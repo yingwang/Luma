@@ -11,6 +11,7 @@ final class PhotoLibraryStore: ObservableObject {
     @Published private(set) var isRenderingPreview = false
     @Published var statusMessage = "Import photos to begin."
     @Published var libraryFilter: LibraryFilter = .all
+    @Published var searchText = ""
     @Published var showOriginal = false {
         didSet {
             renderSelectedPreview()
@@ -18,6 +19,12 @@ final class PhotoLibraryStore: ObservableObject {
     }
 
     private var renderTask: Task<Void, Never>?
+    private var copiedAdjustments: PhotoAdjustments?
+    private let catalogURL = PhotoLibraryStore.defaultCatalogURL
+
+    init() {
+        loadCatalog()
+    }
 
     var selectedPhoto: PhotoAsset? {
         guard let selectedPhotoID else {
@@ -32,7 +39,7 @@ final class PhotoLibraryStore: ObservableObject {
     }
 
     var filteredPhotos: [PhotoAsset] {
-        switch libraryFilter {
+        let filteredByFlag = switch libraryFilter {
         case .all:
             photos
         case .picked:
@@ -41,6 +48,15 @@ final class PhotoLibraryStore: ObservableObject {
             photos.filter { $0.flag == .rejected }
         case .rated:
             photos.filter { $0.rating > 0 }
+        }
+
+        let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else {
+            return filteredByFlag
+        }
+
+        return filteredByFlag.filter {
+            $0.fileName.localizedCaseInsensitiveContains(query)
         }
     }
 
@@ -84,6 +100,7 @@ final class PhotoLibraryStore: ObservableObject {
 
         generateThumbnails(for: imported)
         renderSelectedPreview()
+        saveCatalog()
     }
 
     private func expandedImageURLs(from urls: [URL]) -> [URL] {
@@ -136,6 +153,7 @@ final class PhotoLibraryStore: ObservableObject {
 
         update(&photos[index].adjustments)
         renderSelectedPreview()
+        saveCatalog()
     }
 
     func setSelectedRating(_ rating: Int) {
@@ -148,6 +166,7 @@ final class PhotoLibraryStore: ObservableObject {
 
         photos[index].rating = min(5, max(0, rating))
         statusMessage = "Rated \(photos[index].fileName) \(photos[index].rating) star\(photos[index].rating == 1 ? "" : "s")."
+        saveCatalog()
     }
 
     func setSelectedFlag(_ flag: PhotoFlag) {
@@ -160,6 +179,45 @@ final class PhotoLibraryStore: ObservableObject {
 
         photos[index].flag = flag
         statusMessage = "\(flag.rawValue) \(photos[index].fileName)."
+        saveCatalog()
+    }
+
+    func removeSelectedPhoto() {
+        guard
+            let selectedPhotoID,
+            let index = photos.firstIndex(where: { $0.id == selectedPhotoID })
+        else {
+            return
+        }
+
+        let removed = photos.remove(at: index)
+        self.selectedPhotoID = filteredPhotos.first?.id ?? photos.first?.id
+        statusMessage = "Removed \(removed.fileName) from the library."
+        saveCatalog()
+        renderSelectedPreview()
+    }
+
+    func copySelectedAdjustments() {
+        guard let selectedPhoto else {
+            return
+        }
+
+        copiedAdjustments = selectedPhoto.adjustments
+        statusMessage = "Copied adjustments from \(selectedPhoto.fileName)."
+    }
+
+    func pasteAdjustmentsToSelected() {
+        guard let copiedAdjustments else {
+            statusMessage = "No copied adjustments."
+            return
+        }
+
+        updateSelectedAdjustments { adjustments in
+            let rotationTurns = adjustments.rotationTurns
+            adjustments = copiedAdjustments
+            adjustments.rotationTurns = rotationTurns
+        }
+        statusMessage = "Pasted adjustments."
     }
 
     func applyPreset(_ preset: PhotoPreset) {
@@ -267,6 +325,68 @@ final class PhotoLibraryStore: ObservableObject {
                 self.previewImage = image
                 self.isRenderingPreview = false
             }
+        }
+    }
+
+    private static var defaultCatalogURL: URL {
+        let baseURL = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first
+            ?? FileManager.default.homeDirectoryForCurrentUser
+        return baseURL.appendingPathComponent("Luma", isDirectory: true).appendingPathComponent("catalog.json")
+    }
+
+    private func loadCatalog() {
+        guard
+            let data = try? Data(contentsOf: catalogURL),
+            let catalog = try? JSONDecoder().decode(CatalogFile.self, from: data)
+        else {
+            return
+        }
+
+        let loadedPhotos: [PhotoAsset] = catalog.entries.compactMap { entry -> PhotoAsset? in
+            let url = URL(fileURLWithPath: entry.path)
+            guard FileManager.default.fileExists(atPath: url.path), ImageProcessor.shared.canReadImage(at: url) else {
+                return nil
+            }
+
+            var asset = PhotoAsset(
+                id: entry.id,
+                url: url,
+                metadata: ImageProcessor.shared.metadata(for: url),
+                histogramBins: ImageProcessor.shared.luminanceHistogram(for: url)
+            )
+            asset.adjustments = entry.adjustments
+            asset.rating = entry.rating
+            asset.flag = entry.flag
+            return asset
+        }
+
+        photos = loadedPhotos
+        selectedPhotoID = loadedPhotos.first?.id
+        statusMessage = loadedPhotos.isEmpty ? "Import photos to begin." : "Loaded \(loadedPhotos.count) photo\(loadedPhotos.count == 1 ? "" : "s")."
+        generateThumbnails(for: loadedPhotos)
+        renderSelectedPreview()
+    }
+
+    private func saveCatalog() {
+        do {
+            try FileManager.default.createDirectory(
+                at: catalogURL.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+
+            let catalog = CatalogFile(entries: photos.map {
+                CatalogEntry(
+                    id: $0.id,
+                    path: $0.url.path,
+                    adjustments: $0.adjustments,
+                    rating: $0.rating,
+                    flag: $0.flag
+                )
+            })
+            let data = try JSONEncoder().encode(catalog)
+            try data.write(to: catalogURL, options: .atomic)
+        } catch {
+            statusMessage = "Could not save catalog: \(error.localizedDescription)"
         }
     }
 }

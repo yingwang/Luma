@@ -81,6 +81,11 @@ struct LibrarySidebar: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 
+            TextField("Search file names", text: $library.searchText)
+                .textFieldStyle(.roundedBorder)
+                .padding(.horizontal, 12)
+                .padding(.bottom, 12)
+
             Divider()
 
             if library.photos.isEmpty {
@@ -348,6 +353,27 @@ struct AdjustmentPanel: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Adjustments")
+                    .font(.headline)
+
+                HStack {
+                    Button {
+                        library.copySelectedAdjustments()
+                    } label: {
+                        Label("Copy", systemImage: "doc.on.doc")
+                    }
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button {
+                        library.pasteAdjustmentsToSelected()
+                    } label: {
+                        Label("Paste", systemImage: "doc.on.clipboard")
+                    }
+                    .disabled(library.selectedPhoto == nil)
+                }
+            }
+
             AdjustmentSlider(
                 title: "Exposure",
                 value: adjustmentBinding(\.exposure),
@@ -408,6 +434,13 @@ struct AdjustmentPanel: View {
                 library.resetSelectedAdjustments()
             } label: {
                 Label("Reset Adjustments", systemImage: "arrow.counterclockwise")
+            }
+            .disabled(library.selectedPhoto == nil)
+
+            Button(role: .destructive) {
+                library.removeSelectedPhoto()
+            } label: {
+                Label("Remove From Library", systemImage: "minus.circle")
             }
             .disabled(library.selectedPhoto == nil)
 

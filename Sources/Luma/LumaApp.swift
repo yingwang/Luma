@@ -25,6 +25,20 @@ struct LumaApp: App {
             }
 
             CommandMenu("Photo") {
+                Button("Copy Adjustments") {
+                    library.copySelectedAdjustments()
+                }
+                .keyboardShortcut("c", modifiers: [.command, .option])
+                .disabled(library.selectedPhoto == nil)
+
+                Button("Paste Adjustments") {
+                    library.pasteAdjustmentsToSelected()
+                }
+                .keyboardShortcut("v", modifiers: [.command, .option])
+                .disabled(library.selectedPhoto == nil)
+
+                Divider()
+
                 Button("Auto Enhance") {
                     library.autoEnhanceSelected()
                 }
@@ -55,6 +69,14 @@ struct LumaApp: App {
                     library.setSelectedFlag(.none)
                 }
                 .keyboardShortcut("u", modifiers: [])
+                .disabled(library.selectedPhoto == nil)
+
+                Divider()
+
+                Button("Remove From Library") {
+                    library.removeSelectedPhoto()
+                }
+                .keyboardShortcut(.delete, modifiers: [])
                 .disabled(library.selectedPhoto == nil)
 
                 Divider()
