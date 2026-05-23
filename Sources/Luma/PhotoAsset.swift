@@ -82,14 +82,110 @@ enum PhotoPreset: String, CaseIterable, Identifiable {
 
 struct PhotoAdjustments: Codable, Equatable {
     var exposure: Double = 0
+    var highlights: Double = 0
+    var shadows: Double = 0
     var contrast: Double = 1
     var saturation: Double = 1
     var warmth: Double = 0
     var vibrance: Double = 0
+    var clarity: Double = 0
+    var dehaze: Double = 0
     var sharpness: Double = 0
+    var vignette: Double = 0
     var rotationTurns: Int = 0
+    var cropAspect: CropAspect = .original
 
     static let neutral = PhotoAdjustments()
+
+    private enum CodingKeys: String, CodingKey {
+        case exposure
+        case highlights
+        case shadows
+        case contrast
+        case saturation
+        case warmth
+        case vibrance
+        case clarity
+        case dehaze
+        case sharpness
+        case vignette
+        case rotationTurns
+        case cropAspect
+    }
+
+    init(
+        exposure: Double = 0,
+        highlights: Double = 0,
+        shadows: Double = 0,
+        contrast: Double = 1,
+        saturation: Double = 1,
+        warmth: Double = 0,
+        vibrance: Double = 0,
+        clarity: Double = 0,
+        dehaze: Double = 0,
+        sharpness: Double = 0,
+        vignette: Double = 0,
+        rotationTurns: Int = 0,
+        cropAspect: CropAspect = .original
+    ) {
+        self.exposure = exposure
+        self.highlights = highlights
+        self.shadows = shadows
+        self.contrast = contrast
+        self.saturation = saturation
+        self.warmth = warmth
+        self.vibrance = vibrance
+        self.clarity = clarity
+        self.dehaze = dehaze
+        self.sharpness = sharpness
+        self.vignette = vignette
+        self.rotationTurns = rotationTurns
+        self.cropAspect = cropAspect
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        exposure = try container.decodeIfPresent(Double.self, forKey: .exposure) ?? 0
+        highlights = try container.decodeIfPresent(Double.self, forKey: .highlights) ?? 0
+        shadows = try container.decodeIfPresent(Double.self, forKey: .shadows) ?? 0
+        contrast = try container.decodeIfPresent(Double.self, forKey: .contrast) ?? 1
+        saturation = try container.decodeIfPresent(Double.self, forKey: .saturation) ?? 1
+        warmth = try container.decodeIfPresent(Double.self, forKey: .warmth) ?? 0
+        vibrance = try container.decodeIfPresent(Double.self, forKey: .vibrance) ?? 0
+        clarity = try container.decodeIfPresent(Double.self, forKey: .clarity) ?? 0
+        dehaze = try container.decodeIfPresent(Double.self, forKey: .dehaze) ?? 0
+        sharpness = try container.decodeIfPresent(Double.self, forKey: .sharpness) ?? 0
+        vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
+        rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
+        cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
+    }
+}
+
+enum CropAspect: String, CaseIterable, Codable, Identifiable {
+    case original = "Original"
+    case square = "1:1"
+    case portrait = "4:5"
+    case classic = "3:2"
+    case wide = "16:9"
+
+    var id: String {
+        rawValue
+    }
+
+    var ratio: CGFloat? {
+        switch self {
+        case .original:
+            nil
+        case .square:
+            1
+        case .portrait:
+            4 / 5
+        case .classic:
+            3 / 2
+        case .wide:
+            16 / 9
+        }
+    }
 }
 
 struct CatalogFile: Codable {

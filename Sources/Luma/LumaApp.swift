@@ -100,6 +100,12 @@ struct LumaApp: App {
                 }
                 .keyboardShortcut("e", modifiers: [.command, .shift])
                 .disabled(library.selectedPhoto == nil)
+
+                Button("Export Picked Photos...") {
+                    library.exportPickedPhotos()
+                }
+                .keyboardShortcut("e", modifiers: [.command, .option])
+                .disabled(library.pickedPhotoCount == 0)
             }
         }
     }

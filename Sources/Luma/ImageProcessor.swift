@@ -167,10 +167,19 @@ final class ImageProcessor: @unchecked Sendable {
             return nil
         }
 
+        image = centerCrop(image, aspect: adjustments.cropAspect)
+
         if adjustments.exposure != 0 {
             let filter = CIFilter.exposureAdjust()
             filter.inputImage = image
             filter.ev = Float(adjustments.exposure)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.highlights != 0 || adjustments.shadows != 0, let filter = CIFilter(name: "CIHighlightShadowAdjust") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(1 + adjustments.highlights, forKey: "inputHighlightAmount")
+            filter.setValue(adjustments.shadows, forKey: "inputShadowAmount")
             image = filter.outputImage ?? image
         }
 
@@ -179,6 +188,14 @@ final class ImageProcessor: @unchecked Sendable {
             filter.inputImage = image
             filter.contrast = Float(adjustments.contrast)
             filter.saturation = Float(adjustments.saturation)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.dehaze != 0 {
+            let filter = CIFilter.colorControls()
+            filter.inputImage = image
+            filter.contrast = Float(1 + adjustments.dehaze * 0.35)
+            filter.saturation = Float(1 + adjustments.dehaze * 0.12)
             image = filter.outputImage ?? image
         }
 
@@ -196,9 +213,23 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        if adjustments.clarity > 0, let filter = CIFilter(name: "CIUnsharpMask") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(2 + adjustments.clarity * 4, forKey: kCIInputRadiusKey)
+            filter.setValue(adjustments.clarity * 0.7, forKey: kCIInputIntensityKey)
+            image = filter.outputImage ?? image
+        }
+
         if adjustments.sharpness > 0, let filter = CIFilter(name: "CISharpenLuminance") {
             filter.setValue(image, forKey: kCIInputImageKey)
             filter.setValue(adjustments.sharpness, forKey: kCIInputSharpnessKey)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.vignette != 0, let filter = CIFilter(name: "CIVignette") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(abs(adjustments.vignette) * 1.5, forKey: kCIInputIntensityKey)
+            filter.setValue(1 + abs(adjustments.vignette) * 2.5, forKey: kCIInputRadiusKey)
             image = filter.outputImage ?? image
         }
 
@@ -207,29 +238,65 @@ final class ImageProcessor: @unchecked Sendable {
         return image
     }
 
+    private func centerCrop(_ image: CIImage, aspect: CropAspect) -> CIImage {
+        guard let targetRatio = aspect.ratio else {
+            return normalizeExtent(image)
+        }
+
+        let extent = image.extent
+        let currentRatio = extent.width / extent.height
+        let cropRect: CGRect
+
+        if currentRatio > targetRatio {
+            let width = extent.height * targetRatio
+            cropRect = CGRect(
+                x: extent.midX - width / 2,
+                y: extent.minY,
+                width: width,
+                height: extent.height
+            )
+        } else {
+            let height = extent.width / targetRatio
+            cropRect = CGRect(
+                x: extent.minX,
+                y: extent.midY - height / 2,
+                width: extent.width,
+                height: height
+            )
+        }
+
+        return normalizeExtent(image.cropped(to: cropRect))
+    }
+
     private func rotate(_ image: CIImage, turns: Int) -> CIImage {
         let normalizedTurns = ((turns % 4) + 4) % 4
         let extent = image.extent
 
-        switch normalizedTurns {
+        let rotated = switch normalizedTurns {
         case 1:
-            return image.transformed(
+            image.transformed(
                 by: CGAffineTransform(rotationAngle: .pi / 2)
                     .translatedBy(x: 0, y: -extent.height)
             )
         case 2:
-            return image.transformed(
+            image.transformed(
                 by: CGAffineTransform(rotationAngle: .pi)
                     .translatedBy(x: -extent.width, y: -extent.height)
             )
         case 3:
-            return image.transformed(
+            image.transformed(
                 by: CGAffineTransform(rotationAngle: -.pi / 2)
                     .translatedBy(x: -extent.width, y: 0)
             )
         default:
-            return image
+            image
         }
+
+        return normalizeExtent(rotated)
+    }
+
+    private func normalizeExtent(_ image: CIImage) -> CIImage {
+        image.transformed(by: CGAffineTransform(translationX: -image.extent.origin.x, y: -image.extent.origin.y))
     }
 
     private func render(_ image: CIImage) -> NSImage? {

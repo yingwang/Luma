@@ -38,6 +38,10 @@ final class PhotoLibraryStore: ObservableObject {
         selectedPhoto?.adjustments ?? .neutral
     }
 
+    var pickedPhotoCount: Int {
+        photos.filter { $0.flag == .picked }.count
+    }
+
     var filteredPhotos: [PhotoAsset] {
         let filteredByFlag = switch libraryFilter {
         case .all:
@@ -232,9 +236,12 @@ final class PhotoLibraryStore: ObservableObject {
     func autoEnhanceSelected() {
         updateSelectedAdjustments { adjustments in
             adjustments.exposure += 0.15
+            adjustments.highlights = min(adjustments.highlights, -0.15)
+            adjustments.shadows = max(adjustments.shadows, 0.2)
             adjustments.contrast = max(adjustments.contrast, 1.12)
             adjustments.saturation = max(adjustments.saturation, 1.04)
             adjustments.vibrance = max(adjustments.vibrance, 0.24)
+            adjustments.clarity = max(adjustments.clarity, 0.15)
             adjustments.sharpness = max(adjustments.sharpness, 0.5)
         }
         statusMessage = "Applied auto enhance."
@@ -244,6 +251,13 @@ final class PhotoLibraryStore: ObservableObject {
         updateSelectedAdjustments { adjustments in
             adjustments.rotationTurns -= 1
         }
+    }
+
+    func setSelectedCropAspect(_ cropAspect: CropAspect) {
+        updateSelectedAdjustments { adjustments in
+            adjustments.cropAspect = cropAspect
+        }
+        statusMessage = "Set crop to \(cropAspect.rawValue)."
     }
 
     func rotateSelectedRight() {
@@ -285,6 +299,46 @@ final class PhotoLibraryStore: ObservableObject {
         }
     }
 
+    func exportPickedPhotos() {
+        let pickedPhotos = photos.filter { $0.flag == .picked }
+        guard !pickedPhotos.isEmpty else {
+            statusMessage = "No picked photos to export."
+            return
+        }
+
+        let panel = NSOpenPanel()
+        panel.title = "Export Picked Photos"
+        panel.message = "Choose a folder for exported JPEG files."
+        panel.prompt = "Export"
+        panel.canChooseFiles = false
+        panel.canChooseDirectories = true
+        panel.allowsMultipleSelection = false
+
+        guard panel.runModal() == .OK, let folderURL = panel.url else {
+            return
+        }
+
+        var exportedCount = 0
+
+        for photo in pickedPhotos {
+            let destination = uniqueExportURL(for: photo, in: folderURL)
+
+            do {
+                try ImageProcessor.shared.exportJPEG(
+                    from: photo.url,
+                    adjustments: photo.adjustments,
+                    to: destination
+                )
+                exportedCount += 1
+            } catch {
+                statusMessage = "Could not export \(photo.fileName): \(error.localizedDescription)"
+                return
+            }
+        }
+
+        statusMessage = "Exported \(exportedCount) picked photo\(exportedCount == 1 ? "" : "s")."
+    }
+
     private func generateThumbnails(for imported: [PhotoAsset]) {
         for photo in imported {
             Task.detached(priority: .utility) {
@@ -299,6 +353,19 @@ final class PhotoLibraryStore: ObservableObject {
                 }
             }
         }
+    }
+
+    private func uniqueExportURL(for photo: PhotoAsset, in folderURL: URL) -> URL {
+        let baseName = photo.url.deletingPathExtension().lastPathComponent + "-luma"
+        var destination = folderURL.appendingPathComponent(baseName).appendingPathExtension("jpg")
+        var suffix = 2
+
+        while FileManager.default.fileExists(atPath: destination.path) {
+            destination = folderURL.appendingPathComponent("\(baseName)-\(suffix)").appendingPathExtension("jpg")
+            suffix += 1
+        }
+
+        return destination
     }
 
     private func renderSelectedPreview() {

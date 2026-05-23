@@ -11,13 +11,15 @@ The first version focuses on a local workflow:
 - preview the selected photo
 - compare before and after
 - rotate photos
+- crop to common aspect ratios
 - rate, pick, and reject photos
 - copy and paste adjustments between photos
 - apply built-in presets and auto enhance
 - inspect a luminance histogram
-- adjust exposure, contrast, saturation, warmth, vibrance, and sharpness
+- adjust exposure, highlights, shadows, contrast, saturation, warmth, vibrance, clarity, dehaze, sharpness, and vignette
 - view basic file information
 - export an edited JPEG
+- batch export picked photos
 
 ## Run
 
@@ -33,4 +35,4 @@ Or build it from the command line:
 swift build
 ```
 
-This is an MVP skeleton. The next serious pieces are crop, faster preview caching, batch export, and a more complete RAW/color pipeline.
+This is an MVP skeleton. The next serious pieces are local masks, healing, faster preview caching, and a more complete RAW/color pipeline.

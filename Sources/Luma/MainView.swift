@@ -45,6 +45,13 @@ struct MainView: View {
                     Label("Export", systemImage: "square.and.arrow.up")
                 }
                 .disabled(library.selectedPhoto == nil)
+
+                Button {
+                    library.exportPickedPhotos()
+                } label: {
+                    Label("Export Picked", systemImage: "tray.and.arrow.up")
+                }
+                .disabled(library.pickedPhotoCount == 0)
             }
         }
     }
@@ -374,10 +381,37 @@ struct AdjustmentPanel: View {
                 }
             }
 
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Crop")
+                    .font(.headline)
+
+                Picker("Aspect", selection: adjustmentBinding(\.cropAspect)) {
+                    ForEach(CropAspect.allCases) { aspect in
+                        Text(aspect.rawValue).tag(aspect)
+                    }
+                }
+                .pickerStyle(.menu)
+                .disabled(library.selectedPhoto == nil)
+            }
+
             AdjustmentSlider(
                 title: "Exposure",
                 value: adjustmentBinding(\.exposure),
                 range: -3...3,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Highlights",
+                value: adjustmentBinding(\.highlights),
+                range: -1...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Shadows",
+                value: adjustmentBinding(\.shadows),
+                range: -1...1,
                 format: "%.2f"
             )
 
@@ -410,9 +444,30 @@ struct AdjustmentPanel: View {
             )
 
             AdjustmentSlider(
+                title: "Clarity",
+                value: adjustmentBinding(\.clarity),
+                range: 0...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Dehaze",
+                value: adjustmentBinding(\.dehaze),
+                range: -1...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
                 title: "Sharpness",
                 value: adjustmentBinding(\.sharpness),
                 range: 0...2,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Vignette",
+                value: adjustmentBinding(\.vignette),
+                range: 0...1,
                 format: "%.2f"
             )
 
@@ -451,6 +506,16 @@ struct AdjustmentPanel: View {
     }
 
     private func adjustmentBinding(_ keyPath: WritableKeyPath<PhotoAdjustments, Double>) -> Binding<Double> {
+        Binding {
+            library.selectedAdjustments[keyPath: keyPath]
+        } set: { value in
+            library.updateSelectedAdjustments { adjustments in
+                adjustments[keyPath: keyPath] = value
+            }
+        }
+    }
+
+    private func adjustmentBinding(_ keyPath: WritableKeyPath<PhotoAdjustments, CropAspect>) -> Binding<CropAspect> {
         Binding {
             library.selectedAdjustments[keyPath: keyPath]
         } set: { value in
