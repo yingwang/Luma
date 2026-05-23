@@ -7,7 +7,10 @@ The first version focuses on a local workflow:
 - import local images
 - browse thumbnails
 - preview the selected photo
-- adjust exposure, contrast, saturation, and warmth
+- compare before and after
+- rotate photos
+- adjust exposure, contrast, saturation, warmth, vibrance, and sharpness
+- view basic file information
 - export an edited JPEG
 
 ## Run
@@ -15,7 +18,7 @@ The first version focuses on a local workflow:
 Open the package in Xcode:
 
 ```sh
-open /Users/ying/claude/Luma/Package.swift
+open Package.swift
 ```
 
 Or build it from the command line:
@@ -24,4 +27,4 @@ Or build it from the command line:
 swift build
 ```
 
-This is an MVP skeleton. The next serious pieces are a persistent catalog, faster preview caching, crop/rotate, and a more complete RAW/color pipeline.
+This is an MVP skeleton. The next serious pieces are a persistent catalog, faster preview caching, crop, and a more complete RAW/color pipeline.

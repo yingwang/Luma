@@ -10,6 +10,11 @@ final class PhotoLibraryStore: ObservableObject {
     @Published private(set) var previewImage: NSImage?
     @Published private(set) var isRenderingPreview = false
     @Published var statusMessage = "Import photos to begin."
+    @Published var showOriginal = false {
+        didSet {
+            renderSelectedPreview()
+        }
+    }
 
     private var renderTask: Task<Void, Never>?
 
@@ -51,9 +56,10 @@ final class PhotoLibraryStore: ObservableObject {
             return
         }
 
-        let imported = newURLs.map { PhotoAsset(url: $0) }
+        let imported = newURLs.map { PhotoAsset(url: $0, metadata: ImageProcessor.shared.metadata(for: $0)) }
         photos.append(contentsOf: imported)
         selectedPhotoID = imported.first?.id
+        showOriginal = false
         statusMessage = "Imported \(newURLs.count) photo\(newURLs.count == 1 ? "" : "s")."
 
         generateThumbnails(for: imported)
@@ -110,6 +116,18 @@ final class PhotoLibraryStore: ObservableObject {
 
         update(&photos[index].adjustments)
         renderSelectedPreview()
+    }
+
+    func rotateSelectedLeft() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.rotationTurns -= 1
+        }
+    }
+
+    func rotateSelectedRight() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.rotationTurns += 1
+        }
     }
 
     func resetSelectedAdjustments() {
@@ -172,7 +190,7 @@ final class PhotoLibraryStore: ObservableObject {
 
         isRenderingPreview = true
         let url = selectedPhoto.url
-        let adjustments = selectedPhoto.adjustments
+        let adjustments = showOriginal ? .neutral : selectedPhoto.adjustments
 
         renderTask = Task.detached(priority: .userInitiated) {
             let image = ImageProcessor.shared.preview(for: url, adjustments: adjustments)

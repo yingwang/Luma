@@ -23,6 +23,22 @@ final class ImageProcessor: @unchecked Sendable {
         return CGImageSourceGetCount(source) > 0
     }
 
+    func metadata(for url: URL) -> PhotoMetadata? {
+        guard
+            let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+            let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any],
+            let width = properties[kCGImagePropertyPixelWidth] as? Int,
+            let height = properties[kCGImagePropertyPixelHeight] as? Int
+        else {
+            return nil
+        }
+
+        let resourceValues = try? url.resourceValues(forKeys: [.fileSizeKey])
+        let fileSize = resourceValues?.fileSize.map(Int64.init)
+
+        return PhotoMetadata(pixelWidth: width, pixelHeight: height, fileSize: fileSize)
+    }
+
     func thumbnail(for url: URL, maxPixelSize: CGFloat = 360) -> NSImage? {
         let options: [CFString: Any] = [
             kCGImageSourceShouldCache: false,
@@ -105,7 +121,46 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        if adjustments.vibrance != 0, let filter = CIFilter(name: "CIVibrance") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(adjustments.vibrance, forKey: kCIInputAmountKey)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.sharpness > 0, let filter = CIFilter(name: "CISharpenLuminance") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(adjustments.sharpness, forKey: kCIInputSharpnessKey)
+            image = filter.outputImage ?? image
+        }
+
+        image = rotate(image, turns: adjustments.rotationTurns)
+
         return image
+    }
+
+    private func rotate(_ image: CIImage, turns: Int) -> CIImage {
+        let normalizedTurns = ((turns % 4) + 4) % 4
+        let extent = image.extent
+
+        switch normalizedTurns {
+        case 1:
+            return image.transformed(
+                by: CGAffineTransform(rotationAngle: .pi / 2)
+                    .translatedBy(x: 0, y: -extent.height)
+            )
+        case 2:
+            return image.transformed(
+                by: CGAffineTransform(rotationAngle: .pi)
+                    .translatedBy(x: -extent.width, y: -extent.height)
+            )
+        case 3:
+            return image.transformed(
+                by: CGAffineTransform(rotationAngle: -.pi / 2)
+                    .translatedBy(x: -extent.width, y: 0)
+            )
+        default:
+            return image
+        }
     }
 
     private func render(_ image: CIImage) -> NSImage? {

@@ -19,6 +19,27 @@ struct MainView: View {
                 }
 
                 Button {
+                    library.showOriginal.toggle()
+                } label: {
+                    Label("Before", systemImage: library.showOriginal ? "eye.slash" : "eye")
+                }
+                .disabled(library.selectedPhoto == nil)
+
+                Button {
+                    library.rotateSelectedLeft()
+                } label: {
+                    Label("Rotate Left", systemImage: "rotate.left")
+                }
+                .disabled(library.selectedPhoto == nil)
+
+                Button {
+                    library.rotateSelectedRight()
+                } label: {
+                    Label("Rotate Right", systemImage: "rotate.right")
+                }
+                .disabled(library.selectedPhoto == nil)
+
+                Button {
                     library.exportSelectedPhoto()
                 } label: {
                     Label("Export", systemImage: "square.and.arrow.up")
@@ -165,6 +186,23 @@ struct PreviewPane: View {
                     .resizable()
                     .scaledToFit()
                     .padding(32)
+
+                if library.showOriginal {
+                    VStack {
+                        HStack {
+                            Text("Original")
+                                .font(.caption.weight(.semibold))
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(.regularMaterial, in: Capsule())
+
+                            Spacer()
+                        }
+
+                        Spacer()
+                    }
+                    .padding(24)
+                }
             } else {
                 ContentUnavailableView(
                     "Preview Unavailable",
@@ -226,6 +264,33 @@ struct AdjustmentPanel: View {
                 format: "%.0f"
             )
 
+            AdjustmentSlider(
+                title: "Vibrance",
+                value: adjustmentBinding(\.vibrance),
+                range: -1...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Sharpness",
+                value: adjustmentBinding(\.sharpness),
+                range: 0...2,
+                format: "%.2f"
+            )
+
+            if let metadata = library.selectedPhoto?.metadata {
+                Divider()
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Info")
+                        .font(.headline)
+
+                    InfoRow(label: "Dimensions", value: metadata.dimensionsText)
+                    InfoRow(label: "Resolution", value: metadata.megapixelsText)
+                    InfoRow(label: "File Size", value: metadata.fileSizeText)
+                }
+            }
+
             Button {
                 library.resetSelectedAdjustments()
             } label: {
@@ -246,6 +311,25 @@ struct AdjustmentPanel: View {
                 adjustments[keyPath: keyPath] = value
             }
         }
+    }
+}
+
+struct InfoRow: View {
+    let label: String
+    let value: String
+
+    var body: some View {
+        HStack {
+            Text(label)
+                .foregroundStyle(.secondary)
+
+            Spacer()
+
+            Text(value)
+                .lineLimit(1)
+                .truncationMode(.middle)
+        }
+        .font(.caption)
     }
 }
 

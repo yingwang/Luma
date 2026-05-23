@@ -25,6 +25,28 @@ struct LumaApp: App {
             }
 
             CommandMenu("Photo") {
+                Button("Show Original") {
+                    library.showOriginal.toggle()
+                }
+                .keyboardShortcut("\\", modifiers: [])
+                .disabled(library.selectedPhoto == nil)
+
+                Divider()
+
+                Button("Rotate Left") {
+                    library.rotateSelectedLeft()
+                }
+                .keyboardShortcut("l", modifiers: [.command])
+                .disabled(library.selectedPhoto == nil)
+
+                Button("Rotate Right") {
+                    library.rotateSelectedRight()
+                }
+                .keyboardShortcut("r", modifiers: [.command])
+                .disabled(library.selectedPhoto == nil)
+
+                Divider()
+
                 Button("Export JPEG...") {
                     library.exportSelectedPhoto()
                 }
