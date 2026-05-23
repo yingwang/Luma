@@ -63,13 +63,15 @@ struct LibrarySidebar: View {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 12) {
                         ForEach(library.photos) { photo in
-                            PhotoGridCell(
-                                photo: photo,
-                                isSelected: photo.id == library.selectedPhotoID
-                            )
-                            .onTapGesture {
+                            Button {
                                 library.select(photo)
+                            } label: {
+                                PhotoGridCell(
+                                    photo: photo,
+                                    isSelected: photo.id == library.selectedPhotoID
+                                )
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                     .padding(12)
@@ -120,7 +122,9 @@ struct PhotoGridCell: View {
                 .truncationMode(.middle)
         }
         .padding(4)
+        .frame(maxWidth: .infinity, alignment: .leading)
         .contentShape(Rectangle())
+        .accessibilityLabel(photo.fileName)
     }
 }
 

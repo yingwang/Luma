@@ -53,7 +53,7 @@ final class PhotoLibraryStore: ObservableObject {
 
         let imported = newURLs.map { PhotoAsset(url: $0) }
         photos.append(contentsOf: imported)
-        selectedPhotoID = selectedPhotoID ?? imported.first?.id
+        selectedPhotoID = imported.first?.id
         statusMessage = "Imported \(newURLs.count) photo\(newURLs.count == 1 ? "" : "s")."
 
         generateThumbnails(for: imported)
@@ -96,6 +96,7 @@ final class PhotoLibraryStore: ObservableObject {
 
     func select(_ photo: PhotoAsset) {
         selectedPhotoID = photo.id
+        statusMessage = "Selected \(photo.fileName)."
         renderSelectedPreview()
     }
 
