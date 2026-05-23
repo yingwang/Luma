@@ -12,6 +12,20 @@ struct LumaApp: App {
         }
         .windowStyle(.titleBar)
         .commands {
+            CommandGroup(replacing: .undoRedo) {
+                Button("Undo") {
+                    library.undoAdjustment()
+                }
+                .keyboardShortcut("z", modifiers: [.command])
+                .disabled(!library.canUndo)
+
+                Button("Redo") {
+                    library.redoAdjustment()
+                }
+                .keyboardShortcut("z", modifiers: [.command, .shift])
+                .disabled(!library.canRedo)
+            }
+
             CommandGroup(replacing: .newItem) {
                 Button("Open Photos...") {
                     library.importPhotos()

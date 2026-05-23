@@ -10,14 +10,16 @@ The first version focuses on a local workflow:
 - search and filter the library
 - preview the selected photo
 - compare before and after
+- undo and redo non-destructive edits
 - rotate photos
 - crop to common aspect ratios
 - rate, pick, and reject photos
 - copy and paste adjustments between photos
 - apply built-in presets and auto enhance
 - inspect a luminance histogram
-- adjust exposure, highlights, shadows, contrast, saturation, warmth, vibrance, clarity, dehaze, sharpness, and vignette
+- adjust exposure, highlights, shadows, contrast, saturation, warmth, tint, vibrance, clarity, dehaze, noise reduction, sharpness, and vignette
 - view basic file information
+- choose JPEG export quality
 - export an edited JPEG
 - batch export picked photos
 

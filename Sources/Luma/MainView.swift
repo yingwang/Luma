@@ -19,6 +19,20 @@ struct MainView: View {
                 }
 
                 Button {
+                    library.undoAdjustment()
+                } label: {
+                    Label("Undo", systemImage: "arrow.uturn.backward")
+                }
+                .disabled(!library.canUndo)
+
+                Button {
+                    library.redoAdjustment()
+                } label: {
+                    Label("Redo", systemImage: "arrow.uturn.forward")
+                }
+                .disabled(!library.canRedo)
+
+                Button {
                     library.showOriginal.toggle()
                 } label: {
                     Label("Before", systemImage: library.showOriginal ? "eye.slash" : "eye")
@@ -437,6 +451,13 @@ struct AdjustmentPanel: View {
             )
 
             AdjustmentSlider(
+                title: "Tint",
+                value: adjustmentBinding(\.tint),
+                range: -150...150,
+                format: "%.0f"
+            )
+
+            AdjustmentSlider(
                 title: "Vibrance",
                 value: adjustmentBinding(\.vibrance),
                 range: -1...1,
@@ -454,6 +475,13 @@ struct AdjustmentPanel: View {
                 title: "Dehaze",
                 value: adjustmentBinding(\.dehaze),
                 range: -1...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Noise Reduction",
+                value: adjustmentBinding(\.noiseReduction),
+                range: 0...1,
                 format: "%.2f"
             )
 
@@ -483,6 +511,20 @@ struct AdjustmentPanel: View {
                     InfoRow(label: "File Size", value: metadata.fileSizeText)
                     InfoRow(label: "Format", value: metadata.formatText)
                 }
+            }
+
+            Divider()
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Export")
+                    .font(.headline)
+
+                AdjustmentSlider(
+                    title: "JPEG Quality",
+                    value: $library.exportQuality,
+                    range: 0.5...1,
+                    format: "%.2f"
+                )
             }
 
             Button {

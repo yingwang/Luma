@@ -199,10 +199,10 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
-        if adjustments.warmth != 0 {
+        if adjustments.warmth != 0 || adjustments.tint != 0 {
             let filter = CIFilter.temperatureAndTint()
             filter.inputImage = image
-            filter.neutral = CIVector(x: 6500 - adjustments.warmth, y: 0)
+            filter.neutral = CIVector(x: 6500 - adjustments.warmth, y: -adjustments.tint)
             filter.targetNeutral = CIVector(x: 6500, y: 0)
             image = filter.outputImage ?? image
         }
@@ -217,6 +217,13 @@ final class ImageProcessor: @unchecked Sendable {
             filter.setValue(image, forKey: kCIInputImageKey)
             filter.setValue(2 + adjustments.clarity * 4, forKey: kCIInputRadiusKey)
             filter.setValue(adjustments.clarity * 0.7, forKey: kCIInputIntensityKey)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.noiseReduction > 0, let filter = CIFilter(name: "CINoiseReduction") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(adjustments.noiseReduction * 0.08, forKey: "inputNoiseLevel")
+            filter.setValue(0.3, forKey: kCIInputSharpnessKey)
             image = filter.outputImage ?? image
         }
 

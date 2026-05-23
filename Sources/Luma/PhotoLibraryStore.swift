@@ -12,6 +12,9 @@ final class PhotoLibraryStore: ObservableObject {
     @Published var statusMessage = "Import photos to begin."
     @Published var libraryFilter: LibraryFilter = .all
     @Published var searchText = ""
+    @Published var exportQuality = 0.92
+    @Published private(set) var canUndo = false
+    @Published private(set) var canRedo = false
     @Published var showOriginal = false {
         didSet {
             renderSelectedPreview()
@@ -20,6 +23,8 @@ final class PhotoLibraryStore: ObservableObject {
 
     private var renderTask: Task<Void, Never>?
     private var copiedAdjustments: PhotoAdjustments?
+    private var undoStack: [AdjustmentHistoryEntry] = []
+    private var redoStack: [AdjustmentHistoryEntry] = []
     private let catalogURL = PhotoLibraryStore.defaultCatalogURL
 
     init() {
@@ -155,9 +160,40 @@ final class PhotoLibraryStore: ObservableObject {
             return
         }
 
+        let before = photos[index].adjustments
         update(&photos[index].adjustments)
+        let after = photos[index].adjustments
+
+        if before != after {
+            undoStack.append(AdjustmentHistoryEntry(photoID: selectedPhotoID, before: before, after: after))
+            redoStack.removeAll()
+            updateHistoryState()
+        }
+
         renderSelectedPreview()
         saveCatalog()
+    }
+
+    func undoAdjustment() {
+        guard let entry = undoStack.popLast() else {
+            return
+        }
+
+        applyAdjustment(entry.before, to: entry.photoID)
+        redoStack.append(entry)
+        updateHistoryState()
+        statusMessage = "Undid adjustment."
+    }
+
+    func redoAdjustment() {
+        guard let entry = redoStack.popLast() else {
+            return
+        }
+
+        applyAdjustment(entry.after, to: entry.photoID)
+        undoStack.append(entry)
+        updateHistoryState()
+        statusMessage = "Redid adjustment."
     }
 
     func setSelectedRating(_ rating: Int) {
@@ -288,11 +324,12 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         do {
-            try ImageProcessor.shared.exportJPEG(
-                from: selectedPhoto.url,
-                adjustments: selectedPhoto.adjustments,
-                to: destination
-            )
+                try ImageProcessor.shared.exportJPEG(
+                    from: selectedPhoto.url,
+                    adjustments: selectedPhoto.adjustments,
+                    to: destination,
+                    quality: exportQuality
+                )
             statusMessage = "Exported \(destination.lastPathComponent)."
         } catch {
             statusMessage = error.localizedDescription
@@ -327,7 +364,8 @@ final class PhotoLibraryStore: ObservableObject {
                 try ImageProcessor.shared.exportJPEG(
                     from: photo.url,
                     adjustments: photo.adjustments,
-                    to: destination
+                    to: destination,
+                    quality: exportQuality
                 )
                 exportedCount += 1
             } catch {
@@ -393,6 +431,22 @@ final class PhotoLibraryStore: ObservableObject {
                 self.isRenderingPreview = false
             }
         }
+    }
+
+    private func applyAdjustment(_ adjustment: PhotoAdjustments, to photoID: PhotoAsset.ID) {
+        guard let index = photos.firstIndex(where: { $0.id == photoID }) else {
+            return
+        }
+
+        selectedPhotoID = photoID
+        photos[index].adjustments = adjustment
+        renderSelectedPreview()
+        saveCatalog()
+    }
+
+    private func updateHistoryState() {
+        canUndo = !undoStack.isEmpty
+        canRedo = !redoStack.isEmpty
     }
 
     private static var defaultCatalogURL: URL {

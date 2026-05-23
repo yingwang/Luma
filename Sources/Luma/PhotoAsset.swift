@@ -87,9 +87,11 @@ struct PhotoAdjustments: Codable, Equatable {
     var contrast: Double = 1
     var saturation: Double = 1
     var warmth: Double = 0
+    var tint: Double = 0
     var vibrance: Double = 0
     var clarity: Double = 0
     var dehaze: Double = 0
+    var noiseReduction: Double = 0
     var sharpness: Double = 0
     var vignette: Double = 0
     var rotationTurns: Int = 0
@@ -104,9 +106,11 @@ struct PhotoAdjustments: Codable, Equatable {
         case contrast
         case saturation
         case warmth
+        case tint
         case vibrance
         case clarity
         case dehaze
+        case noiseReduction
         case sharpness
         case vignette
         case rotationTurns
@@ -120,9 +124,11 @@ struct PhotoAdjustments: Codable, Equatable {
         contrast: Double = 1,
         saturation: Double = 1,
         warmth: Double = 0,
+        tint: Double = 0,
         vibrance: Double = 0,
         clarity: Double = 0,
         dehaze: Double = 0,
+        noiseReduction: Double = 0,
         sharpness: Double = 0,
         vignette: Double = 0,
         rotationTurns: Int = 0,
@@ -134,9 +140,11 @@ struct PhotoAdjustments: Codable, Equatable {
         self.contrast = contrast
         self.saturation = saturation
         self.warmth = warmth
+        self.tint = tint
         self.vibrance = vibrance
         self.clarity = clarity
         self.dehaze = dehaze
+        self.noiseReduction = noiseReduction
         self.sharpness = sharpness
         self.vignette = vignette
         self.rotationTurns = rotationTurns
@@ -151,14 +159,22 @@ struct PhotoAdjustments: Codable, Equatable {
         contrast = try container.decodeIfPresent(Double.self, forKey: .contrast) ?? 1
         saturation = try container.decodeIfPresent(Double.self, forKey: .saturation) ?? 1
         warmth = try container.decodeIfPresent(Double.self, forKey: .warmth) ?? 0
+        tint = try container.decodeIfPresent(Double.self, forKey: .tint) ?? 0
         vibrance = try container.decodeIfPresent(Double.self, forKey: .vibrance) ?? 0
         clarity = try container.decodeIfPresent(Double.self, forKey: .clarity) ?? 0
         dehaze = try container.decodeIfPresent(Double.self, forKey: .dehaze) ?? 0
+        noiseReduction = try container.decodeIfPresent(Double.self, forKey: .noiseReduction) ?? 0
         sharpness = try container.decodeIfPresent(Double.self, forKey: .sharpness) ?? 0
         vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
     }
+}
+
+struct AdjustmentHistoryEntry {
+    let photoID: UUID
+    let before: PhotoAdjustments
+    let after: PhotoAdjustments
 }
 
 enum CropAspect: String, CaseIterable, Codable, Identifiable {
