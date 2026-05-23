@@ -13,11 +13,13 @@ The first version focuses on a local workflow:
 - undo and redo non-destructive edits
 - rotate photos
 - crop to common aspect ratios
+- straighten photos
 - rate, pick, and reject photos
 - copy and paste adjustments between photos
 - apply built-in presets and auto enhance
 - inspect a luminance histogram
-- adjust exposure, highlights, shadows, contrast, saturation, warmth, tint, vibrance, clarity, dehaze, noise reduction, sharpness, and vignette
+- adjust exposure, highlights, shadows, whites, blacks, contrast, saturation, hue, warmth, tint, vibrance, clarity, dehaze, noise reduction, sharpness, and vignette
+- tune saturation by color range with a simple color mixer
 - view basic file information
 - choose JPEG export quality
 - export an edited JPEG

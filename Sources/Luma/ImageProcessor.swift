@@ -168,6 +168,7 @@ final class ImageProcessor: @unchecked Sendable {
         }
 
         image = centerCrop(image, aspect: adjustments.cropAspect)
+        image = straighten(image, degrees: adjustments.straighten)
 
         if adjustments.exposure != 0 {
             let filter = CIFilter.exposureAdjust()
@@ -180,6 +181,16 @@ final class ImageProcessor: @unchecked Sendable {
             filter.setValue(image, forKey: kCIInputImageKey)
             filter.setValue(1 + adjustments.highlights, forKey: "inputHighlightAmount")
             filter.setValue(adjustments.shadows, forKey: "inputShadowAmount")
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.whites != 0 || adjustments.blacks != 0, let filter = CIFilter(name: "CIToneCurve") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(CIVector(x: 0, y: clipped(0.08 * adjustments.blacks)), forKey: "inputPoint0")
+            filter.setValue(CIVector(x: 0.25, y: clipped(0.25 + 0.18 * adjustments.blacks)), forKey: "inputPoint1")
+            filter.setValue(CIVector(x: 0.5, y: 0.5), forKey: "inputPoint2")
+            filter.setValue(CIVector(x: 0.75, y: clipped(0.75 + 0.18 * adjustments.whites)), forKey: "inputPoint3")
+            filter.setValue(CIVector(x: 1, y: clipped(1 + 0.08 * adjustments.whites)), forKey: "inputPoint4")
             image = filter.outputImage ?? image
         }
 
@@ -196,6 +207,13 @@ final class ImageProcessor: @unchecked Sendable {
             filter.inputImage = image
             filter.contrast = Float(1 + adjustments.dehaze * 0.35)
             filter.saturation = Float(1 + adjustments.dehaze * 0.12)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.hue != 0 {
+            let filter = CIFilter.hueAdjust()
+            filter.inputImage = image
+            filter.angle = Float(adjustments.hue * .pi / 180)
             image = filter.outputImage ?? image
         }
 
@@ -240,6 +258,10 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        if adjustments.colorMixer.hasAdjustments {
+            image = applyColorMixer(adjustments.colorMixer, to: image)
+        }
+
         image = rotate(image, turns: adjustments.rotationTurns)
 
         return image
@@ -275,6 +297,21 @@ final class ImageProcessor: @unchecked Sendable {
         return normalizeExtent(image.cropped(to: cropRect))
     }
 
+    private func straighten(_ image: CIImage, degrees: Double) -> CIImage {
+        guard degrees != 0 else {
+            return image
+        }
+
+        let radians = CGFloat(degrees * .pi / 180)
+        let extent = image.extent
+        let center = CGPoint(x: extent.midX, y: extent.midY)
+        let transform = CGAffineTransform(translationX: center.x, y: center.y)
+            .rotated(by: radians)
+            .translatedBy(x: -center.x, y: -center.y)
+
+        return normalizeExtent(image.transformed(by: transform))
+    }
+
     private func rotate(_ image: CIImage, turns: Int) -> CIImage {
         let normalizedTurns = ((turns % 4) + 4) % 4
         let extent = image.extent
@@ -304,6 +341,112 @@ final class ImageProcessor: @unchecked Sendable {
 
     private func normalizeExtent(_ image: CIImage) -> CIImage {
         image.transformed(by: CGAffineTransform(translationX: -image.extent.origin.x, y: -image.extent.origin.y))
+    }
+
+    private func applyColorMixer(_ mixer: ColorMixerAdjustments, to image: CIImage) -> CIImage {
+        let dimension = 24
+        var cube = [Float]()
+        cube.reserveCapacity(dimension * dimension * dimension * 4)
+
+        for blueIndex in 0..<dimension {
+            for greenIndex in 0..<dimension {
+                for redIndex in 0..<dimension {
+                    let red = Double(redIndex) / Double(dimension - 1)
+                    let green = Double(greenIndex) / Double(dimension - 1)
+                    let blue = Double(blueIndex) / Double(dimension - 1)
+                    let hsv = rgbToHSV(red: red, green: green, blue: blue)
+                    let saturation = clipped(hsv.saturation * (1 + colorMixerAmount(for: hsv.hue, mixer: mixer)))
+                    let rgb = hsvToRGB(hue: hsv.hue, saturation: saturation, value: hsv.value)
+
+                    cube.append(Float(rgb.red))
+                    cube.append(Float(rgb.green))
+                    cube.append(Float(rgb.blue))
+                    cube.append(1)
+                }
+            }
+        }
+
+        let data = cube.withUnsafeBufferPointer { buffer in
+            Data(buffer: buffer)
+        }
+
+        guard let filter = CIFilter(name: "CIColorCube") else {
+            return image
+        }
+
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(dimension, forKey: "inputCubeDimension")
+        filter.setValue(data, forKey: "inputCubeData")
+        return filter.outputImage ?? image
+    }
+
+    private func colorMixerAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {
+        let controls: [(center: Double, amount: Double)] = [
+            (0, mixer.red),
+            (30, mixer.orange),
+            (60, mixer.yellow),
+            (120, mixer.green),
+            (180, mixer.aqua),
+            (240, mixer.blue),
+            (280, mixer.purple),
+            (320, mixer.magenta),
+            (360, mixer.red)
+        ]
+
+        return controls.reduce(0) { result, control in
+            let distance = abs(hue - control.center)
+            let weight = max(0, 1 - distance / 35)
+            return result + control.amount * weight
+        }
+    }
+
+    private func rgbToHSV(red: Double, green: Double, blue: Double) -> (hue: Double, saturation: Double, value: Double) {
+        let maxValue = max(red, green, blue)
+        let minValue = min(red, green, blue)
+        let delta = maxValue - minValue
+
+        let hue: Double
+        if delta == 0 {
+            hue = 0
+        } else if maxValue == red {
+            hue = 60 * (((green - blue) / delta).truncatingRemainder(dividingBy: 6))
+        } else if maxValue == green {
+            hue = 60 * ((blue - red) / delta + 2)
+        } else {
+            hue = 60 * ((red - green) / delta + 4)
+        }
+
+        let normalizedHue = hue < 0 ? hue + 360 : hue
+        let saturation = maxValue == 0 ? 0 : delta / maxValue
+        return (normalizedHue, saturation, maxValue)
+    }
+
+    private func hsvToRGB(hue: Double, saturation: Double, value: Double) -> (red: Double, green: Double, blue: Double) {
+        let chroma = value * saturation
+        let x = chroma * (1 - abs((hue / 60).truncatingRemainder(dividingBy: 2) - 1))
+        let m = value - chroma
+
+        let rgb: (Double, Double, Double)
+        switch hue {
+        case 0..<60:
+            rgb = (chroma, x, 0)
+        case 60..<120:
+            rgb = (x, chroma, 0)
+        case 120..<180:
+            rgb = (0, chroma, x)
+        case 180..<240:
+            rgb = (0, x, chroma)
+        case 240..<300:
+            rgb = (x, 0, chroma)
+        default:
+            rgb = (chroma, 0, x)
+        }
+
+        return (rgb.0 + m, rgb.1 + m, rgb.2 + m)
+    }
+
+    private func clipped(_ value: Double) -> Double {
+        min(1, max(0, value))
     }
 
     private func render(_ image: CIImage) -> NSImage? {

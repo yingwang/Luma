@@ -84,8 +84,11 @@ struct PhotoAdjustments: Codable, Equatable {
     var exposure: Double = 0
     var highlights: Double = 0
     var shadows: Double = 0
+    var whites: Double = 0
+    var blacks: Double = 0
     var contrast: Double = 1
     var saturation: Double = 1
+    var hue: Double = 0
     var warmth: Double = 0
     var tint: Double = 0
     var vibrance: Double = 0
@@ -94,8 +97,10 @@ struct PhotoAdjustments: Codable, Equatable {
     var noiseReduction: Double = 0
     var sharpness: Double = 0
     var vignette: Double = 0
+    var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
+    var colorMixer = ColorMixerAdjustments()
 
     static let neutral = PhotoAdjustments()
 
@@ -103,8 +108,11 @@ struct PhotoAdjustments: Codable, Equatable {
         case exposure
         case highlights
         case shadows
+        case whites
+        case blacks
         case contrast
         case saturation
+        case hue
         case warmth
         case tint
         case vibrance
@@ -113,16 +121,21 @@ struct PhotoAdjustments: Codable, Equatable {
         case noiseReduction
         case sharpness
         case vignette
+        case straighten
         case rotationTurns
         case cropAspect
+        case colorMixer
     }
 
     init(
         exposure: Double = 0,
         highlights: Double = 0,
         shadows: Double = 0,
+        whites: Double = 0,
+        blacks: Double = 0,
         contrast: Double = 1,
         saturation: Double = 1,
+        hue: Double = 0,
         warmth: Double = 0,
         tint: Double = 0,
         vibrance: Double = 0,
@@ -131,14 +144,19 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction: Double = 0,
         sharpness: Double = 0,
         vignette: Double = 0,
+        straighten: Double = 0,
         rotationTurns: Int = 0,
-        cropAspect: CropAspect = .original
+        cropAspect: CropAspect = .original,
+        colorMixer: ColorMixerAdjustments = ColorMixerAdjustments()
     ) {
         self.exposure = exposure
         self.highlights = highlights
         self.shadows = shadows
+        self.whites = whites
+        self.blacks = blacks
         self.contrast = contrast
         self.saturation = saturation
+        self.hue = hue
         self.warmth = warmth
         self.tint = tint
         self.vibrance = vibrance
@@ -147,8 +165,10 @@ struct PhotoAdjustments: Codable, Equatable {
         self.noiseReduction = noiseReduction
         self.sharpness = sharpness
         self.vignette = vignette
+        self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
+        self.colorMixer = colorMixer
     }
 
     init(from decoder: Decoder) throws {
@@ -156,8 +176,11 @@ struct PhotoAdjustments: Codable, Equatable {
         exposure = try container.decodeIfPresent(Double.self, forKey: .exposure) ?? 0
         highlights = try container.decodeIfPresent(Double.self, forKey: .highlights) ?? 0
         shadows = try container.decodeIfPresent(Double.self, forKey: .shadows) ?? 0
+        whites = try container.decodeIfPresent(Double.self, forKey: .whites) ?? 0
+        blacks = try container.decodeIfPresent(Double.self, forKey: .blacks) ?? 0
         contrast = try container.decodeIfPresent(Double.self, forKey: .contrast) ?? 1
         saturation = try container.decodeIfPresent(Double.self, forKey: .saturation) ?? 1
+        hue = try container.decodeIfPresent(Double.self, forKey: .hue) ?? 0
         warmth = try container.decodeIfPresent(Double.self, forKey: .warmth) ?? 0
         tint = try container.decodeIfPresent(Double.self, forKey: .tint) ?? 0
         vibrance = try container.decodeIfPresent(Double.self, forKey: .vibrance) ?? 0
@@ -166,8 +189,25 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction = try container.decodeIfPresent(Double.self, forKey: .noiseReduction) ?? 0
         sharpness = try container.decodeIfPresent(Double.self, forKey: .sharpness) ?? 0
         vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
+        straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
+        colorMixer = try container.decodeIfPresent(ColorMixerAdjustments.self, forKey: .colorMixer) ?? ColorMixerAdjustments()
+    }
+}
+
+struct ColorMixerAdjustments: Codable, Equatable {
+    var red: Double = 0
+    var orange: Double = 0
+    var yellow: Double = 0
+    var green: Double = 0
+    var aqua: Double = 0
+    var blue: Double = 0
+    var purple: Double = 0
+    var magenta: Double = 0
+
+    var hasAdjustments: Bool {
+        red != 0 || orange != 0 || yellow != 0 || green != 0 || aqua != 0 || blue != 0 || purple != 0 || magenta != 0
     }
 }
 

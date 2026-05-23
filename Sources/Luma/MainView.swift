@@ -406,6 +406,13 @@ struct AdjustmentPanel: View {
                 }
                 .pickerStyle(.menu)
                 .disabled(library.selectedPhoto == nil)
+
+                AdjustmentSlider(
+                    title: "Straighten",
+                    value: adjustmentBinding(\.straighten),
+                    range: -45...45,
+                    format: "%.1f"
+                )
             }
 
             AdjustmentSlider(
@@ -430,6 +437,20 @@ struct AdjustmentPanel: View {
             )
 
             AdjustmentSlider(
+                title: "Whites",
+                value: adjustmentBinding(\.whites),
+                range: -1...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Blacks",
+                value: adjustmentBinding(\.blacks),
+                range: -1...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
                 title: "Contrast",
                 value: adjustmentBinding(\.contrast),
                 range: 0.5...1.8,
@@ -441,6 +462,13 @@ struct AdjustmentPanel: View {
                 value: adjustmentBinding(\.saturation),
                 range: 0...2,
                 format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Hue",
+                value: adjustmentBinding(\.hue),
+                range: -180...180,
+                format: "%.0f"
             )
 
             AdjustmentSlider(
@@ -498,6 +526,67 @@ struct AdjustmentPanel: View {
                 range: 0...1,
                 format: "%.2f"
             )
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Color Mixer")
+                    .font(.headline)
+
+                AdjustmentSlider(
+                    title: "Red Sat",
+                    value: colorMixerBinding(\.red),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Orange Sat",
+                    value: colorMixerBinding(\.orange),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Yellow Sat",
+                    value: colorMixerBinding(\.yellow),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Green Sat",
+                    value: colorMixerBinding(\.green),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Aqua Sat",
+                    value: colorMixerBinding(\.aqua),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Blue Sat",
+                    value: colorMixerBinding(\.blue),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Purple Sat",
+                    value: colorMixerBinding(\.purple),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Magenta Sat",
+                    value: colorMixerBinding(\.magenta),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+            }
 
             if let metadata = library.selectedPhoto?.metadata {
                 Divider()
@@ -563,6 +652,16 @@ struct AdjustmentPanel: View {
         } set: { value in
             library.updateSelectedAdjustments { adjustments in
                 adjustments[keyPath: keyPath] = value
+            }
+        }
+    }
+
+    private func colorMixerBinding(_ keyPath: WritableKeyPath<ColorMixerAdjustments, Double>) -> Binding<Double> {
+        Binding {
+            library.selectedAdjustments.colorMixer[keyPath: keyPath]
+        } set: { value in
+            library.updateSelectedAdjustments { adjustments in
+                adjustments.colorMixer[keyPath: keyPath] = value
             }
         }
     }
