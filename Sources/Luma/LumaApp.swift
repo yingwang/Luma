@@ -25,10 +25,36 @@ struct LumaApp: App {
             }
 
             CommandMenu("Photo") {
+                Button("Auto Enhance") {
+                    library.autoEnhanceSelected()
+                }
+                .keyboardShortcut("u", modifiers: [.command])
+                .disabled(library.selectedPhoto == nil)
+
                 Button("Show Original") {
                     library.showOriginal.toggle()
                 }
                 .keyboardShortcut("\\", modifiers: [])
+                .disabled(library.selectedPhoto == nil)
+
+                Divider()
+
+                Button("Pick") {
+                    library.setSelectedFlag(.picked)
+                }
+                .keyboardShortcut("p", modifiers: [])
+                .disabled(library.selectedPhoto == nil)
+
+                Button("Reject") {
+                    library.setSelectedFlag(.rejected)
+                }
+                .keyboardShortcut("x", modifiers: [])
+                .disabled(library.selectedPhoto == nil)
+
+                Button("Clear Flag") {
+                    library.setSelectedFlag(.none)
+                }
+                .keyboardShortcut("u", modifiers: [])
                 .disabled(library.selectedPhoto == nil)
 
                 Divider()

@@ -5,11 +5,58 @@ struct PhotoAsset: Identifiable, Equatable {
     let id = UUID()
     let url: URL
     let metadata: PhotoMetadata?
+    let histogramBins: [Double]?
     var thumbnail: NSImage?
     var adjustments = PhotoAdjustments()
+    var rating: Int = 0
+    var flag: PhotoFlag = .none
 
     var fileName: String {
         url.lastPathComponent
+    }
+}
+
+enum PhotoFlag: String, CaseIterable, Equatable {
+    case none = "None"
+    case picked = "Picked"
+    case rejected = "Rejected"
+}
+
+enum LibraryFilter: String, CaseIterable, Identifiable {
+    case all = "All"
+    case picked = "Picked"
+    case rejected = "Rejected"
+    case rated = "Rated"
+
+    var id: String {
+        rawValue
+    }
+}
+
+enum PhotoPreset: String, CaseIterable, Identifiable {
+    case neutral = "Neutral"
+    case vivid = "Vivid"
+    case softPortrait = "Soft Portrait"
+    case blackAndWhite = "Black & White"
+    case warmFilm = "Warm Film"
+
+    var id: String {
+        rawValue
+    }
+
+    var adjustments: PhotoAdjustments {
+        switch self {
+        case .neutral:
+            return .neutral
+        case .vivid:
+            return PhotoAdjustments(exposure: 0.1, contrast: 1.18, saturation: 1.12, warmth: 80, vibrance: 0.35, sharpness: 0.7)
+        case .softPortrait:
+            return PhotoAdjustments(exposure: 0.2, contrast: 0.92, saturation: 0.96, warmth: 180, vibrance: 0.08, sharpness: 0.25)
+        case .blackAndWhite:
+            return PhotoAdjustments(exposure: 0, contrast: 1.25, saturation: 0, warmth: 0, vibrance: 0, sharpness: 0.45)
+        case .warmFilm:
+            return PhotoAdjustments(exposure: 0.05, contrast: 1.08, saturation: 0.94, warmth: 420, vibrance: 0.18, sharpness: 0.35)
+        }
     }
 }
 
@@ -29,6 +76,8 @@ struct PhotoMetadata: Equatable {
     let pixelWidth: Int
     let pixelHeight: Int
     let fileSize: Int64?
+    let formatName: String?
+    let isRaw: Bool
 
     var dimensionsText: String {
         "\(pixelWidth) x \(pixelHeight)"
@@ -45,5 +94,13 @@ struct PhotoMetadata: Equatable {
         }
 
         return ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file)
+    }
+
+    var formatText: String {
+        if isRaw {
+            return "RAW"
+        }
+
+        return formatName ?? "Image"
     }
 }

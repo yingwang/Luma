@@ -65,11 +65,21 @@ struct LibrarySidebar: View {
 
                 Spacer()
 
-                Text("\(library.photos.count)")
+                Text("\(library.filteredPhotos.count)/\(library.photos.count)")
                     .foregroundStyle(.secondary)
             }
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
+
+            Picker("Filter", selection: $library.libraryFilter) {
+                ForEach(LibraryFilter.allCases) { filter in
+                    Text(filter.rawValue).tag(filter)
+                }
+            }
+            .pickerStyle(.segmented)
+            .labelsHidden()
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
 
             Divider()
 
@@ -80,10 +90,17 @@ struct LibrarySidebar: View {
                     description: Text("Import local photos to start editing.")
                 )
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if library.filteredPhotos.isEmpty {
+                ContentUnavailableView(
+                    "No Matches",
+                    systemImage: "line.3.horizontal.decrease.circle",
+                    description: Text("Change the library filter to see more photos.")
+                )
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else {
                 ScrollView {
                     LazyVGrid(columns: columns, spacing: 12) {
-                        ForEach(library.photos) { photo in
+                        ForEach(library.filteredPhotos) { photo in
                             Button {
                                 library.select(photo)
                             } label: {
@@ -136,11 +153,34 @@ struct PhotoGridCell: View {
                 RoundedRectangle(cornerRadius: 6)
                     .stroke(isSelected ? Color.accentColor : .clear, lineWidth: 3)
             }
+            .overlay(alignment: .topLeading) {
+                if photo.metadata?.isRaw == true {
+                    Text("RAW")
+                        .font(.caption2.weight(.bold))
+                        .padding(.horizontal, 5)
+                        .padding(.vertical, 3)
+                        .background(.black.opacity(0.65), in: RoundedRectangle(cornerRadius: 4))
+                        .foregroundStyle(.white)
+                        .padding(6)
+                }
+            }
+            .overlay(alignment: .topTrailing) {
+                if photo.flag != .none {
+                    Image(systemName: photo.flag == .picked ? "flag.fill" : "xmark.circle.fill")
+                        .foregroundStyle(photo.flag == .picked ? .green : .red)
+                        .padding(6)
+                }
+            }
 
             Text(photo.fileName)
                 .font(.caption)
                 .lineLimit(1)
                 .truncationMode(.middle)
+
+            if photo.rating > 0 {
+                RatingStars(rating: photo.rating)
+                    .font(.caption2)
+            }
         }
         .padding(4)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -218,7 +258,8 @@ struct AdjustmentPanel: View {
     @EnvironmentObject private var library: PhotoLibraryStore
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 18) {
+        ScrollView {
+            VStack(alignment: .leading, spacing: 18) {
             VStack(alignment: .leading, spacing: 4) {
                 Text("Edit")
                     .font(.headline)
@@ -233,6 +274,77 @@ struct AdjustmentPanel: View {
                     Text("No photo selected")
                         .font(.caption)
                         .foregroundStyle(.secondary)
+                }
+            }
+
+            if let histogramBins = library.selectedPhoto?.histogramBins {
+                HistogramView(bins: histogramBins)
+                    .frame(height: 86)
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                HStack {
+                    Text("Rating")
+                        .font(.headline)
+
+                    Spacer()
+
+                    Button("Clear") {
+                        library.setSelectedRating(0)
+                    }
+                    .disabled(library.selectedPhoto == nil || library.selectedPhoto?.rating == 0)
+                }
+
+                RatingControl(
+                    rating: library.selectedPhoto?.rating ?? 0,
+                    setRating: library.setSelectedRating
+                )
+                .disabled(library.selectedPhoto == nil)
+
+                HStack {
+                    Button {
+                        library.setSelectedFlag(.picked)
+                    } label: {
+                        Label("Pick", systemImage: "flag.fill")
+                    }
+
+                    Button {
+                        library.setSelectedFlag(.rejected)
+                    } label: {
+                        Label("Reject", systemImage: "xmark.circle")
+                    }
+
+                    Button {
+                        library.setSelectedFlag(.none)
+                    } label: {
+                        Label("Clear", systemImage: "flag.slash")
+                    }
+                }
+                .disabled(library.selectedPhoto == nil)
+            }
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Presets")
+                    .font(.headline)
+
+                HStack {
+                    Menu {
+                        ForEach(PhotoPreset.allCases) { preset in
+                            Button(preset.rawValue) {
+                                library.applyPreset(preset)
+                            }
+                        }
+                    } label: {
+                        Label("Apply Preset", systemImage: "slider.horizontal.3")
+                    }
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button {
+                        library.autoEnhanceSelected()
+                    } label: {
+                        Label("Auto", systemImage: "wand.and.stars")
+                    }
+                    .disabled(library.selectedPhoto == nil)
                 }
             }
 
@@ -288,6 +400,7 @@ struct AdjustmentPanel: View {
                     InfoRow(label: "Dimensions", value: metadata.dimensionsText)
                     InfoRow(label: "Resolution", value: metadata.megapixelsText)
                     InfoRow(label: "File Size", value: metadata.fileSizeText)
+                    InfoRow(label: "Format", value: metadata.formatText)
                 }
             }
 
@@ -301,6 +414,7 @@ struct AdjustmentPanel: View {
             Spacer()
         }
         .padding(18)
+        }
     }
 
     private func adjustmentBinding(_ keyPath: WritableKeyPath<PhotoAdjustments, Double>) -> Binding<Double> {
@@ -311,6 +425,64 @@ struct AdjustmentPanel: View {
                 adjustments[keyPath: keyPath] = value
             }
         }
+    }
+}
+
+struct HistogramView: View {
+    let bins: [Double]
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Histogram")
+                .font(.headline)
+
+            GeometryReader { geometry in
+                let barWidth = max(1, geometry.size.width / CGFloat(max(1, bins.count)))
+
+                HStack(alignment: .bottom, spacing: 1) {
+                    ForEach(Array(bins.enumerated()), id: \.offset) { _, value in
+                        Rectangle()
+                            .fill(.secondary)
+                            .frame(width: barWidth, height: max(2, geometry.size.height * value))
+                    }
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
+            }
+            .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
+        }
+    }
+}
+
+struct RatingControl: View {
+    let rating: Int
+    let setRating: (Int) -> Void
+
+    var body: some View {
+        HStack(spacing: 4) {
+            ForEach(1...5, id: \.self) { value in
+                Button {
+                    setRating(value)
+                } label: {
+                    Image(systemName: value <= rating ? "star.fill" : "star")
+                        .foregroundStyle(value <= rating ? .yellow : .secondary)
+                }
+                .buttonStyle(.plain)
+            }
+        }
+        .font(.title3)
+    }
+}
+
+struct RatingStars: View {
+    let rating: Int
+
+    var body: some View {
+        HStack(spacing: 1) {
+            ForEach(1...5, id: \.self) { value in
+                Image(systemName: value <= rating ? "star.fill" : "star")
+            }
+        }
+        .foregroundStyle(.yellow)
     }
 }
 

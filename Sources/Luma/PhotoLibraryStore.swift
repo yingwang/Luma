@@ -10,6 +10,7 @@ final class PhotoLibraryStore: ObservableObject {
     @Published private(set) var previewImage: NSImage?
     @Published private(set) var isRenderingPreview = false
     @Published var statusMessage = "Import photos to begin."
+    @Published var libraryFilter: LibraryFilter = .all
     @Published var showOriginal = false {
         didSet {
             renderSelectedPreview()
@@ -28,6 +29,19 @@ final class PhotoLibraryStore: ObservableObject {
 
     var selectedAdjustments: PhotoAdjustments {
         selectedPhoto?.adjustments ?? .neutral
+    }
+
+    var filteredPhotos: [PhotoAsset] {
+        switch libraryFilter {
+        case .all:
+            photos
+        case .picked:
+            photos.filter { $0.flag == .picked }
+        case .rejected:
+            photos.filter { $0.flag == .rejected }
+        case .rated:
+            photos.filter { $0.rating > 0 }
+        }
     }
 
     func importPhotos() {
@@ -56,7 +70,13 @@ final class PhotoLibraryStore: ObservableObject {
             return
         }
 
-        let imported = newURLs.map { PhotoAsset(url: $0, metadata: ImageProcessor.shared.metadata(for: $0)) }
+        let imported = newURLs.map {
+            PhotoAsset(
+                url: $0,
+                metadata: ImageProcessor.shared.metadata(for: $0),
+                histogramBins: ImageProcessor.shared.luminanceHistogram(for: $0)
+            )
+        }
         photos.append(contentsOf: imported)
         selectedPhotoID = imported.first?.id
         showOriginal = false
@@ -116,6 +136,50 @@ final class PhotoLibraryStore: ObservableObject {
 
         update(&photos[index].adjustments)
         renderSelectedPreview()
+    }
+
+    func setSelectedRating(_ rating: Int) {
+        guard
+            let selectedPhotoID,
+            let index = photos.firstIndex(where: { $0.id == selectedPhotoID })
+        else {
+            return
+        }
+
+        photos[index].rating = min(5, max(0, rating))
+        statusMessage = "Rated \(photos[index].fileName) \(photos[index].rating) star\(photos[index].rating == 1 ? "" : "s")."
+    }
+
+    func setSelectedFlag(_ flag: PhotoFlag) {
+        guard
+            let selectedPhotoID,
+            let index = photos.firstIndex(where: { $0.id == selectedPhotoID })
+        else {
+            return
+        }
+
+        photos[index].flag = flag
+        statusMessage = "\(flag.rawValue) \(photos[index].fileName)."
+    }
+
+    func applyPreset(_ preset: PhotoPreset) {
+        updateSelectedAdjustments { adjustments in
+            let rotationTurns = adjustments.rotationTurns
+            adjustments = preset.adjustments
+            adjustments.rotationTurns = rotationTurns
+        }
+        statusMessage = "Applied \(preset.rawValue) preset."
+    }
+
+    func autoEnhanceSelected() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.exposure += 0.15
+            adjustments.contrast = max(adjustments.contrast, 1.12)
+            adjustments.saturation = max(adjustments.saturation, 1.04)
+            adjustments.vibrance = max(adjustments.vibrance, 0.24)
+            adjustments.sharpness = max(adjustments.sharpness, 0.5)
+        }
+        statusMessage = "Applied auto enhance."
     }
 
     func rotateSelectedLeft() {

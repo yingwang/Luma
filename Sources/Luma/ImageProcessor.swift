@@ -3,6 +3,7 @@ import CoreImage
 import CoreImage.CIFilterBuiltins
 import Foundation
 import ImageIO
+import UniformTypeIdentifiers
 
 final class ImageProcessor: @unchecked Sendable {
     static let shared = ImageProcessor()
@@ -35,11 +36,79 @@ final class ImageProcessor: @unchecked Sendable {
 
         let resourceValues = try? url.resourceValues(forKeys: [.fileSizeKey])
         let fileSize = resourceValues?.fileSize.map(Int64.init)
+        let typeIdentifier = CGImageSourceGetType(source) as String?
+        let type = typeIdentifier.flatMap(UTType.init)
+        let rawType = UTType("public.camera-raw-image")
+        let rawExtensions: Set<String> = ["3fr", "arw", "cr2", "cr3", "dcr", "dng", "erf", "fff", "iiq", "kdc", "mef", "mos", "mrw", "nef", "nrw", "orf", "pef", "raf", "raw", "rw2", "rwl", "sr2", "srf", "x3f"]
+        let conformsToRaw = if let type, let rawType {
+            type.conforms(to: rawType)
+        } else {
+            false
+        }
+        let isRaw = conformsToRaw
+            || rawExtensions.contains(url.pathExtension.lowercased())
 
-        return PhotoMetadata(pixelWidth: width, pixelHeight: height, fileSize: fileSize)
+        return PhotoMetadata(
+            pixelWidth: width,
+            pixelHeight: height,
+            fileSize: fileSize,
+            formatName: type?.preferredFilenameExtension?.uppercased(),
+            isRaw: isRaw
+        )
     }
 
     func thumbnail(for url: URL, maxPixelSize: CGFloat = 360) -> NSImage? {
+        guard let cgImage = thumbnailCGImage(for: url, maxPixelSize: maxPixelSize) else {
+            return nil
+        }
+
+        return NSImage(cgImage: cgImage, size: .zero)
+    }
+
+    func luminanceHistogram(for url: URL, binCount: Int = 48) -> [Double]? {
+        guard binCount > 0, let cgImage = thumbnailCGImage(for: url, maxPixelSize: 256) else {
+            return nil
+        }
+
+        let width = 128
+        let height = 128
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+
+        guard let context = CGContext(
+            data: &pixels,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: width * 4,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            return nil
+        }
+
+        context.interpolationQuality = .medium
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        var bins = [Double](repeating: 0, count: binCount)
+
+        for index in stride(from: 0, to: pixels.count, by: 4) {
+            let red = Double(pixels[index])
+            let green = Double(pixels[index + 1])
+            let blue = Double(pixels[index + 2])
+            let luminance = 0.2126 * red + 0.7152 * green + 0.0722 * blue
+            let bin = min(binCount - 1, Int((luminance / 256) * Double(binCount)))
+            bins[bin] += 1
+        }
+
+        guard let maxValue = bins.max(), maxValue > 0 else {
+            return bins
+        }
+
+        return bins.map { $0 / maxValue }
+    }
+
+    private func thumbnailCGImage(for url: URL, maxPixelSize: CGFloat) -> CGImage? {
         let options: [CFString: Any] = [
             kCGImageSourceShouldCache: false,
             kCGImageSourceCreateThumbnailFromImageAlways: true,
@@ -54,7 +123,7 @@ final class ImageProcessor: @unchecked Sendable {
             return nil
         }
 
-        return NSImage(cgImage: cgImage, size: .zero)
+        return cgImage
     }
 
     func preview(for url: URL, adjustments: PhotoAdjustments, maxPixelSize: CGFloat = 2400) -> NSImage? {
