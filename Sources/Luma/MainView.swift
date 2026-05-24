@@ -166,6 +166,17 @@ struct LibrarySidebar: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 
+            Button {
+                library.clearLibraryFilters()
+            } label: {
+                Label("Clear Filters", systemImage: "line.3.horizontal.decrease.circle")
+            }
+            .buttonStyle(.borderless)
+            .font(.caption)
+            .disabled(!library.hasActiveLibraryFilters)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
+
             HStack(spacing: 6) {
                 TextField("Search file names", text: $library.searchText)
                     .textFieldStyle(.roundedBorder)

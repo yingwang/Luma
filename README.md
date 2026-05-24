@@ -18,6 +18,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Search by filename and clear the active search quickly.
 - Sort by file name, capture date, rating, or flag.
 - Filter by picked, rejected, rated, unrated, unflagged, edited, unedited, and minimum star rating.
+- Clear active library filters in one action.
 - Hide rejected photos during everyday browsing.
 - Keep the preview selection aligned with the visible library filter.
 - Clear in-memory image caches when needed.

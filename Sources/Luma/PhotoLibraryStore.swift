@@ -76,6 +76,13 @@ final class PhotoLibraryStore: ObservableObject {
         photos.filter { $0.flag == .picked }.count
     }
 
+    var hasActiveLibraryFilters: Bool {
+        libraryFilter != .all ||
+            minimumRating > 0 ||
+            !searchText.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty ||
+            hideRejected
+    }
+
     var filteredPhotos: [PhotoAsset] {
         let filteredByFlag = switch libraryFilter {
         case .all:
@@ -114,6 +121,15 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         return sortedPhotos(filteredBySearch)
+    }
+
+    func clearLibraryFilters() {
+        libraryFilter = .all
+        minimumRating = 0
+        searchText = ""
+        hideRejected = false
+        statusMessage = "Cleared library filters."
+        ensureSelectedPhotoIsVisible()
     }
 
     func importPhotos() {
