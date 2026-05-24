@@ -11,6 +11,8 @@ final class PhotoLibraryStore: ObservableObject {
     @Published private(set) var isRenderingPreview = false
     @Published var statusMessage = "Import photos to begin."
     @Published var libraryFilter: LibraryFilter = .all
+    @Published var librarySort: LibrarySort = .fileName
+    @Published var minimumRating = 0
     @Published var searchText = ""
     @Published var exportQuality = 0.92
     @Published var exportLongEdge: Double = 0
@@ -60,14 +62,20 @@ final class PhotoLibraryStore: ObservableObject {
             photos.filter { $0.rating > 0 }
         }
 
+        let filteredByRating = minimumRating > 0
+            ? filteredByFlag.filter { $0.rating >= minimumRating }
+            : filteredByFlag
+
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
-        guard !query.isEmpty else {
-            return filteredByFlag
+        let filteredBySearch = if query.isEmpty {
+            filteredByRating
+        } else {
+            filteredByRating.filter {
+                $0.fileName.localizedCaseInsensitiveContains(query)
+            }
         }
 
-        return filteredByFlag.filter {
-            $0.fileName.localizedCaseInsensitiveContains(query)
-        }
+        return sortedPhotos(filteredBySearch)
     }
 
     func importPhotos() {
@@ -84,6 +92,35 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         addPhotos(panel.urls)
+    }
+
+    func importDroppedItems(_ providers: [NSItemProvider]) -> Bool {
+        let fileURLType = UTType.fileURL.identifier
+        let acceptedProviders = providers.filter { $0.hasItemConformingToTypeIdentifier(fileURLType) }
+
+        for provider in acceptedProviders {
+            provider.loadItem(forTypeIdentifier: fileURLType, options: nil) { item, _ in
+                let url: URL?
+
+                if let itemURL = item as? URL {
+                    url = itemURL
+                } else if let itemData = item as? Data {
+                    url = URL(dataRepresentation: itemData, relativeTo: nil)
+                } else {
+                    url = nil
+                }
+
+                guard let url else {
+                    return
+                }
+
+                Task { @MainActor in
+                    self.addPhotos([url])
+                }
+            }
+        }
+
+        return !acceptedProviders.isEmpty
     }
 
     func addPhotos(_ urls: [URL]) {
@@ -261,6 +298,30 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Pasted adjustments."
     }
 
+    func syncSelectedAdjustmentsToPicked() {
+        guard let selectedPhoto else {
+            return
+        }
+
+        let pickedIndexes = photos.indices.filter {
+            photos[$0].flag == .picked && photos[$0].id != selectedPhoto.id
+        }
+
+        guard !pickedIndexes.isEmpty else {
+            statusMessage = "No other picked photos to sync."
+            return
+        }
+
+        for index in pickedIndexes {
+            var syncedAdjustments = selectedPhoto.adjustments
+            syncedAdjustments.rotationTurns = photos[index].adjustments.rotationTurns
+            photos[index].adjustments = syncedAdjustments
+        }
+
+        saveCatalog()
+        statusMessage = "Synced adjustments to \(pickedIndexes.count) picked photo\(pickedIndexes.count == 1 ? "" : "s")."
+    }
+
     func applyPreset(_ preset: PhotoPreset) {
         updateSelectedAdjustments { adjustments in
             let rotationTurns = adjustments.rotationTurns
@@ -407,6 +468,46 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         return destination
+    }
+
+    private func sortedPhotos(_ photos: [PhotoAsset]) -> [PhotoAsset] {
+        switch librarySort {
+        case .fileName:
+            photos.sorted {
+                $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+            }
+        case .captureDate:
+            photos.sorted {
+                ($0.metadata?.captureDate ?? .distantPast) > ($1.metadata?.captureDate ?? .distantPast)
+            }
+        case .rating:
+            photos.sorted {
+                if $0.rating == $1.rating {
+                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                }
+
+                return $0.rating > $1.rating
+            }
+        case .flag:
+            photos.sorted {
+                if $0.flag == $1.flag {
+                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                }
+
+                return flagRank($0.flag) > flagRank($1.flag)
+            }
+        }
+    }
+
+    private func flagRank(_ flag: PhotoFlag) -> Int {
+        switch flag {
+        case .picked:
+            2
+        case .none:
+            1
+        case .rejected:
+            0
+        }
     }
 
     private var exportMaxLongEdge: CGFloat? {

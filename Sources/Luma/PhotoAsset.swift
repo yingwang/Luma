@@ -53,6 +53,17 @@ enum LibraryFilter: String, CaseIterable, Codable, Identifiable {
     }
 }
 
+enum LibrarySort: String, CaseIterable, Codable, Identifiable {
+    case fileName = "File Name"
+    case captureDate = "Capture Date"
+    case rating = "Rating"
+    case flag = "Flag"
+
+    var id: String {
+        rawValue
+    }
+}
+
 enum PhotoPreset: String, CaseIterable, Identifiable {
     case neutral = "Neutral"
     case vivid = "Vivid"
@@ -97,6 +108,9 @@ struct PhotoAdjustments: Codable, Equatable {
     var noiseReduction: Double = 0
     var sharpness: Double = 0
     var vignette: Double = 0
+    var beautySmooth: Double = 0
+    var beautyBrighten: Double = 0
+    var beautyGlow: Double = 0
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
@@ -121,6 +135,9 @@ struct PhotoAdjustments: Codable, Equatable {
         case noiseReduction
         case sharpness
         case vignette
+        case beautySmooth
+        case beautyBrighten
+        case beautyGlow
         case straighten
         case rotationTurns
         case cropAspect
@@ -144,6 +161,9 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction: Double = 0,
         sharpness: Double = 0,
         vignette: Double = 0,
+        beautySmooth: Double = 0,
+        beautyBrighten: Double = 0,
+        beautyGlow: Double = 0,
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
@@ -165,6 +185,9 @@ struct PhotoAdjustments: Codable, Equatable {
         self.noiseReduction = noiseReduction
         self.sharpness = sharpness
         self.vignette = vignette
+        self.beautySmooth = beautySmooth
+        self.beautyBrighten = beautyBrighten
+        self.beautyGlow = beautyGlow
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
@@ -189,6 +212,9 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction = try container.decodeIfPresent(Double.self, forKey: .noiseReduction) ?? 0
         sharpness = try container.decodeIfPresent(Double.self, forKey: .sharpness) ?? 0
         vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
+        beautySmooth = try container.decodeIfPresent(Double.self, forKey: .beautySmooth) ?? 0
+        beautyBrighten = try container.decodeIfPresent(Double.self, forKey: .beautyBrighten) ?? 0
+        beautyGlow = try container.decodeIfPresent(Double.self, forKey: .beautyGlow) ?? 0
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original

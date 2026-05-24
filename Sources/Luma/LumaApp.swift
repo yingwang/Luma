@@ -51,6 +51,12 @@ struct LumaApp: App {
                 .keyboardShortcut("v", modifiers: [.command, .option])
                 .disabled(library.selectedPhoto == nil)
 
+                Button("Sync Adjustments to Picked") {
+                    library.syncSelectedAdjustmentsToPicked()
+                }
+                .keyboardShortcut("s", modifiers: [.command, .option])
+                .disabled(library.selectedPhoto == nil || library.pickedPhotoCount <= 1)
+
                 Divider()
 
                 Button("Auto Enhance") {

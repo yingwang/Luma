@@ -1,4 +1,5 @@
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct MainView: View {
     @EnvironmentObject private var library: PhotoLibraryStore
@@ -9,6 +10,9 @@ struct MainView: View {
                 .navigationSplitViewColumnWidth(min: 260, ideal: 320, max: 380)
         } detail: {
             EditorView()
+        }
+        .onDrop(of: [UTType.fileURL.identifier], isTargeted: nil) { providers in
+            library.importDroppedItems(providers)
         }
         .toolbar {
             ToolbarItemGroup(placement: .primaryAction) {
@@ -99,6 +103,35 @@ struct LibrarySidebar: View {
             }
             .pickerStyle(.segmented)
             .labelsHidden()
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
+
+            Picker("Sort", selection: $library.librarySort) {
+                ForEach(LibrarySort.allCases) { sort in
+                    Text(sort.rawValue).tag(sort)
+                }
+            }
+            .pickerStyle(.menu)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
+
+            HStack {
+                Text("Min")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                RatingControl(
+                    rating: library.minimumRating,
+                    setRating: { library.minimumRating = $0 }
+                )
+                .font(.caption)
+
+                Button("Clear") {
+                    library.minimumRating = 0
+                }
+                .font(.caption)
+                .disabled(library.minimumRating == 0)
+            }
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 
@@ -240,10 +273,14 @@ struct PreviewPane: View {
 
             if library.selectedPhoto == nil {
                 ContentUnavailableView(
-                    "Select a Photo",
+                    "Open Photos",
                     systemImage: "photo",
-                    description: Text("Imported photos will appear in the library.")
+                    description: Text("Click here or drag photos into the workspace.")
                 )
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    library.importPhotos()
+                }
             } else if library.isRenderingPreview {
                 ProgressView()
                     .controlSize(.large)
@@ -393,6 +430,13 @@ struct AdjustmentPanel: View {
                     }
                     .disabled(library.selectedPhoto == nil)
                 }
+
+                Button {
+                    library.syncSelectedAdjustmentsToPicked()
+                } label: {
+                    Label("Sync to Picked", systemImage: "arrow.triangle.2.circlepath")
+                }
+                .disabled(library.selectedPhoto == nil || library.pickedPhotoCount <= 1)
             }
 
             VStack(alignment: .leading, spacing: 10) {
@@ -526,6 +570,32 @@ struct AdjustmentPanel: View {
                 range: 0...1,
                 format: "%.2f"
             )
+
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Beauty")
+                    .font(.headline)
+
+                AdjustmentSlider(
+                    title: "Smooth",
+                    value: adjustmentBinding(\.beautySmooth),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Brighten",
+                    value: adjustmentBinding(\.beautyBrighten),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Glow",
+                    value: adjustmentBinding(\.beautyGlow),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+            }
 
             VStack(alignment: .leading, spacing: 10) {
                 Text("Color Mixer")

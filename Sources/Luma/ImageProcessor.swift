@@ -262,6 +262,28 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        if adjustments.beautySmooth > 0, let filter = CIFilter(name: "CINoiseReduction") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(0.02 + adjustments.beautySmooth * 0.12, forKey: "inputNoiseLevel")
+            filter.setValue(0.12, forKey: kCIInputSharpnessKey)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.beautyBrighten > 0 {
+            let filter = CIFilter.colorControls()
+            filter.inputImage = image
+            filter.brightness = Float(adjustments.beautyBrighten * 0.12)
+            filter.saturation = Float(1 + adjustments.beautyBrighten * 0.05)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.beautyGlow > 0, let filter = CIFilter(name: "CIBloom") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(adjustments.beautyGlow * 0.45, forKey: kCIInputIntensityKey)
+            filter.setValue(2 + adjustments.beautyGlow * 8, forKey: kCIInputRadiusKey)
+            image = filter.outputImage ?? image
+        }
+
         if adjustments.sharpness > 0, let filter = CIFilter(name: "CISharpenLuminance") {
             filter.setValue(image, forKey: kCIInputImageKey)
             filter.setValue(adjustments.sharpness, forKey: kCIInputSharpnessKey)
