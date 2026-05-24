@@ -9,11 +9,14 @@ final class ImageProcessor: @unchecked Sendable {
     static let shared = ImageProcessor()
 
     private let context: CIContext
+    private let previewCache = NSCache<NSString, NSImage>()
 
     private init() {
         context = CIContext(options: [
             .cacheIntermediates: false
         ])
+        previewCache.countLimit = 80
+        previewCache.totalCostLimit = 256 * 1024 * 1024
     }
 
     func canReadImage(at url: URL) -> Bool {
@@ -137,6 +140,11 @@ final class ImageProcessor: @unchecked Sendable {
     }
 
     func preview(for url: URL, adjustments: PhotoAdjustments, maxPixelSize: CGFloat = 2400) -> NSImage? {
+        let cacheKey = previewCacheKey(for: url, adjustments: adjustments, maxPixelSize: maxPixelSize)
+        if let cachedImage = previewCache.object(forKey: cacheKey) {
+            return cachedImage
+        }
+
         guard let image = processedImage(for: url, adjustments: adjustments) else {
             return nil
         }
@@ -144,7 +152,12 @@ final class ImageProcessor: @unchecked Sendable {
         let scale = min(1, maxPixelSize / max(image.extent.width, image.extent.height))
         let output = scale < 1 ? image.transformed(by: CGAffineTransform(scaleX: scale, y: scale)) : image
 
-        return render(output)
+        guard let renderedImage = render(output) else {
+            return nil
+        }
+
+        previewCache.setObject(renderedImage, forKey: cacheKey, cost: imageCost(renderedImage))
+        return renderedImage
     }
 
     func exportJPEG(
@@ -392,6 +405,23 @@ final class ImageProcessor: @unchecked Sendable {
 
         let scale = maxLongEdge / longEdge
         return image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+    }
+
+    private func previewCacheKey(for url: URL, adjustments: PhotoAdjustments, maxPixelSize: CGFloat) -> NSString {
+        let resourceValues = try? url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
+        let modifiedAt = resourceValues?.contentModificationDate?.timeIntervalSince1970 ?? 0
+        let fileSize = resourceValues?.fileSize ?? 0
+        let adjustmentData = (try? JSONEncoder().encode(adjustments)) ?? Data()
+        let adjustmentKey = adjustmentData.base64EncodedString()
+        let pixelSize = Int(maxPixelSize.rounded())
+
+        return "\(url.path)|\(modifiedAt)|\(fileSize)|\(pixelSize)|\(adjustmentKey)" as NSString
+    }
+
+    private func imageCost(_ image: NSImage) -> Int {
+        let width = max(1, Int(image.size.width.rounded(.up)))
+        let height = max(1, Int(image.size.height.rounded(.up)))
+        return width * height * 4
     }
 
     private func centerCrop(_ image: CIImage, aspect: CropAspect) -> CIImage {
