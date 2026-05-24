@@ -27,6 +27,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Side-by-side original and edited comparison.
 - Undo and redo for adjustment changes.
 - In-memory preview caching for repeated renders.
+- In-memory thumbnail caching for smoother library browsing.
 - Rotate left and right.
 - Straighten.
 - Crop to common aspect ratios.
@@ -112,7 +113,7 @@ swift test
 - RAW processing is still basic. Luma does not yet provide a full camera-profile, demosaic, lens-correction, or color-management pipeline.
 - Portrait retouching is simple Core Image based processing. It is useful for quick edits, but it is not yet a semantic face/body retouching engine.
 - Healing and masking are not complete yet.
-- Preview caching is in memory only. Very large libraries and large RAW files still need disk-backed caching and more scheduling work.
+- Preview and thumbnail caching are in memory only. Very large libraries and large RAW files still need disk-backed caching and more scheduling work.
 
 ## Next Work
 

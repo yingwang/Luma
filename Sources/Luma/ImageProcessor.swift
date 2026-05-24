@@ -10,6 +10,7 @@ final class ImageProcessor: @unchecked Sendable {
 
     private let context: CIContext
     private let previewCache = NSCache<NSString, NSImage>()
+    private let thumbnailCache = NSCache<NSString, NSImage>()
 
     private init() {
         context = CIContext(options: [
@@ -17,6 +18,8 @@ final class ImageProcessor: @unchecked Sendable {
         ])
         previewCache.countLimit = 80
         previewCache.totalCostLimit = 256 * 1024 * 1024
+        thumbnailCache.countLimit = 1_200
+        thumbnailCache.totalCostLimit = 160 * 1024 * 1024
     }
 
     func canReadImage(at url: URL) -> Bool {
@@ -71,11 +74,18 @@ final class ImageProcessor: @unchecked Sendable {
     }
 
     func thumbnail(for url: URL, maxPixelSize: CGFloat = 360) -> NSImage? {
+        let cacheKey = imageCacheKey(for: url, pixelSize: maxPixelSize, namespace: "thumbnail")
+        if let cachedImage = thumbnailCache.object(forKey: cacheKey) {
+            return cachedImage
+        }
+
         guard let cgImage = thumbnailCGImage(for: url, maxPixelSize: maxPixelSize) else {
             return nil
         }
 
-        return NSImage(cgImage: cgImage, size: .zero)
+        let image = NSImage(cgImage: cgImage, size: .zero)
+        thumbnailCache.setObject(image, forKey: cacheKey, cost: imageCost(image))
+        return image
     }
 
     func luminanceHistogram(for url: URL, binCount: Int = 48) -> [Double]? {
@@ -408,14 +418,20 @@ final class ImageProcessor: @unchecked Sendable {
     }
 
     private func previewCacheKey(for url: URL, adjustments: PhotoAdjustments, maxPixelSize: CGFloat) -> NSString {
+        let adjustmentData = (try? JSONEncoder().encode(adjustments)) ?? Data()
+        let adjustmentKey = adjustmentData.base64EncodedString()
+        let baseKey = imageCacheKey(for: url, pixelSize: maxPixelSize, namespace: "preview")
+
+        return "\(baseKey)|\(adjustmentKey)" as NSString
+    }
+
+    private func imageCacheKey(for url: URL, pixelSize: CGFloat, namespace: String) -> NSString {
         let resourceValues = try? url.resourceValues(forKeys: [.contentModificationDateKey, .fileSizeKey])
         let modifiedAt = resourceValues?.contentModificationDate?.timeIntervalSince1970 ?? 0
         let fileSize = resourceValues?.fileSize ?? 0
-        let adjustmentData = (try? JSONEncoder().encode(adjustments)) ?? Data()
-        let adjustmentKey = adjustmentData.base64EncodedString()
-        let pixelSize = Int(maxPixelSize.rounded())
+        let roundedPixelSize = Int(pixelSize.rounded())
 
-        return "\(url.path)|\(modifiedAt)|\(fileSize)|\(pixelSize)|\(adjustmentKey)" as NSString
+        return "\(namespace)|\(url.path)|\(modifiedAt)|\(fileSize)|\(roundedPixelSize)" as NSString
     }
 
     private func imageCost(_ image: NSImage) -> Int {
