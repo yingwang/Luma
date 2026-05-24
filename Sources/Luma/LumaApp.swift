@@ -57,6 +57,15 @@ struct LumaApp: App {
                 .keyboardShortcut("s", modifiers: [.command, .option])
                 .disabled(library.selectedPhoto == nil || library.pickedPhotoCount <= 1)
 
+                Menu("Apply Preset to Picked") {
+                    ForEach(PhotoPreset.allCases) { preset in
+                        Button(preset.rawValue) {
+                            library.applyPresetToPicked(preset)
+                        }
+                    }
+                }
+                .disabled(library.pickedPhotoCount == 0)
+
                 Divider()
 
                 Button("Auto Enhance") {

@@ -454,6 +454,17 @@ struct AdjustmentPanel: View {
                     }
                     .disabled(library.selectedPhoto == nil)
                 }
+
+                Menu {
+                    ForEach(PhotoPreset.allCases) { preset in
+                        Button(preset.rawValue) {
+                            library.applyPresetToPicked(preset)
+                        }
+                    }
+                } label: {
+                    Label("Apply to Picked", systemImage: "square.stack.3d.up")
+                }
+                .disabled(library.pickedPhotoCount == 0)
             }
 
             VStack(alignment: .leading, spacing: 10) {

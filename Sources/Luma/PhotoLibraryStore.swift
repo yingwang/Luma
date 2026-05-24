@@ -347,6 +347,27 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Applied \(preset.rawValue) preset."
     }
 
+    func applyPresetToPicked(_ preset: PhotoPreset) {
+        let pickedIndexes = photos.indices.filter {
+            photos[$0].flag == .picked
+        }
+
+        guard !pickedIndexes.isEmpty else {
+            statusMessage = "No picked photos to update."
+            return
+        }
+
+        for index in pickedIndexes {
+            let rotationTurns = photos[index].adjustments.rotationTurns
+            photos[index].adjustments = preset.adjustments
+            photos[index].adjustments.rotationTurns = rotationTurns
+        }
+
+        saveCatalog()
+        renderSelectedPreview()
+        statusMessage = "Applied \(preset.rawValue) preset to \(pickedIndexes.count) picked photo\(pickedIndexes.count == 1 ? "" : "s")."
+    }
+
     func autoEnhanceSelected() {
         updateSelectedAdjustments { adjustments in
             adjustments.exposure += 0.15
