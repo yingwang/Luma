@@ -35,6 +35,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Copy and paste adjustments between photos.
 - Sync the current adjustments to all picked photos.
 - Apply a built-in preset to all picked photos.
+- Reset adjustments on all picked photos.
 - Inspect a luminance histogram.
 
 ### Light And Color

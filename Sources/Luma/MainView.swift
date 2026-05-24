@@ -493,6 +493,13 @@ struct AdjustmentPanel: View {
                     Label("Sync to Picked", systemImage: "arrow.triangle.2.circlepath")
                 }
                 .disabled(library.selectedPhoto == nil || library.pickedPhotoCount <= 1)
+
+                Button {
+                    library.resetPickedAdjustments()
+                } label: {
+                    Label("Reset Picked", systemImage: "arrow.counterclockwise.circle")
+                }
+                .disabled(library.pickedPhotoCount == 0)
             }
 
             VStack(alignment: .leading, spacing: 10) {

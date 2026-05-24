@@ -66,6 +66,11 @@ struct LumaApp: App {
                 }
                 .disabled(library.pickedPhotoCount == 0)
 
+                Button("Reset Picked Adjustments") {
+                    library.resetPickedAdjustments()
+                }
+                .disabled(library.pickedPhotoCount == 0)
+
                 Divider()
 
                 Button("Auto Enhance") {
