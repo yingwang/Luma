@@ -48,6 +48,7 @@ enum LibraryFilter: String, CaseIterable, Codable, Identifiable {
     case rejected = "Rejected"
     case rated = "Rated"
     case unrated = "Unrated"
+    case unflagged = "Unflagged"
 
     var id: String {
         rawValue
