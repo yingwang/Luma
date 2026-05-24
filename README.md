@@ -13,6 +13,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Click the empty workspace to open the system file picker.
 - Restore the local catalog across launches.
 - Browse thumbnails and preview the selected photo.
+- Keep thumbnail cells stable while showing rating and flag state.
 - Move to the previous or next visible photo from the toolbar or keyboard.
 - Search by filename and clear the active search quickly.
 - Sort by file name, capture date, rating, or flag.

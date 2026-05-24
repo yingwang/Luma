@@ -274,10 +274,9 @@ struct PhotoGridCell: View {
                 .lineLimit(1)
                 .truncationMode(.middle)
 
-            if photo.rating > 0 {
-                RatingStars(rating: photo.rating)
-                    .font(.caption2)
-            }
+            RatingStars(rating: photo.rating)
+                .font(.caption2)
+                .frame(height: 12, alignment: .leading)
         }
         .padding(4)
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -1004,9 +1003,9 @@ struct RatingStars: View {
         HStack(spacing: 1) {
             ForEach(1...5, id: \.self) { value in
                 Image(systemName: value <= rating ? "star.fill" : "star")
+                    .foregroundStyle(value <= rating ? Color.yellow : Color.secondary.opacity(0.35))
             }
         }
-        .foregroundStyle(.yellow)
     }
 }
 
