@@ -57,7 +57,7 @@ final class LumaModelTests: XCTestCase {
     }
 
     func testLibraryFilterMetadata() {
-        XCTAssertEqual(LibraryFilter.allCases.map(\.rawValue), ["All", "Picked", "Rejected", "Rated", "Unrated", "Unflagged"])
+        XCTAssertEqual(LibraryFilter.allCases.map(\.rawValue), ["All", "Picked", "Rejected", "Rated", "Unrated", "Unflagged", "Edited", "Unedited"])
     }
 
     func testExportPresetSettings() {

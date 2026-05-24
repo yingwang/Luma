@@ -117,13 +117,18 @@ struct LibrarySidebar: View {
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
 
-            Picker("Filter", selection: $library.libraryFilter) {
-                ForEach(LibraryFilter.allCases) { filter in
-                    Text(filter.rawValue).tag(filter)
+            HStack {
+                Text("Filter")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Picker("Filter", selection: $library.libraryFilter) {
+                    ForEach(LibraryFilter.allCases) { filter in
+                        Text(filter.rawValue).tag(filter)
+                    }
                 }
+                .pickerStyle(.menu)
             }
-            .pickerStyle(.segmented)
-            .labelsHidden()
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 
