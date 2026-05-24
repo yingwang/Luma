@@ -14,6 +14,11 @@ let package = Package(
         .executableTarget(
             name: "Luma",
             path: "Sources/Luma"
+        ),
+        .testTarget(
+            name: "LumaTests",
+            dependencies: ["Luma"],
+            path: "Tests/LumaTests"
         )
     ]
 )
