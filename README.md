@@ -16,6 +16,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Search by filename.
 - Sort by file name, capture date, rating, or flag.
 - Filter by picked, rejected, and minimum star rating.
+- Clear in-memory image caches when needed.
 - Rate photos from zero to five stars.
 - Mark photos as picked or rejected.
 - Remove photos from the local catalog without deleting the original file.

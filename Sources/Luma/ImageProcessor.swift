@@ -131,6 +131,11 @@ final class ImageProcessor: @unchecked Sendable {
         return bins.map { $0 / maxValue }
     }
 
+    func clearImageCaches() {
+        previewCache.removeAllObjects()
+        thumbnailCache.removeAllObjects()
+    }
+
     private func thumbnailCGImage(for url: URL, maxPixelSize: CGFloat) -> CGImage? {
         let options: [CFString: Any] = [
             kCGImageSourceShouldCache: false,

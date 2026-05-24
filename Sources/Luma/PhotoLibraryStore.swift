@@ -445,6 +445,13 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Reset adjustments on \(pickedIndexes.count) picked photo\(pickedIndexes.count == 1 ? "" : "s")."
     }
 
+    func clearImageCaches() {
+        ImageProcessor.shared.clearImageCaches()
+        generateThumbnails(for: photos)
+        renderSelectedPreview()
+        statusMessage = "Cleared image caches."
+    }
+
     func applyExportPreset(_ preset: ExportPreset) {
         exportQuality = preset.jpegQuality
         exportLongEdge = preset.longEdge

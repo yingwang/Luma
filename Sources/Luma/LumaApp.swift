@@ -38,6 +38,14 @@ struct LumaApp: App {
                 .keyboardShortcut("i", modifiers: [.command])
             }
 
+            CommandMenu("Library") {
+                Button("Clear Image Caches") {
+                    library.clearImageCaches()
+                }
+                .keyboardShortcut("k", modifiers: [.command, .shift])
+                .disabled(library.photos.isEmpty)
+            }
+
             CommandMenu("Photo") {
                 Button("Copy Adjustments") {
                     library.copySelectedAdjustments()
