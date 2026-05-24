@@ -77,6 +77,12 @@ struct LumaApp: App {
                 .keyboardShortcut("\\", modifiers: [])
                 .disabled(library.selectedPhoto == nil)
 
+                Button("Compare Side by Side") {
+                    library.toggleCompareSideBySide()
+                }
+                .keyboardShortcut("y", modifiers: [])
+                .disabled(library.selectedPhoto == nil)
+
                 Divider()
 
                 Button("Pick") {

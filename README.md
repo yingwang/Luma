@@ -24,6 +24,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 
 - Non-destructive adjustment model.
 - Before and after comparison.
+- Side-by-side original and edited comparison.
 - Undo and redo for adjustment changes.
 - Rotate left and right.
 - Straighten.

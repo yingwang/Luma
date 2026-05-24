@@ -44,6 +44,13 @@ struct MainView: View {
                 .disabled(library.selectedPhoto == nil)
 
                 Button {
+                    library.toggleCompareSideBySide()
+                } label: {
+                    Label("Compare", systemImage: "rectangle.split.2x1")
+                }
+                .disabled(library.selectedPhoto == nil)
+
+                Button {
                     library.rotateSelectedLeft()
                 } label: {
                     Label("Rotate Left", systemImage: "rotate.left")
@@ -284,28 +291,25 @@ struct PreviewPane: View {
             } else if library.isRenderingPreview {
                 ProgressView()
                     .controlSize(.large)
-            } else if let previewImage = library.previewImage {
-                Image(nsImage: previewImage)
-                    .resizable()
-                    .scaledToFit()
-                    .padding(32)
+            } else if library.compareSideBySide {
+                if let originalPreviewImage = library.originalPreviewImage,
+                   let previewImage = library.previewImage {
+                    HStack(spacing: 0) {
+                        CompareImagePane(label: "Original", image: originalPreviewImage)
 
-                if library.showOriginal {
-                    VStack {
-                        HStack {
-                            Text("Original")
-                                .font(.caption.weight(.semibold))
-                                .padding(.horizontal, 10)
-                                .padding(.vertical, 5)
-                                .background(.regularMaterial, in: Capsule())
+                        Divider()
 
-                            Spacer()
-                        }
-
-                        Spacer()
+                        CompareImagePane(label: "Edited", image: previewImage)
                     }
-                    .padding(24)
+                } else {
+                    ContentUnavailableView(
+                        "Preview Unavailable",
+                        systemImage: "exclamationmark.triangle",
+                        description: Text("Luma could not render this comparison.")
+                    )
                 }
+            } else if let previewImage = library.previewImage {
+                PreviewImagePane(label: library.showOriginal ? "Original" : nil, image: previewImage)
             } else {
                 ContentUnavailableView(
                     "Preview Unavailable",
@@ -314,6 +318,47 @@ struct PreviewPane: View {
                 )
             }
         }
+    }
+}
+
+struct PreviewImagePane: View {
+    let label: String?
+    let image: NSImage
+
+    var body: some View {
+        ZStack {
+            Image(nsImage: image)
+                .resizable()
+                .scaledToFit()
+                .padding(32)
+
+            if let label {
+                VStack {
+                    HStack {
+                        Text(label)
+                            .font(.caption.weight(.semibold))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(.regularMaterial, in: Capsule())
+
+                        Spacer()
+                    }
+
+                    Spacer()
+                }
+                .padding(24)
+            }
+        }
+    }
+}
+
+struct CompareImagePane: View {
+    let label: String
+    let image: NSImage
+
+    var body: some View {
+        PreviewImagePane(label: label, image: image)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
 

@@ -20,9 +20,18 @@ final class PhotoLibraryStore: ObservableObject {
     @Published private(set) var canRedo = false
     @Published var showOriginal = false {
         didSet {
+            if showOriginal {
+                compareSideBySide = false
+            }
             renderSelectedPreview()
         }
     }
+    @Published var compareSideBySide = false {
+        didSet {
+            renderSelectedPreview()
+        }
+    }
+    @Published private(set) var originalPreviewImage: NSImage?
 
     private var renderTask: Task<Void, Never>?
     private var copiedAdjustments: PhotoAdjustments?
@@ -188,6 +197,13 @@ final class PhotoLibraryStore: ObservableObject {
         selectedPhotoID = photo.id
         statusMessage = "Selected \(photo.fileName)."
         renderSelectedPreview()
+    }
+
+    func toggleCompareSideBySide() {
+        if showOriginal {
+            showOriginal = false
+        }
+        compareSideBySide.toggle()
     }
 
     func updateSelectedAdjustments(_ update: (inout PhotoAdjustments) -> Void) {
@@ -534,6 +550,7 @@ final class PhotoLibraryStore: ObservableObject {
     private func renderSelectedPreview() {
         renderTask?.cancel()
         previewImage = nil
+        originalPreviewImage = nil
 
         guard let selectedPhoto else {
             isRenderingPreview = false
@@ -542,10 +559,18 @@ final class PhotoLibraryStore: ObservableObject {
 
         isRenderingPreview = true
         let url = selectedPhoto.url
-        let adjustments = showOriginal ? .neutral : selectedPhoto.adjustments
+        let adjustments = selectedPhoto.adjustments
+        let renderOriginal = showOriginal || compareSideBySide
+        let renderComparison = compareSideBySide
 
         renderTask = Task.detached(priority: .userInitiated) {
-            let image = ImageProcessor.shared.preview(for: url, adjustments: adjustments)
+            let image = ImageProcessor.shared.preview(
+                for: url,
+                adjustments: renderOriginal && !renderComparison ? .neutral : adjustments
+            )
+            let originalImage = renderComparison
+                ? ImageProcessor.shared.preview(for: url, adjustments: .neutral)
+                : nil
 
             await MainActor.run {
                 guard !Task.isCancelled else {
@@ -553,6 +578,7 @@ final class PhotoLibraryStore: ObservableObject {
                 }
 
                 self.previewImage = image
+                self.originalPreviewImage = originalImage
                 self.isRenderingPreview = false
             }
         }
