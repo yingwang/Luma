@@ -575,6 +575,10 @@ struct AdjustmentPanel: View {
                 Text("Beauty")
                     .font(.headline)
 
+                Text("Skin")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
                 AdjustmentSlider(
                     title: "Smooth",
                     value: adjustmentBinding(\.beautySmooth),
@@ -583,15 +587,54 @@ struct AdjustmentPanel: View {
                 )
 
                 AdjustmentSlider(
-                    title: "Brighten",
+                    title: "Whiten",
+                    value: adjustmentBinding(\.beautyWhiten),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Rosy",
+                    value: adjustmentBinding(\.beautyRosy),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Bright",
                     value: adjustmentBinding(\.beautyBrighten),
                     range: 0...1,
                     format: "%.2f"
                 )
 
                 AdjustmentSlider(
+                    title: "Tone Warmth",
+                    value: adjustmentBinding(\.beautyWarmth),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                Text("Finish")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                AdjustmentSlider(
                     title: "Glow",
                     value: adjustmentBinding(\.beautyGlow),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Soften",
+                    value: adjustmentBinding(\.beautySoften),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Detail",
+                    value: adjustmentBinding(\.beautyDetail),
                     range: 0...1,
                     format: "%.2f"
                 )

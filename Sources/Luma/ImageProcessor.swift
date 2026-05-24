@@ -277,10 +277,57 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        if adjustments.beautyWhiten > 0, let filter = CIFilter(name: "CIColorMatrix") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            let lift = CGFloat(adjustments.beautyWhiten * 0.10)
+            filter.setValue(CIVector(x: 1, y: 0, z: 0, w: 0), forKey: "inputRVector")
+            filter.setValue(CIVector(x: 0, y: 1, z: 0, w: 0), forKey: "inputGVector")
+            filter.setValue(CIVector(x: 0, y: 0, z: 1, w: 0), forKey: "inputBVector")
+            filter.setValue(CIVector(x: lift, y: lift, z: lift * 0.92, w: 0), forKey: "inputBiasVector")
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.beautyRosy > 0, let filter = CIFilter(name: "CIColorMatrix") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            let redLift = CGFloat(adjustments.beautyRosy * 0.08)
+            let blueLift = CGFloat(adjustments.beautyRosy * 0.025)
+            filter.setValue(CIVector(x: 1, y: 0, z: 0, w: 0), forKey: "inputRVector")
+            filter.setValue(CIVector(x: 0, y: 1, z: 0, w: 0), forKey: "inputGVector")
+            filter.setValue(CIVector(x: 0, y: 0, z: 1, w: 0), forKey: "inputBVector")
+            filter.setValue(CIVector(x: redLift, y: 0, z: blueLift, w: 0), forKey: "inputBiasVector")
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.beautyWarmth != 0 {
+            let filter = CIFilter.temperatureAndTint()
+            filter.inputImage = image
+            filter.neutral = CIVector(x: 6500 - adjustments.beautyWarmth * 700, y: 0)
+            filter.targetNeutral = CIVector(x: 6500, y: 0)
+            image = filter.outputImage ?? image
+        }
+
         if adjustments.beautyGlow > 0, let filter = CIFilter(name: "CIBloom") {
             filter.setValue(image, forKey: kCIInputImageKey)
             filter.setValue(adjustments.beautyGlow * 0.45, forKey: kCIInputIntensityKey)
             filter.setValue(2 + adjustments.beautyGlow * 8, forKey: kCIInputRadiusKey)
+            image = filter.outputImage ?? image
+        }
+
+        if adjustments.beautySoften > 0, let filter = CIFilter(name: "CIGaussianBlur") {
+            let original = image
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(adjustments.beautySoften * 2.5, forKey: kCIInputRadiusKey)
+
+            if let blurred = filter.outputImage?.cropped(to: original.extent), let blend = CIFilter(name: "CISoftLightBlendMode") {
+                blend.setValue(blurred, forKey: kCIInputImageKey)
+                blend.setValue(original, forKey: kCIInputBackgroundImageKey)
+                image = blend.outputImage ?? image
+            }
+        }
+
+        if adjustments.beautyDetail > 0, let filter = CIFilter(name: "CISharpenLuminance") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(adjustments.beautyDetail * 0.8, forKey: kCIInputSharpnessKey)
             image = filter.outputImage ?? image
         }
 

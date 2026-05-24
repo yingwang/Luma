@@ -110,7 +110,12 @@ struct PhotoAdjustments: Codable, Equatable {
     var vignette: Double = 0
     var beautySmooth: Double = 0
     var beautyBrighten: Double = 0
+    var beautyWhiten: Double = 0
+    var beautyRosy: Double = 0
     var beautyGlow: Double = 0
+    var beautySoften: Double = 0
+    var beautyDetail: Double = 0
+    var beautyWarmth: Double = 0
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
@@ -137,7 +142,12 @@ struct PhotoAdjustments: Codable, Equatable {
         case vignette
         case beautySmooth
         case beautyBrighten
+        case beautyWhiten
+        case beautyRosy
         case beautyGlow
+        case beautySoften
+        case beautyDetail
+        case beautyWarmth
         case straighten
         case rotationTurns
         case cropAspect
@@ -163,7 +173,12 @@ struct PhotoAdjustments: Codable, Equatable {
         vignette: Double = 0,
         beautySmooth: Double = 0,
         beautyBrighten: Double = 0,
+        beautyWhiten: Double = 0,
+        beautyRosy: Double = 0,
         beautyGlow: Double = 0,
+        beautySoften: Double = 0,
+        beautyDetail: Double = 0,
+        beautyWarmth: Double = 0,
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
@@ -187,7 +202,12 @@ struct PhotoAdjustments: Codable, Equatable {
         self.vignette = vignette
         self.beautySmooth = beautySmooth
         self.beautyBrighten = beautyBrighten
+        self.beautyWhiten = beautyWhiten
+        self.beautyRosy = beautyRosy
         self.beautyGlow = beautyGlow
+        self.beautySoften = beautySoften
+        self.beautyDetail = beautyDetail
+        self.beautyWarmth = beautyWarmth
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
@@ -214,7 +234,12 @@ struct PhotoAdjustments: Codable, Equatable {
         vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
         beautySmooth = try container.decodeIfPresent(Double.self, forKey: .beautySmooth) ?? 0
         beautyBrighten = try container.decodeIfPresent(Double.self, forKey: .beautyBrighten) ?? 0
+        beautyWhiten = try container.decodeIfPresent(Double.self, forKey: .beautyWhiten) ?? 0
+        beautyRosy = try container.decodeIfPresent(Double.self, forKey: .beautyRosy) ?? 0
         beautyGlow = try container.decodeIfPresent(Double.self, forKey: .beautyGlow) ?? 0
+        beautySoften = try container.decodeIfPresent(Double.self, forKey: .beautySoften) ?? 0
+        beautyDetail = try container.decodeIfPresent(Double.self, forKey: .beautyDetail) ?? 0
+        beautyWarmth = try container.decodeIfPresent(Double.self, forKey: .beautyWarmth) ?? 0
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
