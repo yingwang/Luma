@@ -55,4 +55,12 @@ final class LumaModelTests: XCTestCase {
     func testLibrarySortMetadata() {
         XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag"])
     }
+
+    func testExportPresetSettings() {
+        XCTAssertEqual(ExportPreset.fullSize.jpegQuality, 0.95)
+        XCTAssertEqual(ExportPreset.fullSize.longEdge, 0)
+        XCTAssertEqual(ExportPreset.largeWeb.longEdge, 2560)
+        XCTAssertEqual(ExportPreset.social.longEdge, 1600)
+        XCTAssertEqual(ExportPreset.thumbnail.longEdge, 800)
+    }
 }

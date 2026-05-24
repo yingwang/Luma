@@ -91,6 +91,43 @@ enum PhotoPreset: String, CaseIterable, Identifiable {
     }
 }
 
+enum ExportPreset: String, CaseIterable, Identifiable {
+    case fullSize = "Full Size"
+    case largeWeb = "Large Web"
+    case social = "Social"
+    case thumbnail = "Thumbnail"
+
+    var id: String {
+        rawValue
+    }
+
+    var jpegQuality: Double {
+        switch self {
+        case .fullSize:
+            0.95
+        case .largeWeb:
+            0.88
+        case .social:
+            0.86
+        case .thumbnail:
+            0.82
+        }
+    }
+
+    var longEdge: Double {
+        switch self {
+        case .fullSize:
+            0
+        case .largeWeb:
+            2560
+        case .social:
+            1600
+        case .thumbnail:
+            800
+        }
+    }
+}
+
 struct PhotoAdjustments: Codable, Equatable {
     var exposure: Double = 0
     var highlights: Double = 0

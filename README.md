@@ -78,6 +78,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Inspect common EXIF fields such as camera, lens, exposure, focal length, and capture time.
 - Identify system-readable RAW files with a RAW badge.
 - Export the selected edited photo as JPEG.
+- Apply export presets for full-size, large web, social, and thumbnail output.
 - Choose JPEG quality.
 - Resize exports by long edge.
 - Batch export all picked photos.

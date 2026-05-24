@@ -403,6 +403,12 @@ final class PhotoLibraryStore: ObservableObject {
         }
     }
 
+    func applyExportPreset(_ preset: ExportPreset) {
+        exportQuality = preset.jpegQuality
+        exportLongEdge = preset.longEdge
+        statusMessage = "Applied \(preset.rawValue) export preset."
+    }
+
     func exportSelectedPhoto() {
         guard let selectedPhoto else {
             return
@@ -419,13 +425,13 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         do {
-                try ImageProcessor.shared.exportJPEG(
-                    from: selectedPhoto.url,
-                    adjustments: selectedPhoto.adjustments,
-                    to: destination,
-                    quality: exportQuality,
-                    maxLongEdge: exportMaxLongEdge
-                )
+            try ImageProcessor.shared.exportJPEG(
+                from: selectedPhoto.url,
+                adjustments: selectedPhoto.adjustments,
+                to: destination,
+                quality: exportQuality,
+                maxLongEdge: exportMaxLongEdge
+            )
             statusMessage = "Exported \(destination.lastPathComponent)."
         } catch {
             statusMessage = error.localizedDescription

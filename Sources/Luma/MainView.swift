@@ -827,6 +827,16 @@ struct AdjustmentPanel: View {
                 Text("Export")
                     .font(.headline)
 
+                Menu {
+                    ForEach(ExportPreset.allCases) { preset in
+                        Button(preset.rawValue) {
+                            library.applyExportPreset(preset)
+                        }
+                    }
+                } label: {
+                    Label("Export Preset", systemImage: "square.and.arrow.up.on.square")
+                }
+
                 AdjustmentSlider(
                     title: "JPEG Quality",
                     value: $library.exportQuality,
