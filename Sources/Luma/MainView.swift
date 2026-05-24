@@ -99,9 +99,14 @@ struct MainView: View {
 struct LibrarySidebar: View {
     @EnvironmentObject private var library: PhotoLibraryStore
 
-    private let columns = [
-        GridItem(.adaptive(minimum: 112, maximum: 150), spacing: 12)
-    ]
+    private var columns: [GridItem] {
+        [
+            GridItem(
+                .adaptive(minimum: CGFloat(library.thumbnailSize), maximum: CGFloat(library.thumbnailSize + 42)),
+                spacing: 12
+            )
+        ]
+    }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -174,6 +179,16 @@ struct LibrarySidebar: View {
             .buttonStyle(.borderless)
             .font(.caption)
             .disabled(!library.hasActiveLibraryFilters)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
+
+            HStack {
+                Text("Size")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                Slider(value: $library.thumbnailSize, in: 88...180, step: 4)
+            }
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 

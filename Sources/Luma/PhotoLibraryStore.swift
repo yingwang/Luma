@@ -31,6 +31,7 @@ final class PhotoLibraryStore: ObservableObject {
             ensureSelectedPhotoIsVisible()
         }
     }
+    @Published var thumbnailSize = 124.0
     @Published var exportQuality = 0.92
     @Published var exportLongEdge: Double = 0
     @Published private(set) var canUndo = false
