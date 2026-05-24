@@ -14,6 +14,7 @@ final class PhotoLibraryStore: ObservableObject {
     @Published var librarySort: LibrarySort = .fileName
     @Published var minimumRating = 0
     @Published var searchText = ""
+    @Published var hideRejected = false
     @Published var exportQuality = 0.92
     @Published var exportLongEdge: Double = 0
     @Published private(set) var canUndo = false
@@ -75,9 +76,13 @@ final class PhotoLibraryStore: ObservableObject {
             photos.filter { $0.flag == .none }
         }
 
-        let filteredByRating = minimumRating > 0
-            ? filteredByFlag.filter { $0.rating >= minimumRating }
+        let filteredByHiddenRejected = hideRejected && libraryFilter != .rejected
+            ? filteredByFlag.filter { $0.flag != .rejected }
             : filteredByFlag
+
+        let filteredByRating = minimumRating > 0
+            ? filteredByHiddenRejected.filter { $0.rating >= minimumRating }
+            : filteredByHiddenRejected
 
         let query = searchText.trimmingCharacters(in: .whitespacesAndNewlines)
         let filteredBySearch = if query.isEmpty {

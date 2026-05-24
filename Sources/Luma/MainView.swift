@@ -136,6 +136,11 @@ struct LibrarySidebar: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 
+            Toggle("Hide rejected", isOn: $library.hideRejected)
+                .font(.caption)
+                .padding(.horizontal, 12)
+                .padding(.bottom, 12)
+
             HStack {
                 Text("Min")
                     .font(.caption)
