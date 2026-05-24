@@ -156,10 +156,22 @@ struct LibrarySidebar: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 
-            TextField("Search file names", text: $library.searchText)
-                .textFieldStyle(.roundedBorder)
-                .padding(.horizontal, 12)
-                .padding(.bottom, 12)
+            HStack(spacing: 6) {
+                TextField("Search file names", text: $library.searchText)
+                    .textFieldStyle(.roundedBorder)
+
+                Button {
+                    library.searchText = ""
+                } label: {
+                    Image(systemName: "xmark.circle.fill")
+                }
+                .buttonStyle(.plain)
+                .foregroundStyle(library.searchText.isEmpty ? .tertiary : .secondary)
+                .help("Clear search")
+                .disabled(library.searchText.isEmpty)
+            }
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
 
             Divider()
 
