@@ -59,6 +59,16 @@ struct LumaApp: App {
                 .keyboardShortcut("]", modifiers: [.command])
                 .disabled(library.filteredPhotos.isEmpty)
 
+                Button("First Visible Photo") {
+                    library.selectFirstVisiblePhoto()
+                }
+                .disabled(library.filteredPhotos.isEmpty)
+
+                Button("Last Visible Photo") {
+                    library.selectLastVisiblePhoto()
+                }
+                .disabled(library.filteredPhotos.isEmpty)
+
                 Divider()
 
                 Button("Copy Adjustments") {

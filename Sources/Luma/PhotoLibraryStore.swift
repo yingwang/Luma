@@ -253,6 +253,22 @@ final class PhotoLibraryStore: ObservableObject {
         selectAdjacentPhoto(offset: 1)
     }
 
+    func selectFirstVisiblePhoto() {
+        guard let firstPhoto = filteredPhotos.first else {
+            return
+        }
+
+        select(firstPhoto)
+    }
+
+    func selectLastVisiblePhoto() {
+        guard let lastPhoto = filteredPhotos.last else {
+            return
+        }
+
+        select(lastPhoto)
+    }
+
     func toggleCompareSideBySide() {
         if showOriginal {
             showOriginal = false

@@ -16,6 +16,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Adjust the thumbnail grid size from the library sidebar.
 - Keep thumbnail cells stable while showing rating and flag state.
 - Move to the previous or next visible photo from the toolbar or keyboard.
+- Jump to the first or last visible photo from the Photo menu.
 - Search by filename and clear the active search quickly.
 - Sort by file name, capture date, rating, or flag.
 - Filter by picked, rejected, rated, unrated, unflagged, edited, unedited, and minimum star rating.
