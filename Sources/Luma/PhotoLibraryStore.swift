@@ -434,6 +434,7 @@ final class PhotoLibraryStore: ObservableObject {
         updateSelectedAdjustments { adjustments in
             adjustments = .neutral
         }
+        statusMessage = "Reset selected photo adjustments."
     }
 
     func resetPickedAdjustments() {

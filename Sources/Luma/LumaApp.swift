@@ -79,6 +79,12 @@ struct LumaApp: App {
                 .keyboardShortcut("s", modifiers: [.command, .option])
                 .disabled(library.selectedPhoto == nil || library.pickedPhotoCount <= 1)
 
+                Button("Reset Selected Adjustments") {
+                    library.resetSelectedAdjustments()
+                }
+                .keyboardShortcut("r", modifiers: [.command, .option])
+                .disabled(library.selectedPhoto == nil)
+
                 Menu("Apply Preset to Picked") {
                     ForEach(PhotoPreset.allCases) { preset in
                         Button(preset.rawValue) {
