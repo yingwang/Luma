@@ -10,11 +10,27 @@ final class PhotoLibraryStore: ObservableObject {
     @Published private(set) var previewImage: NSImage?
     @Published private(set) var isRenderingPreview = false
     @Published var statusMessage = "Import photos to begin."
-    @Published var libraryFilter: LibraryFilter = .all
+    @Published var libraryFilter: LibraryFilter = .all {
+        didSet {
+            ensureSelectedPhotoIsVisible()
+        }
+    }
     @Published var librarySort: LibrarySort = .fileName
-    @Published var minimumRating = 0
-    @Published var searchText = ""
-    @Published var hideRejected = false
+    @Published var minimumRating = 0 {
+        didSet {
+            ensureSelectedPhotoIsVisible()
+        }
+    }
+    @Published var searchText = "" {
+        didSet {
+            ensureSelectedPhotoIsVisible()
+        }
+    }
+    @Published var hideRejected = false {
+        didSet {
+            ensureSelectedPhotoIsVisible()
+        }
+    }
     @Published var exportQuality = 0.92
     @Published var exportLongEdge: Double = 0
     @Published private(set) var canUndo = false
@@ -278,6 +294,7 @@ final class PhotoLibraryStore: ObservableObject {
         photos[index].rating = min(5, max(0, rating))
         statusMessage = "Rated \(photos[index].fileName) \(photos[index].rating) star\(photos[index].rating == 1 ? "" : "s")."
         saveCatalog()
+        ensureSelectedPhotoIsVisible()
     }
 
     func setSelectedFlag(_ flag: PhotoFlag) {
@@ -291,6 +308,7 @@ final class PhotoLibraryStore: ObservableObject {
         photos[index].flag = flag
         statusMessage = "\(flag.rawValue) \(photos[index].fileName)."
         saveCatalog()
+        ensureSelectedPhotoIsVisible()
     }
 
     func removeSelectedPhoto() {
@@ -625,6 +643,19 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         select(visiblePhotos[nextIndex])
+    }
+
+    private func ensureSelectedPhotoIsVisible() {
+        let visiblePhotos = filteredPhotos
+
+        guard
+            let selectedPhotoID,
+            visiblePhotos.contains(where: { $0.id == selectedPhotoID })
+        else {
+            self.selectedPhotoID = visiblePhotos.first?.id
+            renderSelectedPreview()
+            return
+        }
     }
 
     private func flagRank(_ flag: PhotoFlag) -> Int {
