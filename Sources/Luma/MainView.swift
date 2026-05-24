@@ -587,6 +587,20 @@ struct AdjustmentPanel: View {
                 )
 
                 AdjustmentSlider(
+                    title: "Wrinkle",
+                    value: adjustmentBinding(\.beautyWrinkle),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Blemish",
+                    value: adjustmentBinding(\.beautyBlemish),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
                     title: "Whiten",
                     value: adjustmentBinding(\.beautyWhiten),
                     range: 0...1,
@@ -635,6 +649,24 @@ struct AdjustmentPanel: View {
                 AdjustmentSlider(
                     title: "Detail",
                     value: adjustmentBinding(\.beautyDetail),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                Text("Shape")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+
+                AdjustmentSlider(
+                    title: "Face Slim",
+                    value: adjustmentBinding(\.faceSlim),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Body Slim",
+                    value: adjustmentBinding(\.bodySlim),
                     range: 0...1,
                     format: "%.2f"
                 )

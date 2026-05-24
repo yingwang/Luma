@@ -25,7 +25,7 @@ The first version focuses on a local workflow:
 - inspect a luminance histogram
 - adjust exposure, highlights, shadows, whites, blacks, contrast, saturation, hue, warmth, tint, vibrance, clarity, dehaze, noise reduction, sharpness, and vignette
 - tune saturation by color range with a simple color mixer
-- apply simple portrait beauty controls for smoothing, whitening, rosy tone, brightening, skin warmth, glow, softening, and detail
+- apply simple portrait beauty controls for smoothing, wrinkle softening, blemish fading, whitening, rosy tone, brightening, skin warmth, glow, softening, detail, face slimming, and body slimming
 - view basic file information
 - inspect common EXIF fields such as camera, lens, exposure, focal length, and capture time
 - choose JPEG export quality

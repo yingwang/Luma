@@ -109,6 +109,8 @@ struct PhotoAdjustments: Codable, Equatable {
     var sharpness: Double = 0
     var vignette: Double = 0
     var beautySmooth: Double = 0
+    var beautyWrinkle: Double = 0
+    var beautyBlemish: Double = 0
     var beautyBrighten: Double = 0
     var beautyWhiten: Double = 0
     var beautyRosy: Double = 0
@@ -116,6 +118,8 @@ struct PhotoAdjustments: Codable, Equatable {
     var beautySoften: Double = 0
     var beautyDetail: Double = 0
     var beautyWarmth: Double = 0
+    var faceSlim: Double = 0
+    var bodySlim: Double = 0
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
@@ -141,6 +145,8 @@ struct PhotoAdjustments: Codable, Equatable {
         case sharpness
         case vignette
         case beautySmooth
+        case beautyWrinkle
+        case beautyBlemish
         case beautyBrighten
         case beautyWhiten
         case beautyRosy
@@ -148,6 +154,8 @@ struct PhotoAdjustments: Codable, Equatable {
         case beautySoften
         case beautyDetail
         case beautyWarmth
+        case faceSlim
+        case bodySlim
         case straighten
         case rotationTurns
         case cropAspect
@@ -172,6 +180,8 @@ struct PhotoAdjustments: Codable, Equatable {
         sharpness: Double = 0,
         vignette: Double = 0,
         beautySmooth: Double = 0,
+        beautyWrinkle: Double = 0,
+        beautyBlemish: Double = 0,
         beautyBrighten: Double = 0,
         beautyWhiten: Double = 0,
         beautyRosy: Double = 0,
@@ -179,6 +189,8 @@ struct PhotoAdjustments: Codable, Equatable {
         beautySoften: Double = 0,
         beautyDetail: Double = 0,
         beautyWarmth: Double = 0,
+        faceSlim: Double = 0,
+        bodySlim: Double = 0,
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
@@ -201,6 +213,8 @@ struct PhotoAdjustments: Codable, Equatable {
         self.sharpness = sharpness
         self.vignette = vignette
         self.beautySmooth = beautySmooth
+        self.beautyWrinkle = beautyWrinkle
+        self.beautyBlemish = beautyBlemish
         self.beautyBrighten = beautyBrighten
         self.beautyWhiten = beautyWhiten
         self.beautyRosy = beautyRosy
@@ -208,6 +222,8 @@ struct PhotoAdjustments: Codable, Equatable {
         self.beautySoften = beautySoften
         self.beautyDetail = beautyDetail
         self.beautyWarmth = beautyWarmth
+        self.faceSlim = faceSlim
+        self.bodySlim = bodySlim
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
@@ -233,6 +249,8 @@ struct PhotoAdjustments: Codable, Equatable {
         sharpness = try container.decodeIfPresent(Double.self, forKey: .sharpness) ?? 0
         vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
         beautySmooth = try container.decodeIfPresent(Double.self, forKey: .beautySmooth) ?? 0
+        beautyWrinkle = try container.decodeIfPresent(Double.self, forKey: .beautyWrinkle) ?? 0
+        beautyBlemish = try container.decodeIfPresent(Double.self, forKey: .beautyBlemish) ?? 0
         beautyBrighten = try container.decodeIfPresent(Double.self, forKey: .beautyBrighten) ?? 0
         beautyWhiten = try container.decodeIfPresent(Double.self, forKey: .beautyWhiten) ?? 0
         beautyRosy = try container.decodeIfPresent(Double.self, forKey: .beautyRosy) ?? 0
@@ -240,6 +258,8 @@ struct PhotoAdjustments: Codable, Equatable {
         beautySoften = try container.decodeIfPresent(Double.self, forKey: .beautySoften) ?? 0
         beautyDetail = try container.decodeIfPresent(Double.self, forKey: .beautyDetail) ?? 0
         beautyWarmth = try container.decodeIfPresent(Double.self, forKey: .beautyWarmth) ?? 0
+        faceSlim = try container.decodeIfPresent(Double.self, forKey: .faceSlim) ?? 0
+        bodySlim = try container.decodeIfPresent(Double.self, forKey: .bodySlim) ?? 0
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original

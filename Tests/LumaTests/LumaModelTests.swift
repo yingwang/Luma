@@ -25,9 +25,13 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.cropAspect, .original)
         XCTAssertEqual(adjustments.colorMixer, ColorMixerAdjustments())
         XCTAssertEqual(adjustments.beautySmooth, 0)
+        XCTAssertEqual(adjustments.beautyWrinkle, 0)
+        XCTAssertEqual(adjustments.beautyBlemish, 0)
         XCTAssertEqual(adjustments.beautyWhiten, 0)
         XCTAssertEqual(adjustments.beautyRosy, 0)
         XCTAssertEqual(adjustments.beautySoften, 0)
+        XCTAssertEqual(adjustments.faceSlim, 0)
+        XCTAssertEqual(adjustments.bodySlim, 0)
     }
 
     func testCropAspectRatios() {

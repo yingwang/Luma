@@ -269,6 +269,29 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        if adjustments.beautyWrinkle > 0, let filter = CIFilter(name: "CIGaussianBlur") {
+            let original = image
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(adjustments.beautyWrinkle * 1.8, forKey: kCIInputRadiusKey)
+
+            if let softened = filter.outputImage?.cropped(to: original.extent), let blend = CIFilter(name: "CIScreenBlendMode") {
+                blend.setValue(softened, forKey: kCIInputImageKey)
+                blend.setValue(original, forKey: kCIInputBackgroundImageKey)
+                image = blend.outputImage ?? image
+            }
+        }
+
+        if adjustments.beautyBlemish > 0, let median = CIFilter(name: "CIMedianFilter") {
+            let original = image
+            median.setValue(image, forKey: kCIInputImageKey)
+
+            if let cleaned = median.outputImage?.cropped(to: original.extent), let blend = CIFilter(name: "CISoftLightBlendMode") {
+                blend.setValue(cleaned, forKey: kCIInputImageKey)
+                blend.setValue(original, forKey: kCIInputBackgroundImageKey)
+                image = blend.outputImage ?? image
+            }
+        }
+
         if adjustments.beautyBrighten > 0 {
             let filter = CIFilter.colorControls()
             filter.inputImage = image
@@ -330,6 +353,9 @@ final class ImageProcessor: @unchecked Sendable {
             filter.setValue(adjustments.beautyDetail * 0.8, forKey: kCIInputSharpnessKey)
             image = filter.outputImage ?? image
         }
+
+        image = applyBodySlim(adjustments.bodySlim, to: image)
+        image = applyFaceSlim(adjustments.faceSlim, to: image)
 
         if adjustments.sharpness > 0, let filter = CIFilter(name: "CISharpenLuminance") {
             filter.setValue(image, forKey: kCIInputImageKey)
@@ -478,6 +504,55 @@ final class ImageProcessor: @unchecked Sendable {
         filter.setValue(dimension, forKey: "inputCubeDimension")
         filter.setValue(data, forKey: "inputCubeData")
         return filter.outputImage ?? image
+    }
+
+    private func applyFaceSlim(_ amount: Double, to image: CIImage) -> CIImage {
+        guard amount > 0 else {
+            return image
+        }
+
+        let detector = CIDetector(
+            ofType: CIDetectorTypeFace,
+            context: context,
+            options: [CIDetectorAccuracy: CIDetectorAccuracyLow]
+        )
+        let faces = detector?.features(in: image).compactMap { $0 as? CIFaceFeature } ?? []
+
+        guard !faces.isEmpty else {
+            return image
+        }
+
+        return faces.reduce(image) { currentImage, face in
+            guard let filter = CIFilter(name: "CIPinchDistortion") else {
+                return currentImage
+            }
+
+            let bounds = face.bounds
+            let center = CIVector(x: bounds.midX, y: bounds.midY)
+            let radius = max(bounds.width, bounds.height) * (0.65 + amount * 0.35)
+
+            filter.setValue(currentImage, forKey: kCIInputImageKey)
+            filter.setValue(center, forKey: kCIInputCenterKey)
+            filter.setValue(radius, forKey: kCIInputRadiusKey)
+            filter.setValue(amount * 0.45, forKey: kCIInputScaleKey)
+            return filter.outputImage?.cropped(to: currentImage.extent) ?? currentImage
+        }
+    }
+
+    private func applyBodySlim(_ amount: Double, to image: CIImage) -> CIImage {
+        guard amount > 0, let filter = CIFilter(name: "CIPinchDistortion") else {
+            return image
+        }
+
+        let extent = image.extent
+        let center = CIVector(x: extent.midX, y: extent.midY - extent.height * 0.08)
+        let radius = min(extent.width, extent.height) * (0.42 + amount * 0.18)
+
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(center, forKey: kCIInputCenterKey)
+        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(amount * 0.28, forKey: kCIInputScaleKey)
+        return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
     private func colorMixerAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {
