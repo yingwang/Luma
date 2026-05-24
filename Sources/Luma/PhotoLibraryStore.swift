@@ -69,6 +69,8 @@ final class PhotoLibraryStore: ObservableObject {
             photos.filter { $0.flag == .rejected }
         case .rated:
             photos.filter { $0.rating > 0 }
+        case .unrated:
+            photos.filter { $0.rating == 0 }
         }
 
         let filteredByRating = minimumRating > 0

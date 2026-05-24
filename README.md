@@ -16,7 +16,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Move to the previous or next visible photo from the toolbar or keyboard.
 - Search by filename.
 - Sort by file name, capture date, rating, or flag.
-- Filter by picked, rejected, and minimum star rating.
+- Filter by picked, rejected, rated, unrated, and minimum star rating.
 - Clear in-memory image caches when needed.
 - Rate photos from zero to five stars.
 - Use number keys 0-5 to clear or set the selected photo rating.

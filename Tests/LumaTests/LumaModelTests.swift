@@ -56,6 +56,10 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag"])
     }
 
+    func testLibraryFilterMetadata() {
+        XCTAssertEqual(LibraryFilter.allCases.map(\.rawValue), ["All", "Picked", "Rejected", "Rated", "Unrated"])
+    }
+
     func testExportPresetSettings() {
         XCTAssertEqual(ExportPreset.fullSize.jpegQuality, 0.95)
         XCTAssertEqual(ExportPreset.fullSize.longEdge, 0)
