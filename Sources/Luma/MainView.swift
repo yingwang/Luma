@@ -599,6 +599,21 @@ struct AdjustmentPanel: View {
                     InfoRow(label: "Resolution", value: metadata.megapixelsText)
                     InfoRow(label: "File Size", value: metadata.fileSizeText)
                     InfoRow(label: "Format", value: metadata.formatText)
+                    if let captureDateText = metadata.captureDateText {
+                        InfoRow(label: "Captured", value: captureDateText)
+                    }
+                    if let cameraText = metadata.cameraText {
+                        InfoRow(label: "Camera", value: cameraText)
+                    }
+                    if let lensModel = metadata.lensModel {
+                        InfoRow(label: "Lens", value: lensModel)
+                    }
+                    if let exposureText = metadata.exposureText {
+                        InfoRow(label: "Exposure", value: exposureText)
+                    }
+                    if let focalLengthText = metadata.focalLengthText {
+                        InfoRow(label: "Focal Length", value: focalLengthText)
+                    }
                 }
             }
 
@@ -613,6 +628,13 @@ struct AdjustmentPanel: View {
                     value: $library.exportQuality,
                     range: 0.5...1,
                     format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Long Edge",
+                    value: $library.exportLongEdge,
+                    range: 0...6000,
+                    format: "%.0f"
                 )
             }
 

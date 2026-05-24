@@ -13,6 +13,7 @@ final class PhotoLibraryStore: ObservableObject {
     @Published var libraryFilter: LibraryFilter = .all
     @Published var searchText = ""
     @Published var exportQuality = 0.92
+    @Published var exportLongEdge: Double = 0
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
     @Published var showOriginal = false {
@@ -328,7 +329,8 @@ final class PhotoLibraryStore: ObservableObject {
                     from: selectedPhoto.url,
                     adjustments: selectedPhoto.adjustments,
                     to: destination,
-                    quality: exportQuality
+                    quality: exportQuality,
+                    maxLongEdge: exportMaxLongEdge
                 )
             statusMessage = "Exported \(destination.lastPathComponent)."
         } catch {
@@ -365,7 +367,8 @@ final class PhotoLibraryStore: ObservableObject {
                     from: photo.url,
                     adjustments: photo.adjustments,
                     to: destination,
-                    quality: exportQuality
+                    quality: exportQuality,
+                    maxLongEdge: exportMaxLongEdge
                 )
                 exportedCount += 1
             } catch {
@@ -404,6 +407,10 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         return destination
+    }
+
+    private var exportMaxLongEdge: CGFloat? {
+        exportLongEdge > 0 ? CGFloat(exportLongEdge) : nil
     }
 
     private func renderSelectedPreview() {

@@ -34,6 +34,8 @@ final class ImageProcessor: @unchecked Sendable {
             return nil
         }
 
+        let tiff = properties[kCGImagePropertyTIFFDictionary] as? [CFString: Any]
+        let exif = properties[kCGImagePropertyExifDictionary] as? [CFString: Any]
         let resourceValues = try? url.resourceValues(forKeys: [.fileSizeKey])
         let fileSize = resourceValues?.fileSize.map(Int64.init)
         let typeIdentifier = CGImageSourceGetType(source) as String?
@@ -53,7 +55,15 @@ final class ImageProcessor: @unchecked Sendable {
             pixelHeight: height,
             fileSize: fileSize,
             formatName: type?.preferredFilenameExtension?.uppercased(),
-            isRaw: isRaw
+            isRaw: isRaw,
+            cameraMake: tiff?[kCGImagePropertyTIFFMake] as? String,
+            cameraModel: tiff?[kCGImagePropertyTIFFModel] as? String,
+            lensModel: exif?[kCGImagePropertyExifLensModel] as? String,
+            iso: isoValue(from: exif?[kCGImagePropertyExifISOSpeedRatings]),
+            aperture: exif?[kCGImagePropertyExifFNumber] as? Double,
+            shutterSpeed: exif?[kCGImagePropertyExifExposureTime] as? Double,
+            focalLength: exif?[kCGImagePropertyExifFocalLength] as? Double,
+            captureDate: captureDate(from: exif?[kCGImagePropertyExifDateTimeOriginal] as? String)
         )
     }
 
@@ -137,9 +147,16 @@ final class ImageProcessor: @unchecked Sendable {
         return render(output)
     }
 
-    func exportJPEG(from url: URL, adjustments: PhotoAdjustments, to destination: URL, quality: CGFloat = 0.92) throws {
+    func exportJPEG(
+        from url: URL,
+        adjustments: PhotoAdjustments,
+        to destination: URL,
+        quality: CGFloat = 0.92,
+        maxLongEdge: CGFloat? = nil
+    ) throws {
         guard
-            let image = processedImage(for: url, adjustments: adjustments),
+            let processedImage = processedImage(for: url, adjustments: adjustments),
+            let image = scaledImage(processedImage, maxLongEdge: maxLongEdge),
             let cgImage = context.createCGImage(image, from: image.extent),
             let destinationRef = CGImageDestinationCreateWithURL(
                 destination as CFURL,
@@ -265,6 +282,20 @@ final class ImageProcessor: @unchecked Sendable {
         image = rotate(image, turns: adjustments.rotationTurns)
 
         return image
+    }
+
+    private func scaledImage(_ image: CIImage, maxLongEdge: CGFloat?) -> CIImage? {
+        guard let maxLongEdge, maxLongEdge > 0 else {
+            return image
+        }
+
+        let longEdge = max(image.extent.width, image.extent.height)
+        guard longEdge > maxLongEdge else {
+            return image
+        }
+
+        let scale = maxLongEdge / longEdge
+        return image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
     }
 
     private func centerCrop(_ image: CIImage, aspect: CropAspect) -> CIImage {
@@ -447,6 +478,29 @@ final class ImageProcessor: @unchecked Sendable {
 
     private func clipped(_ value: Double) -> Double {
         min(1, max(0, value))
+    }
+
+    private func isoValue(from value: Any?) -> Int? {
+        if let ratings = value as? [Int] {
+            return ratings.first
+        }
+
+        if let ratings = value as? [Double] {
+            return ratings.first.map(Int.init)
+        }
+
+        return value as? Int
+    }
+
+    private func captureDate(from value: String?) -> Date? {
+        guard let value else {
+            return nil
+        }
+
+        let formatter = DateFormatter()
+        formatter.dateFormat = "yyyy:MM:dd HH:mm:ss"
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        return formatter.date(from: value)
     }
 
     private func render(_ image: CIImage) -> NSImage? {

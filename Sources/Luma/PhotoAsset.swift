@@ -262,6 +262,14 @@ struct PhotoMetadata: Equatable {
     let fileSize: Int64?
     let formatName: String?
     let isRaw: Bool
+    let cameraMake: String?
+    let cameraModel: String?
+    let lensModel: String?
+    let iso: Int?
+    let aperture: Double?
+    let shutterSpeed: Double?
+    let focalLength: Double?
+    let captureDate: Date?
 
     var dimensionsText: String {
         "\(pixelWidth) x \(pixelHeight)"
@@ -286,5 +294,52 @@ struct PhotoMetadata: Equatable {
         }
 
         return formatName ?? "Image"
+    }
+
+    var cameraText: String? {
+        [cameraMake, cameraModel]
+            .compactMap { $0 }
+            .joined(separator: " ")
+            .nilIfEmpty
+    }
+
+    var exposureText: String? {
+        var parts: [String] = []
+
+        if let shutterSpeed {
+            if shutterSpeed >= 1 {
+                parts.append(String(format: "%.1fs", shutterSpeed))
+            } else if shutterSpeed > 0 {
+                parts.append("1/\(Int(round(1 / shutterSpeed)))s")
+            }
+        }
+
+        if let aperture {
+            parts.append(String(format: "f/%.1f", aperture))
+        }
+
+        if let iso {
+            parts.append("ISO \(iso)")
+        }
+
+        return parts.joined(separator: "  ").nilIfEmpty
+    }
+
+    var focalLengthText: String? {
+        focalLength.map { String(format: "%.0f mm", $0) }
+    }
+
+    var captureDateText: String? {
+        guard let captureDate else {
+            return nil
+        }
+
+        return captureDate.formatted(date: .abbreviated, time: .shortened)
+    }
+}
+
+private extension String {
+    var nilIfEmpty: String? {
+        isEmpty ? nil : self
     }
 }
