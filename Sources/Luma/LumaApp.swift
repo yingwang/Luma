@@ -47,6 +47,20 @@ struct LumaApp: App {
             }
 
             CommandMenu("Photo") {
+                Button("Previous Photo") {
+                    library.selectPreviousPhoto()
+                }
+                .keyboardShortcut("[", modifiers: [.command])
+                .disabled(library.filteredPhotos.isEmpty)
+
+                Button("Next Photo") {
+                    library.selectNextPhoto()
+                }
+                .keyboardShortcut("]", modifiers: [.command])
+                .disabled(library.filteredPhotos.isEmpty)
+
+                Divider()
+
                 Button("Copy Adjustments") {
                     library.copySelectedAdjustments()
                 }

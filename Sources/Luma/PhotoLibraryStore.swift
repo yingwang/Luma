@@ -199,6 +199,14 @@ final class PhotoLibraryStore: ObservableObject {
         renderSelectedPreview()
     }
 
+    func selectPreviousPhoto() {
+        selectAdjacentPhoto(offset: -1)
+    }
+
+    func selectNextPhoto() {
+        selectAdjacentPhoto(offset: 1)
+    }
+
     func toggleCompareSideBySide() {
         if showOriginal {
             showOriginal = false
@@ -585,6 +593,28 @@ final class PhotoLibraryStore: ObservableObject {
                 return flagRank($0.flag) > flagRank($1.flag)
             }
         }
+    }
+
+    private func selectAdjacentPhoto(offset: Int) {
+        let visiblePhotos = filteredPhotos
+        guard !visiblePhotos.isEmpty else {
+            return
+        }
+
+        guard
+            let selectedPhotoID,
+            let currentIndex = visiblePhotos.firstIndex(where: { $0.id == selectedPhotoID })
+        else {
+            select(visiblePhotos[0])
+            return
+        }
+
+        let nextIndex = min(max(currentIndex + offset, 0), visiblePhotos.count - 1)
+        guard nextIndex != currentIndex else {
+            return
+        }
+
+        select(visiblePhotos[nextIndex])
     }
 
     private func flagRank(_ flag: PhotoFlag) -> Int {

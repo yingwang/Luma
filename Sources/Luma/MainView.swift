@@ -37,6 +37,20 @@ struct MainView: View {
                 .disabled(!library.canRedo)
 
                 Button {
+                    library.selectPreviousPhoto()
+                } label: {
+                    Label("Previous", systemImage: "chevron.left")
+                }
+                .disabled(library.filteredPhotos.isEmpty)
+
+                Button {
+                    library.selectNextPhoto()
+                } label: {
+                    Label("Next", systemImage: "chevron.right")
+                }
+                .disabled(library.filteredPhotos.isEmpty)
+
+                Button {
                     library.showOriginal.toggle()
                 } label: {
                     Label("Before", systemImage: library.showOriginal ? "eye.slash" : "eye")
