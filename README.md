@@ -18,6 +18,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Filter by picked, rejected, and minimum star rating.
 - Clear in-memory image caches when needed.
 - Rate photos from zero to five stars.
+- Use number keys 0-5 to clear or set the selected photo rating.
 - Mark photos as picked or rejected.
 - Remove photos from the local catalog without deleting the original file.
 

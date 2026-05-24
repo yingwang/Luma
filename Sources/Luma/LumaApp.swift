@@ -127,6 +127,22 @@ struct LumaApp: App {
 
                 Divider()
 
+                Button("Clear Rating") {
+                    library.setSelectedRating(0)
+                }
+                .keyboardShortcut("0", modifiers: [])
+                .disabled(library.selectedPhoto == nil)
+
+                ForEach(1...5, id: \.self) { rating in
+                    Button("Rate \(rating) Star\(rating == 1 ? "" : "s")") {
+                        library.setSelectedRating(rating)
+                    }
+                    .keyboardShortcut(KeyEquivalent(Character("\(rating)")), modifiers: [])
+                    .disabled(library.selectedPhoto == nil)
+                }
+
+                Divider()
+
                 Button("Remove From Library") {
                     library.removeSelectedPhoto()
                 }
