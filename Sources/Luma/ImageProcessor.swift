@@ -354,6 +354,7 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        image = applyEyeEnlarge(adjustments.eyeEnlarge, to: image)
         image = applyBodySlim(adjustments.bodySlim, to: image)
         image = applyFaceSlim(adjustments.faceSlim, to: image)
 
@@ -511,13 +512,7 @@ final class ImageProcessor: @unchecked Sendable {
             return image
         }
 
-        let detector = CIDetector(
-            ofType: CIDetectorTypeFace,
-            context: context,
-            options: [CIDetectorAccuracy: CIDetectorAccuracyLow]
-        )
-        let faces = detector?.features(in: image).compactMap { $0 as? CIFaceFeature } ?? []
-
+        let faces = faceFeatures(in: image)
         guard !faces.isEmpty else {
             return image
         }
@@ -539,6 +534,44 @@ final class ImageProcessor: @unchecked Sendable {
         }
     }
 
+    private func applyEyeEnlarge(_ amount: Double, to image: CIImage) -> CIImage {
+        guard amount > 0 else {
+            return image
+        }
+
+        let faces = faceFeatures(in: image)
+        guard !faces.isEmpty else {
+            return image
+        }
+
+        return faces.reduce(image) { currentImage, face in
+            var output = currentImage
+            let eyeRadius = max(face.bounds.width, face.bounds.height) * (0.10 + amount * 0.05)
+
+            if face.hasLeftEyePosition {
+                output = applyEyeBump(to: output, center: face.leftEyePosition, radius: eyeRadius, amount: amount)
+            }
+
+            if face.hasRightEyePosition {
+                output = applyEyeBump(to: output, center: face.rightEyePosition, radius: eyeRadius, amount: amount)
+            }
+
+            return output
+        }
+    }
+
+    private func applyEyeBump(to image: CIImage, center: CGPoint, radius: CGFloat, amount: Double) -> CIImage {
+        guard let filter = CIFilter(name: "CIBumpDistortion") else {
+            return image
+        }
+
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(CIVector(x: center.x, y: center.y), forKey: kCIInputCenterKey)
+        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(amount * 0.35, forKey: kCIInputScaleKey)
+        return filter.outputImage?.cropped(to: image.extent) ?? image
+    }
+
     private func applyBodySlim(_ amount: Double, to image: CIImage) -> CIImage {
         guard amount > 0, let filter = CIFilter(name: "CIPinchDistortion") else {
             return image
@@ -553,6 +586,16 @@ final class ImageProcessor: @unchecked Sendable {
         filter.setValue(radius, forKey: kCIInputRadiusKey)
         filter.setValue(amount * 0.28, forKey: kCIInputScaleKey)
         return filter.outputImage?.cropped(to: image.extent) ?? image
+    }
+
+    private func faceFeatures(in image: CIImage) -> [CIFaceFeature] {
+        let detector = CIDetector(
+            ofType: CIDetectorTypeFace,
+            context: context,
+            options: [CIDetectorAccuracy: CIDetectorAccuracyLow]
+        )
+
+        return detector?.features(in: image).compactMap { $0 as? CIFaceFeature } ?? []
     }
 
     private func colorMixerAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {

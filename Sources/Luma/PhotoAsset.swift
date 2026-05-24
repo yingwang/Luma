@@ -118,6 +118,7 @@ struct PhotoAdjustments: Codable, Equatable {
     var beautySoften: Double = 0
     var beautyDetail: Double = 0
     var beautyWarmth: Double = 0
+    var eyeEnlarge: Double = 0
     var faceSlim: Double = 0
     var bodySlim: Double = 0
     var straighten: Double = 0
@@ -154,6 +155,7 @@ struct PhotoAdjustments: Codable, Equatable {
         case beautySoften
         case beautyDetail
         case beautyWarmth
+        case eyeEnlarge
         case faceSlim
         case bodySlim
         case straighten
@@ -189,6 +191,7 @@ struct PhotoAdjustments: Codable, Equatable {
         beautySoften: Double = 0,
         beautyDetail: Double = 0,
         beautyWarmth: Double = 0,
+        eyeEnlarge: Double = 0,
         faceSlim: Double = 0,
         bodySlim: Double = 0,
         straighten: Double = 0,
@@ -222,6 +225,7 @@ struct PhotoAdjustments: Codable, Equatable {
         self.beautySoften = beautySoften
         self.beautyDetail = beautyDetail
         self.beautyWarmth = beautyWarmth
+        self.eyeEnlarge = eyeEnlarge
         self.faceSlim = faceSlim
         self.bodySlim = bodySlim
         self.straighten = straighten
@@ -258,6 +262,7 @@ struct PhotoAdjustments: Codable, Equatable {
         beautySoften = try container.decodeIfPresent(Double.self, forKey: .beautySoften) ?? 0
         beautyDetail = try container.decodeIfPresent(Double.self, forKey: .beautyDetail) ?? 0
         beautyWarmth = try container.decodeIfPresent(Double.self, forKey: .beautyWarmth) ?? 0
+        eyeEnlarge = try container.decodeIfPresent(Double.self, forKey: .eyeEnlarge) ?? 0
         faceSlim = try container.decodeIfPresent(Double.self, forKey: .faceSlim) ?? 0
         bodySlim = try container.decodeIfPresent(Double.self, forKey: .bodySlim) ?? 0
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0

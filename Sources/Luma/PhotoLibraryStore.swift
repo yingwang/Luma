@@ -345,6 +345,23 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Applied auto enhance."
     }
 
+    func autoBeautySelected() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.beautySmooth = max(adjustments.beautySmooth, 0.28)
+            adjustments.beautyWrinkle = max(adjustments.beautyWrinkle, 0.16)
+            adjustments.beautyBlemish = max(adjustments.beautyBlemish, 0.18)
+            adjustments.beautyWhiten = max(adjustments.beautyWhiten, 0.18)
+            adjustments.beautyRosy = max(adjustments.beautyRosy, 0.12)
+            adjustments.beautyBrighten = max(adjustments.beautyBrighten, 0.16)
+            adjustments.beautyGlow = max(adjustments.beautyGlow, 0.10)
+            adjustments.beautySoften = max(adjustments.beautySoften, 0.12)
+            adjustments.beautyDetail = max(adjustments.beautyDetail, 0.08)
+            adjustments.eyeEnlarge = max(adjustments.eyeEnlarge, 0.10)
+            adjustments.faceSlim = max(adjustments.faceSlim, 0.08)
+        }
+        statusMessage = "Applied auto beauty."
+    }
+
     func rotateSelectedLeft() {
         updateSelectedAdjustments { adjustments in
             adjustments.rotationTurns -= 1

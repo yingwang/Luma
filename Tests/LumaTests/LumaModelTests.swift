@@ -30,6 +30,7 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.beautyWhiten, 0)
         XCTAssertEqual(adjustments.beautyRosy, 0)
         XCTAssertEqual(adjustments.beautySoften, 0)
+        XCTAssertEqual(adjustments.eyeEnlarge, 0)
         XCTAssertEqual(adjustments.faceSlim, 0)
         XCTAssertEqual(adjustments.bodySlim, 0)
     }

@@ -575,6 +575,13 @@ struct AdjustmentPanel: View {
                 Text("Beauty")
                     .font(.headline)
 
+                Button {
+                    library.autoBeautySelected()
+                } label: {
+                    Label("Auto Beauty", systemImage: "sparkles")
+                }
+                .disabled(library.selectedPhoto == nil)
+
                 Text("Skin")
                     .font(.caption)
                     .foregroundStyle(.secondary)
@@ -656,6 +663,13 @@ struct AdjustmentPanel: View {
                 Text("Shape")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+
+                AdjustmentSlider(
+                    title: "Eye Enlarge",
+                    value: adjustmentBinding(\.eyeEnlarge),
+                    range: 0...1,
+                    format: "%.2f"
+                )
 
                 AdjustmentSlider(
                     title: "Face Slim",

@@ -65,6 +65,12 @@ struct LumaApp: App {
                 .keyboardShortcut("u", modifiers: [.command])
                 .disabled(library.selectedPhoto == nil)
 
+                Button("Auto Beauty") {
+                    library.autoBeautySelected()
+                }
+                .keyboardShortcut("b", modifiers: [.command])
+                .disabled(library.selectedPhoto == nil)
+
                 Button("Show Original") {
                     library.showOriginal.toggle()
                 }
