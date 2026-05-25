@@ -167,6 +167,9 @@ struct PhotoAdjustments: Codable, Equatable {
     var radialCenterY: Double = 0.5
     var radialRadius: Double = 0.35
     var radialFeather: Double = 0.25
+    var linearExposure: Double = 0
+    var linearStartY: Double = 1
+    var linearEndY: Double = 0.65
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
@@ -209,6 +212,9 @@ struct PhotoAdjustments: Codable, Equatable {
         case radialCenterY
         case radialRadius
         case radialFeather
+        case linearExposure
+        case linearStartY
+        case linearEndY
         case straighten
         case rotationTurns
         case cropAspect
@@ -250,6 +256,9 @@ struct PhotoAdjustments: Codable, Equatable {
         radialCenterY: Double = 0.5,
         radialRadius: Double = 0.35,
         radialFeather: Double = 0.25,
+        linearExposure: Double = 0,
+        linearStartY: Double = 1,
+        linearEndY: Double = 0.65,
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
@@ -289,6 +298,9 @@ struct PhotoAdjustments: Codable, Equatable {
         self.radialCenterY = radialCenterY
         self.radialRadius = radialRadius
         self.radialFeather = radialFeather
+        self.linearExposure = linearExposure
+        self.linearStartY = linearStartY
+        self.linearEndY = linearEndY
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
@@ -331,6 +343,9 @@ struct PhotoAdjustments: Codable, Equatable {
         radialCenterY = try container.decodeIfPresent(Double.self, forKey: .radialCenterY) ?? 0.5
         radialRadius = try container.decodeIfPresent(Double.self, forKey: .radialRadius) ?? 0.35
         radialFeather = try container.decodeIfPresent(Double.self, forKey: .radialFeather) ?? 0.25
+        linearExposure = try container.decodeIfPresent(Double.self, forKey: .linearExposure) ?? 0
+        linearStartY = try container.decodeIfPresent(Double.self, forKey: .linearStartY) ?? 1
+        linearEndY = try container.decodeIfPresent(Double.self, forKey: .linearEndY) ?? 0.65
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original

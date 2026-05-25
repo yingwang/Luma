@@ -426,6 +426,7 @@ struct CompareImagePane: View {
 struct AdjustmentPanel: View {
     @EnvironmentObject private var library: PhotoLibraryStore
     @State private var isLocalExpanded = false
+    @State private var isLinearExpanded = false
     @State private var isBeautyExpanded = false
     @State private var isColorMixerExpanded = false
     @State private var isInfoExpanded = false
@@ -740,6 +741,35 @@ struct AdjustmentPanel: View {
                 .padding(.top, 8)
             } label: {
                 Label("Local Radial", systemImage: "circle.dashed.inset.filled")
+                    .font(.headline)
+            }
+
+            DisclosureGroup(isExpanded: $isLinearExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    AdjustmentSlider(
+                        title: "Linear Exposure",
+                        value: adjustmentBinding(\.linearExposure),
+                        range: -2...2,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Start Y",
+                        value: adjustmentBinding(\.linearStartY),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "End Y",
+                        value: adjustmentBinding(\.linearEndY),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+                }
+                .padding(.top, 8)
+            } label: {
+                Label("Local Linear", systemImage: "rectangle.split.1x2")
                     .font(.headline)
             }
 

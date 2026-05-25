@@ -386,6 +386,7 @@ final class ImageProcessor: @unchecked Sendable {
         image = applyBodySlim(adjustments.bodySlim, to: image)
         image = applyFaceSlim(adjustments.faceSlim, to: image)
         image = applyRadialExposure(adjustments, to: image)
+        image = applyLinearExposure(adjustments, to: image)
 
         if adjustments.sharpness > 0, let filter = CIFilter(name: "CISharpenLuminance") {
             filter.setValue(image, forKey: kCIInputImageKey)
@@ -661,6 +662,37 @@ final class ImageProcessor: @unchecked Sendable {
         gradient.setValue(CIVector(x: centerX, y: centerY), forKey: kCIInputCenterKey)
         gradient.setValue(innerRadius, forKey: "inputRadius0")
         gradient.setValue(outerRadius, forKey: "inputRadius1")
+        gradient.setValue(CIColor.white, forKey: "inputColor0")
+        gradient.setValue(CIColor.black, forKey: "inputColor1")
+
+        guard let adjusted = exposure.outputImage,
+              let mask = gradient.outputImage?.cropped(to: extent) else {
+            return image
+        }
+
+        blend.setValue(adjusted, forKey: kCIInputImageKey)
+        blend.setValue(image, forKey: kCIInputBackgroundImageKey)
+        blend.setValue(mask, forKey: kCIInputMaskImageKey)
+        return blend.outputImage?.cropped(to: extent) ?? image
+    }
+
+    private func applyLinearExposure(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.linearExposure != 0,
+              let exposure = CIFilter(name: "CIExposureAdjust"),
+              let gradient = CIFilter(name: "CILinearGradient"),
+              let blend = CIFilter(name: "CIBlendWithMask") else {
+            return image
+        }
+
+        let extent = image.extent
+        let startY = extent.minY + extent.height * clipped(adjustments.linearStartY)
+        let endY = extent.minY + extent.height * clipped(adjustments.linearEndY)
+
+        exposure.setValue(image, forKey: kCIInputImageKey)
+        exposure.setValue(adjustments.linearExposure, forKey: kCIInputEVKey)
+
+        gradient.setValue(CIVector(x: extent.midX, y: startY), forKey: "inputPoint0")
+        gradient.setValue(CIVector(x: extent.midX, y: endY), forKey: "inputPoint1")
         gradient.setValue(CIColor.white, forKey: "inputColor0")
         gradient.setValue(CIColor.black, forKey: "inputColor1")
 

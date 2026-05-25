@@ -69,6 +69,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Sharpness.
 - Vignette.
 - Radial local exposure with center, radius, and feather controls.
+- Linear gradient exposure with start and end controls.
 - Per-color saturation controls for red, orange, yellow, green, aqua, blue, purple, and magenta.
 
 ### Portrait Retouching
@@ -130,7 +131,7 @@ swift test
 ## Next Work
 
 - More local adjustment mask types.
-- Brush and linear gradient tools.
+- Brush and more gradient tools.
 - Better healing and spot removal.
 - Disk-backed preview cache.
 - More complete RAW and color pipeline.
