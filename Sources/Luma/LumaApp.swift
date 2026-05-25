@@ -123,6 +123,12 @@ struct LumaApp: App {
                 .keyboardShortcut("b", modifiers: [.command])
                 .disabled(library.selectedPhoto == nil)
 
+                Button("Black And White") {
+                    library.applyBlackAndWhiteSelected()
+                }
+                .keyboardShortcut("b", modifiers: [.command, .shift])
+                .disabled(library.selectedPhoto == nil)
+
                 Button("Show Original") {
                     library.showOriginal.toggle()
                 }
