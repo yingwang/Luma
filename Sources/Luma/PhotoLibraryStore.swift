@@ -520,6 +520,19 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Reset local adjustments."
     }
 
+    func resetSelectedSpotHeal() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.spotHealAmount = 0
+            adjustments.spotHealX = 0.5
+            adjustments.spotHealY = 0.5
+            adjustments.spotHealRadius = 0.06
+            adjustments.spotHealFeather = 0.04
+            adjustments.spotHealSourceOffsetX = 0.08
+            adjustments.spotHealSourceOffsetY = 0
+        }
+        statusMessage = "Reset spot heal."
+    }
+
     func resetPickedAdjustments() {
         let pickedIndexes = photos.indices.filter {
             photos[$0].flag == .picked

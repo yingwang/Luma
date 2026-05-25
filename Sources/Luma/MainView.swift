@@ -830,6 +830,13 @@ struct AdjustmentPanel: View {
                         range: -0.5...0.5,
                         format: "%.2f"
                     )
+
+                    Button {
+                        library.resetSelectedSpotHeal()
+                    } label: {
+                        Label("Reset Spot", systemImage: "arrow.counterclockwise.circle")
+                    }
+                    .disabled(library.selectedPhoto == nil)
                 }
                 .padding(.top, 8)
             } label: {

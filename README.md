@@ -72,6 +72,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Linear gradient exposure with start and end controls.
 - Invert radial and linear local masks.
 - Single-point spot healing with source offset, radius, feather, and strength controls.
+- Reset only the active spot-heal controls.
 - Reset local adjustments without changing global edits.
 - Per-color saturation controls for red, orange, yellow, green, aqua, blue, purple, and magenta.
 
