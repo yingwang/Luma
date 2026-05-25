@@ -71,6 +71,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Radial local exposure with center, radius, and feather controls.
 - Linear gradient exposure with start and end controls.
 - Invert radial and linear local masks.
+- Reset radial and linear local adjustments independently.
 - Single-point spot healing with source offset, radius, feather, and strength controls.
 - Reset only the active spot-heal controls.
 - Reset local adjustments without changing global edits.

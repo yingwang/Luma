@@ -520,6 +520,28 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Reset local adjustments."
     }
 
+    func resetSelectedRadialAdjustment() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.radialExposure = 0
+            adjustments.radialCenterX = 0.5
+            adjustments.radialCenterY = 0.5
+            adjustments.radialRadius = 0.35
+            adjustments.radialFeather = 0.25
+            adjustments.radialInvert = false
+        }
+        statusMessage = "Reset radial adjustment."
+    }
+
+    func resetSelectedLinearAdjustment() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.linearExposure = 0
+            adjustments.linearStartY = 1
+            adjustments.linearEndY = 0.65
+            adjustments.linearInvert = false
+        }
+        statusMessage = "Reset linear adjustment."
+    }
+
     func resetSelectedSpotHeal() {
         updateSelectedAdjustments { adjustments in
             adjustments.spotHealAmount = 0

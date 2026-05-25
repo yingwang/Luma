@@ -741,6 +741,13 @@ struct AdjustmentPanel: View {
 
                     Toggle("Invert Mask", isOn: adjustmentBinding(\.radialInvert))
                         .disabled(library.selectedPhoto == nil)
+
+                    Button {
+                        library.resetSelectedRadialAdjustment()
+                    } label: {
+                        Label("Reset Radial", systemImage: "arrow.counterclockwise.circle")
+                    }
+                    .disabled(library.selectedPhoto == nil)
                 }
                 .padding(.top, 8)
             } label: {
@@ -773,6 +780,13 @@ struct AdjustmentPanel: View {
 
                     Toggle("Invert Mask", isOn: adjustmentBinding(\.linearInvert))
                         .disabled(library.selectedPhoto == nil)
+
+                    Button {
+                        library.resetSelectedLinearAdjustment()
+                    } label: {
+                        Label("Reset Linear", systemImage: "arrow.counterclockwise.circle")
+                    }
+                    .disabled(library.selectedPhoto == nil)
                 }
                 .padding(.top, 8)
             } label: {
