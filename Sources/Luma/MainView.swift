@@ -427,6 +427,7 @@ struct AdjustmentPanel: View {
     @EnvironmentObject private var library: PhotoLibraryStore
     @State private var isLocalExpanded = false
     @State private var isLinearExpanded = false
+    @State private var isHealExpanded = false
     @State private var isBeautyExpanded = false
     @State private var isColorMixerExpanded = false
     @State private var isInfoExpanded = false
@@ -770,6 +771,63 @@ struct AdjustmentPanel: View {
                 .padding(.top, 8)
             } label: {
                 Label("Local Linear", systemImage: "rectangle.split.1x2")
+                    .font(.headline)
+            }
+
+            DisclosureGroup(isExpanded: $isHealExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    AdjustmentSlider(
+                        title: "Amount",
+                        value: adjustmentBinding(\.spotHealAmount),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Target X",
+                        value: adjustmentBinding(\.spotHealX),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Target Y",
+                        value: adjustmentBinding(\.spotHealY),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Radius",
+                        value: adjustmentBinding(\.spotHealRadius),
+                        range: 0.01...0.2,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Feather",
+                        value: adjustmentBinding(\.spotHealFeather),
+                        range: 0.005...0.2,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Source X",
+                        value: adjustmentBinding(\.spotHealSourceOffsetX),
+                        range: -0.5...0.5,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Source Y",
+                        value: adjustmentBinding(\.spotHealSourceOffsetY),
+                        range: -0.5...0.5,
+                        format: "%.2f"
+                    )
+                }
+                .padding(.top, 8)
+            } label: {
+                Label("Spot Heal", systemImage: "bandage")
                     .font(.headline)
             }
 

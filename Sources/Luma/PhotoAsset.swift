@@ -170,6 +170,13 @@ struct PhotoAdjustments: Codable, Equatable {
     var linearExposure: Double = 0
     var linearStartY: Double = 1
     var linearEndY: Double = 0.65
+    var spotHealAmount: Double = 0
+    var spotHealX: Double = 0.5
+    var spotHealY: Double = 0.5
+    var spotHealRadius: Double = 0.06
+    var spotHealFeather: Double = 0.04
+    var spotHealSourceOffsetX: Double = 0.08
+    var spotHealSourceOffsetY: Double = 0
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
@@ -215,6 +222,13 @@ struct PhotoAdjustments: Codable, Equatable {
         case linearExposure
         case linearStartY
         case linearEndY
+        case spotHealAmount
+        case spotHealX
+        case spotHealY
+        case spotHealRadius
+        case spotHealFeather
+        case spotHealSourceOffsetX
+        case spotHealSourceOffsetY
         case straighten
         case rotationTurns
         case cropAspect
@@ -259,6 +273,13 @@ struct PhotoAdjustments: Codable, Equatable {
         linearExposure: Double = 0,
         linearStartY: Double = 1,
         linearEndY: Double = 0.65,
+        spotHealAmount: Double = 0,
+        spotHealX: Double = 0.5,
+        spotHealY: Double = 0.5,
+        spotHealRadius: Double = 0.06,
+        spotHealFeather: Double = 0.04,
+        spotHealSourceOffsetX: Double = 0.08,
+        spotHealSourceOffsetY: Double = 0,
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
@@ -301,6 +322,13 @@ struct PhotoAdjustments: Codable, Equatable {
         self.linearExposure = linearExposure
         self.linearStartY = linearStartY
         self.linearEndY = linearEndY
+        self.spotHealAmount = spotHealAmount
+        self.spotHealX = spotHealX
+        self.spotHealY = spotHealY
+        self.spotHealRadius = spotHealRadius
+        self.spotHealFeather = spotHealFeather
+        self.spotHealSourceOffsetX = spotHealSourceOffsetX
+        self.spotHealSourceOffsetY = spotHealSourceOffsetY
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
@@ -346,6 +374,13 @@ struct PhotoAdjustments: Codable, Equatable {
         linearExposure = try container.decodeIfPresent(Double.self, forKey: .linearExposure) ?? 0
         linearStartY = try container.decodeIfPresent(Double.self, forKey: .linearStartY) ?? 1
         linearEndY = try container.decodeIfPresent(Double.self, forKey: .linearEndY) ?? 0.65
+        spotHealAmount = try container.decodeIfPresent(Double.self, forKey: .spotHealAmount) ?? 0
+        spotHealX = try container.decodeIfPresent(Double.self, forKey: .spotHealX) ?? 0.5
+        spotHealY = try container.decodeIfPresent(Double.self, forKey: .spotHealY) ?? 0.5
+        spotHealRadius = try container.decodeIfPresent(Double.self, forKey: .spotHealRadius) ?? 0.06
+        spotHealFeather = try container.decodeIfPresent(Double.self, forKey: .spotHealFeather) ?? 0.04
+        spotHealSourceOffsetX = try container.decodeIfPresent(Double.self, forKey: .spotHealSourceOffsetX) ?? 0.08
+        spotHealSourceOffsetY = try container.decodeIfPresent(Double.self, forKey: .spotHealSourceOffsetY) ?? 0
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original

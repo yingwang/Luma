@@ -41,6 +41,13 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.linearExposure, 0)
         XCTAssertEqual(adjustments.linearStartY, 1)
         XCTAssertEqual(adjustments.linearEndY, 0.65)
+        XCTAssertEqual(adjustments.spotHealAmount, 0)
+        XCTAssertEqual(adjustments.spotHealX, 0.5)
+        XCTAssertEqual(adjustments.spotHealY, 0.5)
+        XCTAssertEqual(adjustments.spotHealRadius, 0.06)
+        XCTAssertEqual(adjustments.spotHealFeather, 0.04)
+        XCTAssertEqual(adjustments.spotHealSourceOffsetX, 0.08)
+        XCTAssertEqual(adjustments.spotHealSourceOffsetY, 0)
     }
 
     func testCropAspectRatios() {

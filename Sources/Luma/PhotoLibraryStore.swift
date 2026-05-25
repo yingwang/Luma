@@ -507,6 +507,13 @@ final class PhotoLibraryStore: ObservableObject {
             adjustments.linearExposure = 0
             adjustments.linearStartY = 1
             adjustments.linearEndY = 0.65
+            adjustments.spotHealAmount = 0
+            adjustments.spotHealX = 0.5
+            adjustments.spotHealY = 0.5
+            adjustments.spotHealRadius = 0.06
+            adjustments.spotHealFeather = 0.04
+            adjustments.spotHealSourceOffsetX = 0.08
+            adjustments.spotHealSourceOffsetY = 0
         }
         statusMessage = "Reset local adjustments."
     }

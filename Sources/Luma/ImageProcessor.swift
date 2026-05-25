@@ -387,6 +387,7 @@ final class ImageProcessor: @unchecked Sendable {
         image = applyFaceSlim(adjustments.faceSlim, to: image)
         image = applyRadialExposure(adjustments, to: image)
         image = applyLinearExposure(adjustments, to: image)
+        image = applySpotHeal(adjustments, to: image)
 
         if adjustments.sharpness > 0, let filter = CIFilter(name: "CISharpenLuminance") {
             filter.setValue(image, forKey: kCIInputImageKey)
@@ -702,6 +703,42 @@ final class ImageProcessor: @unchecked Sendable {
         }
 
         blend.setValue(adjusted, forKey: kCIInputImageKey)
+        blend.setValue(image, forKey: kCIInputBackgroundImageKey)
+        blend.setValue(mask, forKey: kCIInputMaskImageKey)
+        return blend.outputImage?.cropped(to: extent) ?? image
+    }
+
+    private func applySpotHeal(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.spotHealAmount > 0,
+              let gradient = CIFilter(name: "CIRadialGradient"),
+              let blend = CIFilter(name: "CIBlendWithMask") else {
+            return image
+        }
+
+        let extent = image.extent
+        let shortEdge = min(extent.width, extent.height)
+        let targetX = extent.minX + extent.width * clipped(adjustments.spotHealX)
+        let targetY = extent.minY + extent.height * clipped(adjustments.spotHealY)
+        let sourceX = targetX + extent.width * max(-1, min(1, adjustments.spotHealSourceOffsetX))
+        let sourceY = targetY + extent.height * max(-1, min(1, adjustments.spotHealSourceOffsetY))
+        let radius = shortEdge * max(0.01, clipped(adjustments.spotHealRadius))
+        let outerRadius = radius + shortEdge * max(0.005, clipped(adjustments.spotHealFeather))
+        let sourcePatch = image
+            .clampedToExtent()
+            .transformed(by: CGAffineTransform(translationX: targetX - sourceX, y: targetY - sourceY))
+            .cropped(to: extent)
+
+        gradient.setValue(CIVector(x: targetX, y: targetY), forKey: kCIInputCenterKey)
+        gradient.setValue(radius, forKey: "inputRadius0")
+        gradient.setValue(outerRadius, forKey: "inputRadius1")
+        gradient.setValue(CIColor(red: clipped(adjustments.spotHealAmount), green: clipped(adjustments.spotHealAmount), blue: clipped(adjustments.spotHealAmount)), forKey: "inputColor0")
+        gradient.setValue(CIColor.black, forKey: "inputColor1")
+
+        guard let mask = gradient.outputImage?.cropped(to: extent) else {
+            return image
+        }
+
+        blend.setValue(sourcePatch, forKey: kCIInputImageKey)
         blend.setValue(image, forKey: kCIInputBackgroundImageKey)
         blend.setValue(mask, forKey: kCIInputMaskImageKey)
         return blend.outputImage?.cropped(to: extent) ?? image
