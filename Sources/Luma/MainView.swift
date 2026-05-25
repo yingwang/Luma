@@ -976,6 +976,13 @@ struct AdjustmentPanel: View {
                         range: 0...1,
                         format: "%.2f"
                     )
+
+                    Button {
+                        library.resetSelectedBeautyAdjustments()
+                    } label: {
+                        Label("Reset Beauty", systemImage: "arrow.counterclockwise.circle")
+                    }
+                    .disabled(library.selectedPhoto == nil)
                 }
                 .padding(.top, 8)
             } label: {

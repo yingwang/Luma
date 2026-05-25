@@ -93,6 +93,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Eye enlargement using face detection when eye landmarks are available.
 - Face slimming using face detection.
 - Body slimming with a simple center-weighted distortion.
+- Reset beauty adjustments without changing other edits.
 
 ### Metadata And Export
 

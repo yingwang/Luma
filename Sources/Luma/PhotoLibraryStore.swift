@@ -471,6 +471,25 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Applied auto beauty."
     }
 
+    func resetSelectedBeautyAdjustments() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.beautySmooth = 0
+            adjustments.beautyWrinkle = 0
+            adjustments.beautyBlemish = 0
+            adjustments.beautyBrighten = 0
+            adjustments.beautyWhiten = 0
+            adjustments.beautyRosy = 0
+            adjustments.beautyGlow = 0
+            adjustments.beautySoften = 0
+            adjustments.beautyDetail = 0
+            adjustments.beautyWarmth = 0
+            adjustments.eyeEnlarge = 0
+            adjustments.faceSlim = 0
+            adjustments.bodySlim = 0
+        }
+        statusMessage = "Reset beauty adjustments."
+    }
+
     func rotateSelectedLeft() {
         updateSelectedAdjustments { adjustments in
             adjustments.rotationTurns -= 1
