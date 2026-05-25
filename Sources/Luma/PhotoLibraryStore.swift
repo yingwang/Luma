@@ -454,6 +454,13 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Applied auto enhance."
     }
 
+    func applyBlackAndWhiteSelected() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.applyBlackAndWhiteLook()
+        }
+        statusMessage = "Applied black and white look."
+    }
+
     func autoBeautySelected() {
         updateSelectedAdjustments { adjustments in
             adjustments.beautySmooth = max(adjustments.beautySmooth, 0.28)

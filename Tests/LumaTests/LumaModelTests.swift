@@ -78,6 +78,26 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.linearEndY, 0.9)
     }
 
+    func testBlackAndWhiteLookPreservesStrongerExistingToneAdjustments() {
+        var adjustments = PhotoAdjustments(
+            contrast: 1.4,
+            saturation: 1.2,
+            vibrance: 0.3,
+            clarity: 0.5,
+            vignette: 0.4
+        )
+
+        adjustments.applyBlackAndWhiteLook()
+
+        XCTAssertEqual(adjustments.saturation, 0)
+        XCTAssertEqual(adjustments.vibrance, 0)
+        XCTAssertEqual(adjustments.contrast, 1.4)
+        XCTAssertEqual(adjustments.clarity, 0.5)
+        XCTAssertEqual(adjustments.blacks, -0.08)
+        XCTAssertEqual(adjustments.whites, 0.08)
+        XCTAssertEqual(adjustments.vignette, 0.4)
+    }
+
     func testLibrarySortMetadata() {
         XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag"])
     }

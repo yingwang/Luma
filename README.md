@@ -43,6 +43,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Crop to common aspect ratios.
 - Apply built-in presets.
 - Apply one-click Auto Enhance.
+- Apply a one-click black and white look.
 - Copy and paste adjustments between photos.
 - Sync the current adjustments to all picked photos.
 - Reset the selected photo adjustments from the Photo menu or keyboard.

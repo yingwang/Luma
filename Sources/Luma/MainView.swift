@@ -521,6 +521,13 @@ struct AdjustmentPanel: View {
                         Label("Auto", systemImage: "wand.and.stars")
                     }
                     .disabled(library.selectedPhoto == nil)
+
+                    Button {
+                        library.applyBlackAndWhiteSelected()
+                    } label: {
+                        Label("B&W", systemImage: "circle.lefthalf.filled")
+                    }
+                    .disabled(library.selectedPhoto == nil)
                 }
 
                 Menu {

@@ -402,6 +402,16 @@ struct PhotoAdjustments: Codable, Equatable {
         linearStartY = linearEndY
         linearEndY = startY
     }
+
+    mutating func applyBlackAndWhiteLook() {
+        saturation = 0
+        vibrance = 0
+        contrast = max(contrast, 1.18)
+        clarity = max(clarity, 0.22)
+        blacks = min(blacks, -0.08)
+        whites = max(whites, 0.08)
+        vignette = max(vignette, 0.12)
+    }
 }
 
 struct ColorMixerAdjustments: Codable, Equatable {
