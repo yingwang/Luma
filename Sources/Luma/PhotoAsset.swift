@@ -412,6 +412,12 @@ struct PhotoAdjustments: Codable, Equatable {
         whites = max(whites, 0.08)
         vignette = max(vignette, 0.12)
     }
+
+    mutating func resetCropTransform() {
+        straighten = 0
+        rotationTurns = 0
+        cropAspect = .original
+    }
 }
 
 struct ColorMixerAdjustments: Codable, Equatable {

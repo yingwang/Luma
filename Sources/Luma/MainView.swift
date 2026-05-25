@@ -595,6 +595,13 @@ struct AdjustmentPanel: View {
                     range: -45...45,
                     format: "%.1f"
                 )
+
+                Button {
+                    library.resetSelectedCropTransform()
+                } label: {
+                    Label("Reset Crop", systemImage: "crop.rotate")
+                }
+                .disabled(library.selectedPhoto == nil)
             }
 
             AdjustmentSlider(

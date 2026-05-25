@@ -41,6 +41,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Rotate left and right.
 - Straighten.
 - Crop to common aspect ratios.
+- Reset crop, straighten, and rotation without changing tone edits.
 - Apply built-in presets.
 - Apply one-click Auto Enhance.
 - Apply a one-click black and white look.

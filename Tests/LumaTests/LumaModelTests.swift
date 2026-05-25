@@ -98,6 +98,22 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.vignette, 0.4)
     }
 
+    func testCropTransformCanBeResetWithoutChangingToneAdjustments() {
+        var adjustments = PhotoAdjustments(
+            exposure: 0.6,
+            straighten: 12,
+            rotationTurns: 1,
+            cropAspect: .square
+        )
+
+        adjustments.resetCropTransform()
+
+        XCTAssertEqual(adjustments.exposure, 0.6)
+        XCTAssertEqual(adjustments.straighten, 0)
+        XCTAssertEqual(adjustments.rotationTurns, 0)
+        XCTAssertEqual(adjustments.cropAspect, .original)
+    }
+
     func testLibrarySortMetadata() {
         XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag"])
     }

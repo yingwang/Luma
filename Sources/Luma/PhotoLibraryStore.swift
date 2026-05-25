@@ -523,6 +523,13 @@ final class PhotoLibraryStore: ObservableObject {
         }
     }
 
+    func resetSelectedCropTransform() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.resetCropTransform()
+        }
+        statusMessage = "Reset crop and rotation."
+    }
+
     func resetSelectedAdjustments() {
         updateSelectedAdjustments { adjustments in
             adjustments = .neutral
