@@ -568,6 +568,13 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Reset linear adjustment."
     }
 
+    func invertSelectedLinearGradientDirection() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.invertLinearGradientDirection()
+        }
+        statusMessage = "Inverted linear gradient direction."
+    }
+
     func resetSelectedSpotHeal() {
         updateSelectedAdjustments { adjustments in
             adjustments.spotHealAmount = 0

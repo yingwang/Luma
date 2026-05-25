@@ -396,6 +396,12 @@ struct PhotoAdjustments: Codable, Equatable {
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
         colorMixer = try container.decodeIfPresent(ColorMixerAdjustments.self, forKey: .colorMixer) ?? ColorMixerAdjustments()
     }
+
+    mutating func invertLinearGradientDirection() {
+        let startY = linearStartY
+        linearStartY = linearEndY
+        linearEndY = startY
+    }
 }
 
 struct ColorMixerAdjustments: Codable, Equatable {

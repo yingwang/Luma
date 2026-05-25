@@ -69,6 +69,15 @@ final class LumaModelTests: XCTestCase {
         XCTAssertTrue(mixer.hasAdjustments)
     }
 
+    func testLinearGradientDirectionCanBeInverted() {
+        var adjustments = PhotoAdjustments(linearStartY: 0.9, linearEndY: 0.25)
+
+        adjustments.invertLinearGradientDirection()
+
+        XCTAssertEqual(adjustments.linearStartY, 0.25)
+        XCTAssertEqual(adjustments.linearEndY, 0.9)
+    }
+
     func testLibrarySortMetadata() {
         XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag"])
     }

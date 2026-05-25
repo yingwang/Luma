@@ -782,6 +782,13 @@ struct AdjustmentPanel: View {
                         .disabled(library.selectedPhoto == nil)
 
                     Button {
+                        library.invertSelectedLinearGradientDirection()
+                    } label: {
+                        Label("Flip Direction", systemImage: "arrow.up.arrow.down")
+                    }
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button {
                         library.resetSelectedLinearAdjustment()
                     } label: {
                         Label("Reset Linear", systemImage: "arrow.counterclockwise.circle")
