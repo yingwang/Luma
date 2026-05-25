@@ -497,6 +497,20 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Reset selected photo adjustments."
     }
 
+    func resetSelectedLocalAdjustments() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.radialExposure = 0
+            adjustments.radialCenterX = 0.5
+            adjustments.radialCenterY = 0.5
+            adjustments.radialRadius = 0.35
+            adjustments.radialFeather = 0.25
+            adjustments.linearExposure = 0
+            adjustments.linearStartY = 1
+            adjustments.linearEndY = 0.65
+        }
+        statusMessage = "Reset local adjustments."
+    }
+
     func resetPickedAdjustments() {
         let pickedIndexes = photos.indices.filter {
             photos[$0].flag == .picked

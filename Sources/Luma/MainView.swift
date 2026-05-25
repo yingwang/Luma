@@ -773,6 +773,13 @@ struct AdjustmentPanel: View {
                     .font(.headline)
             }
 
+            Button {
+                library.resetSelectedLocalAdjustments()
+            } label: {
+                Label("Reset Local", systemImage: "scope")
+            }
+            .disabled(library.selectedPhoto == nil)
+
             DisclosureGroup(isExpanded: $isBeautyExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
                     Button {
