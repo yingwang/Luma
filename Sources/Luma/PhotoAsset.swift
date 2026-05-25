@@ -167,9 +167,11 @@ struct PhotoAdjustments: Codable, Equatable {
     var radialCenterY: Double = 0.5
     var radialRadius: Double = 0.35
     var radialFeather: Double = 0.25
+    var radialInvert: Bool = false
     var linearExposure: Double = 0
     var linearStartY: Double = 1
     var linearEndY: Double = 0.65
+    var linearInvert: Bool = false
     var spotHealAmount: Double = 0
     var spotHealX: Double = 0.5
     var spotHealY: Double = 0.5
@@ -219,9 +221,11 @@ struct PhotoAdjustments: Codable, Equatable {
         case radialCenterY
         case radialRadius
         case radialFeather
+        case radialInvert
         case linearExposure
         case linearStartY
         case linearEndY
+        case linearInvert
         case spotHealAmount
         case spotHealX
         case spotHealY
@@ -270,9 +274,11 @@ struct PhotoAdjustments: Codable, Equatable {
         radialCenterY: Double = 0.5,
         radialRadius: Double = 0.35,
         radialFeather: Double = 0.25,
+        radialInvert: Bool = false,
         linearExposure: Double = 0,
         linearStartY: Double = 1,
         linearEndY: Double = 0.65,
+        linearInvert: Bool = false,
         spotHealAmount: Double = 0,
         spotHealX: Double = 0.5,
         spotHealY: Double = 0.5,
@@ -319,9 +325,11 @@ struct PhotoAdjustments: Codable, Equatable {
         self.radialCenterY = radialCenterY
         self.radialRadius = radialRadius
         self.radialFeather = radialFeather
+        self.radialInvert = radialInvert
         self.linearExposure = linearExposure
         self.linearStartY = linearStartY
         self.linearEndY = linearEndY
+        self.linearInvert = linearInvert
         self.spotHealAmount = spotHealAmount
         self.spotHealX = spotHealX
         self.spotHealY = spotHealY
@@ -371,9 +379,11 @@ struct PhotoAdjustments: Codable, Equatable {
         radialCenterY = try container.decodeIfPresent(Double.self, forKey: .radialCenterY) ?? 0.5
         radialRadius = try container.decodeIfPresent(Double.self, forKey: .radialRadius) ?? 0.35
         radialFeather = try container.decodeIfPresent(Double.self, forKey: .radialFeather) ?? 0.25
+        radialInvert = try container.decodeIfPresent(Bool.self, forKey: .radialInvert) ?? false
         linearExposure = try container.decodeIfPresent(Double.self, forKey: .linearExposure) ?? 0
         linearStartY = try container.decodeIfPresent(Double.self, forKey: .linearStartY) ?? 1
         linearEndY = try container.decodeIfPresent(Double.self, forKey: .linearEndY) ?? 0.65
+        linearInvert = try container.decodeIfPresent(Bool.self, forKey: .linearInvert) ?? false
         spotHealAmount = try container.decodeIfPresent(Double.self, forKey: .spotHealAmount) ?? 0
         spotHealX = try container.decodeIfPresent(Double.self, forKey: .spotHealX) ?? 0.5
         spotHealY = try container.decodeIfPresent(Double.self, forKey: .spotHealY) ?? 0.5

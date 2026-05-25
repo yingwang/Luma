@@ -504,9 +504,11 @@ final class PhotoLibraryStore: ObservableObject {
             adjustments.radialCenterY = 0.5
             adjustments.radialRadius = 0.35
             adjustments.radialFeather = 0.25
+            adjustments.radialInvert = false
             adjustments.linearExposure = 0
             adjustments.linearStartY = 1
             adjustments.linearEndY = 0.65
+            adjustments.linearInvert = false
             adjustments.spotHealAmount = 0
             adjustments.spotHealX = 0.5
             adjustments.spotHealY = 0.5

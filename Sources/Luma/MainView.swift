@@ -738,6 +738,9 @@ struct AdjustmentPanel: View {
                         range: 0.02...0.8,
                         format: "%.2f"
                     )
+
+                    Toggle("Invert Mask", isOn: adjustmentBinding(\.radialInvert))
+                        .disabled(library.selectedPhoto == nil)
                 }
                 .padding(.top, 8)
             } label: {
@@ -767,6 +770,9 @@ struct AdjustmentPanel: View {
                         range: 0...1,
                         format: "%.2f"
                     )
+
+                    Toggle("Invert Mask", isOn: adjustmentBinding(\.linearInvert))
+                        .disabled(library.selectedPhoto == nil)
                 }
                 .padding(.top, 8)
             } label: {
@@ -1117,6 +1123,16 @@ struct AdjustmentPanel: View {
     }
 
     private func adjustmentBinding(_ keyPath: WritableKeyPath<PhotoAdjustments, CropAspect>) -> Binding<CropAspect> {
+        Binding {
+            library.selectedAdjustments[keyPath: keyPath]
+        } set: { value in
+            library.updateSelectedAdjustments { adjustments in
+                adjustments[keyPath: keyPath] = value
+            }
+        }
+    }
+
+    private func adjustmentBinding(_ keyPath: WritableKeyPath<PhotoAdjustments, Bool>) -> Binding<Bool> {
         Binding {
             library.selectedAdjustments[keyPath: keyPath]
         } set: { value in

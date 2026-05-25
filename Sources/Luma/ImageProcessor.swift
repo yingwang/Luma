@@ -663,8 +663,8 @@ final class ImageProcessor: @unchecked Sendable {
         gradient.setValue(CIVector(x: centerX, y: centerY), forKey: kCIInputCenterKey)
         gradient.setValue(innerRadius, forKey: "inputRadius0")
         gradient.setValue(outerRadius, forKey: "inputRadius1")
-        gradient.setValue(CIColor.white, forKey: "inputColor0")
-        gradient.setValue(CIColor.black, forKey: "inputColor1")
+        gradient.setValue(adjustments.radialInvert ? CIColor.black : CIColor.white, forKey: "inputColor0")
+        gradient.setValue(adjustments.radialInvert ? CIColor.white : CIColor.black, forKey: "inputColor1")
 
         guard let adjusted = exposure.outputImage,
               let mask = gradient.outputImage?.cropped(to: extent) else {
@@ -694,8 +694,8 @@ final class ImageProcessor: @unchecked Sendable {
 
         gradient.setValue(CIVector(x: extent.midX, y: startY), forKey: "inputPoint0")
         gradient.setValue(CIVector(x: extent.midX, y: endY), forKey: "inputPoint1")
-        gradient.setValue(CIColor.white, forKey: "inputColor0")
-        gradient.setValue(CIColor.black, forKey: "inputColor1")
+        gradient.setValue(adjustments.linearInvert ? CIColor.black : CIColor.white, forKey: "inputColor0")
+        gradient.setValue(adjustments.linearInvert ? CIColor.white : CIColor.black, forKey: "inputColor1")
 
         guard let adjusted = exposure.outputImage,
               let mask = gradient.outputImage?.cropped(to: extent) else {
