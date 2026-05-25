@@ -114,6 +114,28 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.cropAspect, .original)
     }
 
+    func testToneAdjustmentsCanBeResetWithoutChangingCropOrLocalAdjustments() {
+        var adjustments = PhotoAdjustments(
+            exposure: 0.6,
+            contrast: 1.4,
+            saturation: 0.7,
+            warmth: 250,
+            radialExposure: -0.5,
+            straighten: 12,
+            cropAspect: .square
+        )
+
+        adjustments.resetToneAdjustments()
+
+        XCTAssertEqual(adjustments.exposure, 0)
+        XCTAssertEqual(adjustments.contrast, 1)
+        XCTAssertEqual(adjustments.saturation, 1)
+        XCTAssertEqual(adjustments.warmth, 0)
+        XCTAssertEqual(adjustments.radialExposure, -0.5)
+        XCTAssertEqual(adjustments.straighten, 12)
+        XCTAssertEqual(adjustments.cropAspect, .square)
+    }
+
     func testLibrarySortMetadata() {
         XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag"])
     }

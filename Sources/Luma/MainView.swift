@@ -716,6 +716,13 @@ struct AdjustmentPanel: View {
                 format: "%.2f"
             )
 
+            Button {
+                library.resetSelectedToneAdjustments()
+            } label: {
+                Label("Reset Tone", systemImage: "slider.horizontal.2.gobackward")
+            }
+            .disabled(library.selectedPhoto == nil)
+
             DisclosureGroup(isExpanded: $isLocalExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
                     AdjustmentSlider(
