@@ -35,6 +35,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Before and after comparison.
 - Side-by-side original and edited comparison.
 - Undo and redo for adjustment changes.
+- Collapse advanced adjustment panel sections.
 - In-memory preview caching for repeated renders.
 - In-memory thumbnail caching for smoother library browsing.
 - Rotate left and right.

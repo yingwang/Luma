@@ -425,6 +425,10 @@ struct CompareImagePane: View {
 
 struct AdjustmentPanel: View {
     @EnvironmentObject private var library: PhotoLibraryStore
+    @State private var isBeautyExpanded = false
+    @State private var isColorMixerExpanded = false
+    @State private var isInfoExpanded = false
+    @State private var isExportExpanded = true
 
     var body: some View {
         ScrollView {
@@ -695,240 +699,252 @@ struct AdjustmentPanel: View {
                 format: "%.2f"
             )
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Beauty")
-                    .font(.headline)
+            DisclosureGroup(isExpanded: $isBeautyExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Button {
+                        library.autoBeautySelected()
+                    } label: {
+                        Label("Auto Beauty", systemImage: "sparkles")
+                    }
+                    .disabled(library.selectedPhoto == nil)
 
-                Button {
-                    library.autoBeautySelected()
-                } label: {
-                    Label("Auto Beauty", systemImage: "sparkles")
+                    Text("Skin")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    AdjustmentSlider(
+                        title: "Smooth",
+                        value: adjustmentBinding(\.beautySmooth),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Wrinkle",
+                        value: adjustmentBinding(\.beautyWrinkle),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Blemish",
+                        value: adjustmentBinding(\.beautyBlemish),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Whiten",
+                        value: adjustmentBinding(\.beautyWhiten),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Rosy",
+                        value: adjustmentBinding(\.beautyRosy),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Bright",
+                        value: adjustmentBinding(\.beautyBrighten),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Tone Warmth",
+                        value: adjustmentBinding(\.beautyWarmth),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    Text("Finish")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    AdjustmentSlider(
+                        title: "Glow",
+                        value: adjustmentBinding(\.beautyGlow),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Soften",
+                        value: adjustmentBinding(\.beautySoften),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Detail",
+                        value: adjustmentBinding(\.beautyDetail),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    Text("Shape")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    AdjustmentSlider(
+                        title: "Eye Enlarge",
+                        value: adjustmentBinding(\.eyeEnlarge),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Face Slim",
+                        value: adjustmentBinding(\.faceSlim),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Body Slim",
+                        value: adjustmentBinding(\.bodySlim),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
                 }
-                .disabled(library.selectedPhoto == nil)
-
-                Text("Skin")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                AdjustmentSlider(
-                    title: "Smooth",
-                    value: adjustmentBinding(\.beautySmooth),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Wrinkle",
-                    value: adjustmentBinding(\.beautyWrinkle),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Blemish",
-                    value: adjustmentBinding(\.beautyBlemish),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Whiten",
-                    value: adjustmentBinding(\.beautyWhiten),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Rosy",
-                    value: adjustmentBinding(\.beautyRosy),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Bright",
-                    value: adjustmentBinding(\.beautyBrighten),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Tone Warmth",
-                    value: adjustmentBinding(\.beautyWarmth),
-                    range: -1...1,
-                    format: "%.2f"
-                )
-
-                Text("Finish")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                AdjustmentSlider(
-                    title: "Glow",
-                    value: adjustmentBinding(\.beautyGlow),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Soften",
-                    value: adjustmentBinding(\.beautySoften),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Detail",
-                    value: adjustmentBinding(\.beautyDetail),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                Text("Shape")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
-
-                AdjustmentSlider(
-                    title: "Eye Enlarge",
-                    value: adjustmentBinding(\.eyeEnlarge),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Face Slim",
-                    value: adjustmentBinding(\.faceSlim),
-                    range: 0...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Body Slim",
-                    value: adjustmentBinding(\.bodySlim),
-                    range: 0...1,
-                    format: "%.2f"
-                )
+                .padding(.top, 8)
+            } label: {
+                Label("Beauty", systemImage: "sparkles")
+                    .font(.headline)
             }
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Color Mixer")
+            DisclosureGroup(isExpanded: $isColorMixerExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    AdjustmentSlider(
+                        title: "Red Sat",
+                        value: colorMixerBinding(\.red),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Orange Sat",
+                        value: colorMixerBinding(\.orange),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Yellow Sat",
+                        value: colorMixerBinding(\.yellow),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Green Sat",
+                        value: colorMixerBinding(\.green),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Aqua Sat",
+                        value: colorMixerBinding(\.aqua),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Blue Sat",
+                        value: colorMixerBinding(\.blue),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Purple Sat",
+                        value: colorMixerBinding(\.purple),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Magenta Sat",
+                        value: colorMixerBinding(\.magenta),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+                }
+                .padding(.top, 8)
+            } label: {
+                Label("Color Mixer", systemImage: "paintpalette")
                     .font(.headline)
-
-                AdjustmentSlider(
-                    title: "Red Sat",
-                    value: colorMixerBinding(\.red),
-                    range: -1...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Orange Sat",
-                    value: colorMixerBinding(\.orange),
-                    range: -1...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Yellow Sat",
-                    value: colorMixerBinding(\.yellow),
-                    range: -1...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Green Sat",
-                    value: colorMixerBinding(\.green),
-                    range: -1...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Aqua Sat",
-                    value: colorMixerBinding(\.aqua),
-                    range: -1...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Blue Sat",
-                    value: colorMixerBinding(\.blue),
-                    range: -1...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Purple Sat",
-                    value: colorMixerBinding(\.purple),
-                    range: -1...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Magenta Sat",
-                    value: colorMixerBinding(\.magenta),
-                    range: -1...1,
-                    format: "%.2f"
-                )
             }
 
             if let metadata = library.selectedPhoto?.metadata {
                 Divider()
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Info")
+                DisclosureGroup(isExpanded: $isInfoExpanded) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        InfoRow(label: "Dimensions", value: metadata.dimensionsText)
+                        InfoRow(label: "Resolution", value: metadata.megapixelsText)
+                        InfoRow(label: "File Size", value: metadata.fileSizeText)
+                        InfoRow(label: "Format", value: metadata.formatText)
+                        if let captureDateText = metadata.captureDateText {
+                            InfoRow(label: "Captured", value: captureDateText)
+                        }
+                        if let cameraText = metadata.cameraText {
+                            InfoRow(label: "Camera", value: cameraText)
+                        }
+                        if let lensModel = metadata.lensModel {
+                            InfoRow(label: "Lens", value: lensModel)
+                        }
+                        if let exposureText = metadata.exposureText {
+                            InfoRow(label: "Exposure", value: exposureText)
+                        }
+                        if let focalLengthText = metadata.focalLengthText {
+                            InfoRow(label: "Focal Length", value: focalLengthText)
+                        }
+                    }
+                    .padding(.top, 8)
+                } label: {
+                    Label("Info", systemImage: "info.circle")
                         .font(.headline)
-
-                    InfoRow(label: "Dimensions", value: metadata.dimensionsText)
-                    InfoRow(label: "Resolution", value: metadata.megapixelsText)
-                    InfoRow(label: "File Size", value: metadata.fileSizeText)
-                    InfoRow(label: "Format", value: metadata.formatText)
-                    if let captureDateText = metadata.captureDateText {
-                        InfoRow(label: "Captured", value: captureDateText)
-                    }
-                    if let cameraText = metadata.cameraText {
-                        InfoRow(label: "Camera", value: cameraText)
-                    }
-                    if let lensModel = metadata.lensModel {
-                        InfoRow(label: "Lens", value: lensModel)
-                    }
-                    if let exposureText = metadata.exposureText {
-                        InfoRow(label: "Exposure", value: exposureText)
-                    }
-                    if let focalLengthText = metadata.focalLengthText {
-                        InfoRow(label: "Focal Length", value: focalLengthText)
-                    }
                 }
             }
 
             Divider()
 
-            VStack(alignment: .leading, spacing: 10) {
-                Text("Export")
-                    .font(.headline)
-
-                Menu {
-                    ForEach(ExportPreset.allCases) { preset in
-                        Button(preset.rawValue) {
-                            library.applyExportPreset(preset)
+            DisclosureGroup(isExpanded: $isExportExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    Menu {
+                        ForEach(ExportPreset.allCases) { preset in
+                            Button(preset.rawValue) {
+                                library.applyExportPreset(preset)
+                            }
                         }
+                    } label: {
+                        Label("Export Preset", systemImage: "square.and.arrow.up.on.square")
                     }
-                } label: {
-                    Label("Export Preset", systemImage: "square.and.arrow.up.on.square")
+
+                    AdjustmentSlider(
+                        title: "JPEG Quality",
+                        value: $library.exportQuality,
+                        range: 0.5...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Long Edge",
+                        value: $library.exportLongEdge,
+                        range: 0...6000,
+                        format: "%.0f"
+                    )
                 }
-
-                AdjustmentSlider(
-                    title: "JPEG Quality",
-                    value: $library.exportQuality,
-                    range: 0.5...1,
-                    format: "%.2f"
-                )
-
-                AdjustmentSlider(
-                    title: "Long Edge",
-                    value: $library.exportLongEdge,
-                    range: 0...6000,
-                    format: "%.0f"
-                )
+                .padding(.top, 8)
+            } label: {
+                Label("Export", systemImage: "square.and.arrow.up")
+                    .font(.headline)
             }
 
             Button {
