@@ -76,6 +76,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Reset only the active spot-heal controls.
 - Reset local adjustments without changing global edits.
 - Per-color saturation controls for red, orange, yellow, green, aqua, blue, purple, and magenta.
+- Reset color mixer channels without changing other edits.
 
 ### Portrait Retouching
 

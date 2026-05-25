@@ -490,6 +490,13 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Reset beauty adjustments."
     }
 
+    func resetSelectedColorMixer() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.colorMixer = ColorMixerAdjustments()
+        }
+        statusMessage = "Reset color mixer."
+    }
+
     func rotateSelectedLeft() {
         updateSelectedAdjustments { adjustments in
             adjustments.rotationTurns -= 1

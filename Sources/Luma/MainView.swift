@@ -1047,6 +1047,13 @@ struct AdjustmentPanel: View {
                         range: -1...1,
                         format: "%.2f"
                     )
+
+                    Button {
+                        library.resetSelectedColorMixer()
+                    } label: {
+                        Label("Reset Mixer", systemImage: "arrow.counterclockwise.circle")
+                    }
+                    .disabled(library.selectedPhoto == nil)
                 }
                 .padding(.top, 8)
             } label: {
