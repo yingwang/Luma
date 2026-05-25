@@ -132,6 +132,33 @@ enum ExportPreset: String, CaseIterable, Identifiable {
     }
 }
 
+enum ExportFormat: String, CaseIterable, Identifiable {
+    case jpeg = "JPEG"
+    case png = "PNG"
+
+    var id: String {
+        rawValue
+    }
+
+    var fileExtension: String {
+        switch self {
+        case .jpeg:
+            "jpg"
+        case .png:
+            "png"
+        }
+    }
+
+    var typeIdentifier: String {
+        switch self {
+        case .jpeg:
+            "public.jpeg"
+        case .png:
+            "public.png"
+        }
+    }
+}
+
 struct PhotoAdjustments: Codable, Equatable {
     var exposure: Double = 0
     var highlights: Double = 0

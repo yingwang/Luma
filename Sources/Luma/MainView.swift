@@ -1125,6 +1125,13 @@ struct AdjustmentPanel: View {
 
             DisclosureGroup(isExpanded: $isExportExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
+                    Picker("Format", selection: $library.exportFormat) {
+                        ForEach(ExportFormat.allCases) { format in
+                            Text(format.rawValue).tag(format)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
                     Menu {
                         ForEach(ExportPreset.allCases) { preset in
                             Button(preset.rawValue) {
@@ -1141,6 +1148,7 @@ struct AdjustmentPanel: View {
                         range: 0.5...1,
                         format: "%.2f"
                     )
+                    .disabled(library.exportFormat != .jpeg)
 
                     AdjustmentSlider(
                         title: "Long Edge",

@@ -32,6 +32,7 @@ final class PhotoLibraryStore: ObservableObject {
         }
     }
     @Published var thumbnailSize = 124.0
+    @Published var exportFormat: ExportFormat = .jpeg
     @Published var exportQuality = 0.92
     @Published var exportLongEdge: Double = 0
     @Published private(set) var canUndo = false
@@ -649,20 +650,23 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         let panel = NSSavePanel()
-        panel.title = "Export JPEG"
+        panel.title = "Export \(exportFormat.rawValue)"
         panel.prompt = "Export"
-        panel.allowedContentTypes = [.jpeg]
-        panel.nameFieldStringValue = selectedPhoto.url.deletingPathExtension().lastPathComponent + "-luma.jpg"
+        panel.allowedContentTypes = [exportContentType]
+        panel.nameFieldStringValue = selectedPhoto.url
+            .deletingPathExtension()
+            .lastPathComponent + "-luma.\(exportFormat.fileExtension)"
 
         guard panel.runModal() == .OK, let destination = panel.url else {
             return
         }
 
         do {
-            try ImageProcessor.shared.exportJPEG(
+            try ImageProcessor.shared.exportImage(
                 from: selectedPhoto.url,
                 adjustments: selectedPhoto.adjustments,
                 to: destination,
+                format: exportFormat,
                 quality: exportQuality,
                 maxLongEdge: exportMaxLongEdge
             )
@@ -681,7 +685,7 @@ final class PhotoLibraryStore: ObservableObject {
 
         let panel = NSOpenPanel()
         panel.title = "Export Picked Photos"
-        panel.message = "Choose a folder for exported JPEG files."
+        panel.message = "Choose a folder for exported \(exportFormat.rawValue) files."
         panel.prompt = "Export"
         panel.canChooseFiles = false
         panel.canChooseDirectories = true
@@ -697,10 +701,11 @@ final class PhotoLibraryStore: ObservableObject {
             let destination = uniqueExportURL(for: photo, in: folderURL)
 
             do {
-                try ImageProcessor.shared.exportJPEG(
+                try ImageProcessor.shared.exportImage(
                     from: photo.url,
                     adjustments: photo.adjustments,
                     to: destination,
+                    format: exportFormat,
                     quality: exportQuality,
                     maxLongEdge: exportMaxLongEdge
                 )
@@ -732,11 +737,13 @@ final class PhotoLibraryStore: ObservableObject {
 
     private func uniqueExportURL(for photo: PhotoAsset, in folderURL: URL) -> URL {
         let baseName = photo.url.deletingPathExtension().lastPathComponent + "-luma"
-        var destination = folderURL.appendingPathComponent(baseName).appendingPathExtension("jpg")
+        var destination = folderURL.appendingPathComponent(baseName).appendingPathExtension(exportFormat.fileExtension)
         var suffix = 2
 
         while FileManager.default.fileExists(atPath: destination.path) {
-            destination = folderURL.appendingPathComponent("\(baseName)-\(suffix)").appendingPathExtension("jpg")
+            destination = folderURL
+                .appendingPathComponent("\(baseName)-\(suffix)")
+                .appendingPathExtension(exportFormat.fileExtension)
             suffix += 1
         }
 
@@ -820,6 +827,15 @@ final class PhotoLibraryStore: ObservableObject {
 
     private var exportMaxLongEdge: CGFloat? {
         exportLongEdge > 0 ? CGFloat(exportLongEdge) : nil
+    }
+
+    private var exportContentType: UTType {
+        switch exportFormat {
+        case .jpeg:
+            .jpeg
+        case .png:
+            .png
+        }
     }
 
     private func renderSelectedPreview() {

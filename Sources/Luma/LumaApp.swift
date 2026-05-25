@@ -201,7 +201,7 @@ struct LumaApp: App {
 
                 Divider()
 
-                Button("Export JPEG...") {
+                Button("Export Image...") {
                     library.exportSelectedPhoto()
                 }
                 .keyboardShortcut("e", modifiers: [.command, .shift])

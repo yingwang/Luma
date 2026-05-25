@@ -151,4 +151,11 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(ExportPreset.social.longEdge, 1600)
         XCTAssertEqual(ExportPreset.thumbnail.longEdge, 800)
     }
+
+    func testExportFormatMetadata() {
+        XCTAssertEqual(ExportFormat.jpeg.fileExtension, "jpg")
+        XCTAssertEqual(ExportFormat.jpeg.typeIdentifier, "public.jpeg")
+        XCTAssertEqual(ExportFormat.png.fileExtension, "png")
+        XCTAssertEqual(ExportFormat.png.typeIdentifier, "public.png")
+    }
 }

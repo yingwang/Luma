@@ -182,13 +182,31 @@ final class ImageProcessor: @unchecked Sendable {
         quality: CGFloat = 0.92,
         maxLongEdge: CGFloat? = nil
     ) throws {
+        try exportImage(
+            from: url,
+            adjustments: adjustments,
+            to: destination,
+            format: .jpeg,
+            quality: quality,
+            maxLongEdge: maxLongEdge
+        )
+    }
+
+    func exportImage(
+        from url: URL,
+        adjustments: PhotoAdjustments,
+        to destination: URL,
+        format: ExportFormat,
+        quality: CGFloat = 0.92,
+        maxLongEdge: CGFloat? = nil
+    ) throws {
         guard
             let processedImage = processedImage(for: url, adjustments: adjustments),
             let image = scaledImage(processedImage, maxLongEdge: maxLongEdge),
             let cgImage = context.createCGImage(image, from: image.extent),
             let destinationRef = CGImageDestinationCreateWithURL(
                 destination as CFURL,
-                "public.jpeg" as CFString,
+                format.typeIdentifier as CFString,
                 1,
                 nil
             )
@@ -196,9 +214,12 @@ final class ImageProcessor: @unchecked Sendable {
             throw LumaError.exportFailed
         }
 
-        let properties: [CFString: Any] = [
-            kCGImageDestinationLossyCompressionQuality: quality
-        ]
+        let properties: [CFString: Any] = switch format {
+        case .jpeg:
+            [kCGImageDestinationLossyCompressionQuality: quality]
+        case .png:
+            [:]
+        }
 
         CGImageDestinationAddImage(destinationRef, cgImage, properties as CFDictionary)
 
