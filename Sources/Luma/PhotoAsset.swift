@@ -162,6 +162,11 @@ struct PhotoAdjustments: Codable, Equatable {
     var eyeEnlarge: Double = 0
     var faceSlim: Double = 0
     var bodySlim: Double = 0
+    var radialExposure: Double = 0
+    var radialCenterX: Double = 0.5
+    var radialCenterY: Double = 0.5
+    var radialRadius: Double = 0.35
+    var radialFeather: Double = 0.25
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
@@ -199,6 +204,11 @@ struct PhotoAdjustments: Codable, Equatable {
         case eyeEnlarge
         case faceSlim
         case bodySlim
+        case radialExposure
+        case radialCenterX
+        case radialCenterY
+        case radialRadius
+        case radialFeather
         case straighten
         case rotationTurns
         case cropAspect
@@ -235,6 +245,11 @@ struct PhotoAdjustments: Codable, Equatable {
         eyeEnlarge: Double = 0,
         faceSlim: Double = 0,
         bodySlim: Double = 0,
+        radialExposure: Double = 0,
+        radialCenterX: Double = 0.5,
+        radialCenterY: Double = 0.5,
+        radialRadius: Double = 0.35,
+        radialFeather: Double = 0.25,
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
@@ -269,6 +284,11 @@ struct PhotoAdjustments: Codable, Equatable {
         self.eyeEnlarge = eyeEnlarge
         self.faceSlim = faceSlim
         self.bodySlim = bodySlim
+        self.radialExposure = radialExposure
+        self.radialCenterX = radialCenterX
+        self.radialCenterY = radialCenterY
+        self.radialRadius = radialRadius
+        self.radialFeather = radialFeather
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
@@ -306,6 +326,11 @@ struct PhotoAdjustments: Codable, Equatable {
         eyeEnlarge = try container.decodeIfPresent(Double.self, forKey: .eyeEnlarge) ?? 0
         faceSlim = try container.decodeIfPresent(Double.self, forKey: .faceSlim) ?? 0
         bodySlim = try container.decodeIfPresent(Double.self, forKey: .bodySlim) ?? 0
+        radialExposure = try container.decodeIfPresent(Double.self, forKey: .radialExposure) ?? 0
+        radialCenterX = try container.decodeIfPresent(Double.self, forKey: .radialCenterX) ?? 0.5
+        radialCenterY = try container.decodeIfPresent(Double.self, forKey: .radialCenterY) ?? 0.5
+        radialRadius = try container.decodeIfPresent(Double.self, forKey: .radialRadius) ?? 0.35
+        radialFeather = try container.decodeIfPresent(Double.self, forKey: .radialFeather) ?? 0.25
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original

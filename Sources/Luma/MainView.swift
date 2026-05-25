@@ -425,6 +425,7 @@ struct CompareImagePane: View {
 
 struct AdjustmentPanel: View {
     @EnvironmentObject private var library: PhotoLibraryStore
+    @State private var isLocalExpanded = false
     @State private var isBeautyExpanded = false
     @State private var isColorMixerExpanded = false
     @State private var isInfoExpanded = false
@@ -698,6 +699,49 @@ struct AdjustmentPanel: View {
                 range: 0...1,
                 format: "%.2f"
             )
+
+            DisclosureGroup(isExpanded: $isLocalExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    AdjustmentSlider(
+                        title: "Radial Exposure",
+                        value: adjustmentBinding(\.radialExposure),
+                        range: -2...2,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Center X",
+                        value: adjustmentBinding(\.radialCenterX),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Center Y",
+                        value: adjustmentBinding(\.radialCenterY),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Radius",
+                        value: adjustmentBinding(\.radialRadius),
+                        range: 0.05...0.8,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Feather",
+                        value: adjustmentBinding(\.radialFeather),
+                        range: 0.02...0.8,
+                        format: "%.2f"
+                    )
+                }
+                .padding(.top, 8)
+            } label: {
+                Label("Local Radial", systemImage: "circle.dashed.inset.filled")
+                    .font(.headline)
+            }
 
             DisclosureGroup(isExpanded: $isBeautyExpanded) {
                 VStack(alignment: .leading, spacing: 10) {

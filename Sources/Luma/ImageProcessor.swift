@@ -385,6 +385,7 @@ final class ImageProcessor: @unchecked Sendable {
         image = applyEyeEnlarge(adjustments.eyeEnlarge, to: image)
         image = applyBodySlim(adjustments.bodySlim, to: image)
         image = applyFaceSlim(adjustments.faceSlim, to: image)
+        image = applyRadialExposure(adjustments, to: image)
 
         if adjustments.sharpness > 0, let filter = CIFilter(name: "CISharpenLuminance") {
             filter.setValue(image, forKey: kCIInputImageKey)
@@ -637,6 +638,41 @@ final class ImageProcessor: @unchecked Sendable {
         filter.setValue(radius, forKey: kCIInputRadiusKey)
         filter.setValue(amount * 0.28, forKey: kCIInputScaleKey)
         return filter.outputImage?.cropped(to: image.extent) ?? image
+    }
+
+    private func applyRadialExposure(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.radialExposure != 0,
+              let exposure = CIFilter(name: "CIExposureAdjust"),
+              let gradient = CIFilter(name: "CIRadialGradient"),
+              let blend = CIFilter(name: "CIBlendWithMask") else {
+            return image
+        }
+
+        let extent = image.extent
+        let shortEdge = min(extent.width, extent.height)
+        let centerX = extent.minX + extent.width * clipped(adjustments.radialCenterX)
+        let centerY = extent.minY + extent.height * clipped(adjustments.radialCenterY)
+        let innerRadius = shortEdge * max(0.02, clipped(adjustments.radialRadius))
+        let outerRadius = innerRadius + shortEdge * max(0.01, clipped(adjustments.radialFeather))
+
+        exposure.setValue(image, forKey: kCIInputImageKey)
+        exposure.setValue(adjustments.radialExposure, forKey: kCIInputEVKey)
+
+        gradient.setValue(CIVector(x: centerX, y: centerY), forKey: kCIInputCenterKey)
+        gradient.setValue(innerRadius, forKey: "inputRadius0")
+        gradient.setValue(outerRadius, forKey: "inputRadius1")
+        gradient.setValue(CIColor.white, forKey: "inputColor0")
+        gradient.setValue(CIColor.black, forKey: "inputColor1")
+
+        guard let adjusted = exposure.outputImage,
+              let mask = gradient.outputImage?.cropped(to: extent) else {
+            return image
+        }
+
+        blend.setValue(adjusted, forKey: kCIInputImageKey)
+        blend.setValue(image, forKey: kCIInputBackgroundImageKey)
+        blend.setValue(mask, forKey: kCIInputMaskImageKey)
+        return blend.outputImage?.cropped(to: extent) ?? image
     }
 
     private func faceFeatures(in image: CIImage) -> [CIFaceFeature] {
