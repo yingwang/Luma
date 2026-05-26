@@ -34,6 +34,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Non-destructive adjustment model.
 - Before and after comparison.
 - Side-by-side original and edited comparison.
+- Highlight clipped shadows and highlights in the preview.
 - Undo and redo for adjustment changes.
 - Collapse advanced adjustment panel sections.
 - In-memory preview caching for repeated renders.

@@ -65,6 +65,13 @@ struct MainView: View {
                 .disabled(library.selectedPhoto == nil)
 
                 Button {
+                    library.showClippingWarnings.toggle()
+                } label: {
+                    Label("Clipping", systemImage: library.showClippingWarnings ? "exclamationmark.triangle.fill" : "exclamationmark.triangle")
+                }
+                .disabled(library.selectedPhoto == nil)
+
+                Button {
                     library.rotateSelectedLeft()
                 } label: {
                     Label("Rotate Left", systemImage: "rotate.left")

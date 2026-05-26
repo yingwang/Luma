@@ -50,6 +50,11 @@ final class PhotoLibraryStore: ObservableObject {
             renderSelectedPreview()
         }
     }
+    @Published var showClippingWarnings = false {
+        didSet {
+            renderSelectedPreview()
+        }
+    }
     @Published private(set) var originalPreviewImage: NSImage?
 
     private var renderTask: Task<Void, Never>?
@@ -855,14 +860,20 @@ final class PhotoLibraryStore: ObservableObject {
         let adjustments = selectedPhoto.adjustments
         let renderOriginal = showOriginal || compareSideBySide
         let renderComparison = compareSideBySide
+        let renderClippingWarnings = showClippingWarnings
 
         renderTask = Task.detached(priority: .userInitiated) {
             let image = ImageProcessor.shared.preview(
                 for: url,
-                adjustments: renderOriginal && !renderComparison ? .neutral : adjustments
+                adjustments: renderOriginal && !renderComparison ? .neutral : adjustments,
+                showClippingWarnings: renderClippingWarnings
             )
             let originalImage = renderComparison
-                ? ImageProcessor.shared.preview(for: url, adjustments: .neutral)
+                ? ImageProcessor.shared.preview(
+                    for: url,
+                    adjustments: .neutral,
+                    showClippingWarnings: renderClippingWarnings
+                )
                 : nil
 
             await MainActor.run {

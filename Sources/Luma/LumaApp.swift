@@ -141,6 +141,12 @@ struct LumaApp: App {
                 .keyboardShortcut("y", modifiers: [])
                 .disabled(library.selectedPhoto == nil)
 
+                Button("Show Clipping Warnings") {
+                    library.showClippingWarnings.toggle()
+                }
+                .keyboardShortcut("j", modifiers: [])
+                .disabled(library.selectedPhoto == nil)
+
                 Divider()
 
                 Button("Pick") {

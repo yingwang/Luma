@@ -154,8 +154,18 @@ final class ImageProcessor: @unchecked Sendable {
         return cgImage
     }
 
-    func preview(for url: URL, adjustments: PhotoAdjustments, maxPixelSize: CGFloat = 2400) -> NSImage? {
-        let cacheKey = previewCacheKey(for: url, adjustments: adjustments, maxPixelSize: maxPixelSize)
+    func preview(
+        for url: URL,
+        adjustments: PhotoAdjustments,
+        maxPixelSize: CGFloat = 2400,
+        showClippingWarnings: Bool = false
+    ) -> NSImage? {
+        let cacheKey = previewCacheKey(
+            for: url,
+            adjustments: adjustments,
+            maxPixelSize: maxPixelSize,
+            showClippingWarnings: showClippingWarnings
+        )
         if let cachedImage = previewCache.object(forKey: cacheKey) {
             return cachedImage
         }
@@ -171,8 +181,12 @@ final class ImageProcessor: @unchecked Sendable {
             return nil
         }
 
-        previewCache.setObject(renderedImage, forKey: cacheKey, cost: imageCost(renderedImage))
-        return renderedImage
+        let finalImage = showClippingWarnings
+            ? clippingWarningPreview(from: renderedImage)
+            : renderedImage
+
+        previewCache.setObject(finalImage, forKey: cacheKey, cost: imageCost(finalImage))
+        return finalImage
     }
 
     func exportJPEG(
@@ -446,12 +460,73 @@ final class ImageProcessor: @unchecked Sendable {
         return image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
     }
 
-    private func previewCacheKey(for url: URL, adjustments: PhotoAdjustments, maxPixelSize: CGFloat) -> NSString {
+    private func previewCacheKey(
+        for url: URL,
+        adjustments: PhotoAdjustments,
+        maxPixelSize: CGFloat,
+        showClippingWarnings: Bool
+    ) -> NSString {
         let adjustmentData = (try? JSONEncoder().encode(adjustments)) ?? Data()
         let adjustmentKey = adjustmentData.base64EncodedString()
-        let baseKey = imageCacheKey(for: url, pixelSize: maxPixelSize, namespace: "preview")
+        let namespace = showClippingWarnings ? "preview-clipping" : "preview"
+        let baseKey = imageCacheKey(for: url, pixelSize: maxPixelSize, namespace: namespace)
 
         return "\(baseKey)|\(adjustmentKey)" as NSString
+    }
+
+    private func clippingWarningPreview(from image: NSImage) -> NSImage {
+        guard
+            let cgImage = image.cgImage(forProposedRect: nil, context: nil, hints: nil),
+            let output = clippingWarningImage(from: cgImage)
+        else {
+            return image
+        }
+
+        return NSImage(cgImage: output, size: image.size)
+    }
+
+    private func clippingWarningImage(from cgImage: CGImage) -> CGImage? {
+        let width = cgImage.width
+        let height = cgImage.height
+        let bytesPerPixel = 4
+        let bytesPerRow = width * bytesPerPixel
+        var pixels = [UInt8](repeating: 0, count: height * bytesPerRow)
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+
+        guard let bitmapContext = CGContext(
+            data: &pixels,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: bytesPerRow,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            return nil
+        }
+
+        bitmapContext.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        for index in stride(from: 0, to: pixels.count, by: bytesPerPixel) {
+            let red = pixels[index]
+            let green = pixels[index + 1]
+            let blue = pixels[index + 2]
+            let maxChannel = max(red, green, blue)
+
+            if maxChannel >= 250 {
+                pixels[index] = 255
+                pixels[index + 1] = 64
+                pixels[index + 2] = 48
+                pixels[index + 3] = 255
+            } else if maxChannel <= 5 {
+                pixels[index] = 48
+                pixels[index + 1] = 112
+                pixels[index + 2] = 255
+                pixels[index + 3] = 255
+            }
+        }
+
+        return bitmapContext.makeImage()
     }
 
     private func imageCacheKey(for url: URL, pixelSize: CGFloat, namespace: String) -> NSString {
