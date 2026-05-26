@@ -23,6 +23,13 @@ struct MainView: View {
                 }
 
                 Button {
+                    library.revealSelectedPhotoInFinder()
+                } label: {
+                    Label("Reveal", systemImage: "arrow.up.forward.app")
+                }
+                .disabled(library.selectedPhoto == nil)
+
+                Button {
                     library.undoAdjustment()
                 } label: {
                     Label("Undo", systemImage: "arrow.uturn.backward")

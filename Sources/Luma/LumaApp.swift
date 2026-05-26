@@ -71,6 +71,14 @@ struct LumaApp: App {
 
                 Divider()
 
+                Button("Reveal in Finder") {
+                    library.revealSelectedPhotoInFinder()
+                }
+                .keyboardShortcut("r", modifiers: [.command, .shift])
+                .disabled(library.selectedPhoto == nil)
+
+                Divider()
+
                 Button("Copy Adjustments") {
                     library.copySelectedAdjustments()
                 }

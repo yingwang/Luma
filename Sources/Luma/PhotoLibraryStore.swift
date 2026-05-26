@@ -291,6 +291,15 @@ final class PhotoLibraryStore: ObservableObject {
         compareSideBySide.toggle()
     }
 
+    func revealSelectedPhotoInFinder() {
+        guard let selectedPhoto else {
+            return
+        }
+
+        NSWorkspace.shared.activateFileViewerSelecting([selectedPhoto.url])
+        statusMessage = "Revealed \(selectedPhoto.fileName) in Finder."
+    }
+
     func updateSelectedAdjustments(_ update: (inout PhotoAdjustments) -> Void) {
         guard
             let selectedPhotoID,

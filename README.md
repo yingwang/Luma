@@ -28,6 +28,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Use number keys 0-5 to clear or set the selected photo rating.
 - Mark photos as picked or rejected.
 - Remove photos from the local catalog without deleting the original file.
+- Reveal the selected original file in Finder.
 
 ### Editing
 
