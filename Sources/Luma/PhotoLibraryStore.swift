@@ -835,6 +835,8 @@ final class PhotoLibraryStore: ObservableObject {
             .jpeg
         case .png:
             .png
+        case .tiff:
+            .tiff
         }
     }
 

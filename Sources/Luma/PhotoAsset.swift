@@ -135,6 +135,7 @@ enum ExportPreset: String, CaseIterable, Identifiable {
 enum ExportFormat: String, CaseIterable, Identifiable {
     case jpeg = "JPEG"
     case png = "PNG"
+    case tiff = "TIFF"
 
     var id: String {
         rawValue
@@ -146,6 +147,8 @@ enum ExportFormat: String, CaseIterable, Identifiable {
             "jpg"
         case .png:
             "png"
+        case .tiff:
+            "tiff"
         }
     }
 
@@ -155,6 +158,8 @@ enum ExportFormat: String, CaseIterable, Identifiable {
             "public.jpeg"
         case .png:
             "public.png"
+        case .tiff:
+            "public.tiff"
         }
     }
 }
