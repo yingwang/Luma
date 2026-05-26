@@ -104,6 +104,8 @@ final class PhotoLibraryStore: ObservableObject {
             photos.filter { $0.rating == 0 }
         case .unflagged:
             photos.filter { $0.flag == .none }
+        case .raw:
+            photos.filter { $0.metadata?.isRaw == true }
         case .edited:
             photos.filter { $0.adjustments != .neutral }
         case .unedited:
