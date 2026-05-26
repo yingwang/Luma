@@ -341,6 +341,15 @@ struct EditorView: View {
 
 struct PreviewPane: View {
     @EnvironmentObject private var library: PhotoLibraryStore
+    @State private var zoomScale = 0.0
+
+    private var canShowZoomControls: Bool {
+        library.previewImage != nil || library.originalPreviewImage != nil
+    }
+
+    private var zoomLabel: String {
+        zoomScale == 0 ? "Fit" : "\(Int((zoomScale * 100).rounded()))%"
+    }
 
     var body: some View {
         ZStack {
@@ -363,11 +372,11 @@ struct PreviewPane: View {
                 if let originalPreviewImage = library.originalPreviewImage,
                    let previewImage = library.previewImage {
                     HStack(spacing: 0) {
-                        CompareImagePane(label: "Original", image: originalPreviewImage)
+                        CompareImagePane(label: "Original", image: originalPreviewImage, zoomScale: zoomScale)
 
                         Divider()
 
-                        CompareImagePane(label: "Edited", image: previewImage)
+                        CompareImagePane(label: "Edited", image: previewImage, zoomScale: zoomScale)
                     }
                 } else {
                     ContentUnavailableView(
@@ -377,7 +386,7 @@ struct PreviewPane: View {
                     )
                 }
             } else if let previewImage = library.previewImage {
-                PreviewImagePane(label: library.showOriginal ? "Original" : nil, image: previewImage)
+                PreviewImagePane(label: library.showOriginal ? "Original" : nil, image: previewImage, zoomScale: zoomScale)
             } else {
                 ContentUnavailableView(
                     "Preview Unavailable",
@@ -386,19 +395,78 @@ struct PreviewPane: View {
                 )
             }
         }
+        .overlay(alignment: .bottom) {
+            if canShowZoomControls {
+                HStack(spacing: 8) {
+                    Button {
+                        zoomScale = 0
+                    } label: {
+                        Label("Fit", systemImage: "arrow.up.left.and.arrow.down.right")
+                    }
+
+                    Button {
+                        zoomScale = 1
+                    } label: {
+                        Label("100%", systemImage: "1.magnifyingglass")
+                    }
+
+                    Divider()
+                        .frame(height: 18)
+
+                    Button {
+                        zoomScale = zoomScale == 0 ? 0.75 : max(0.25, zoomScale / 1.25)
+                    } label: {
+                        Label("Zoom Out", systemImage: "minus.magnifyingglass")
+                    }
+
+                    Text(zoomLabel)
+                        .font(.caption.monospacedDigit())
+                        .frame(width: 48)
+
+                    Button {
+                        zoomScale = zoomScale == 0 ? 1.25 : min(4, zoomScale * 1.25)
+                    } label: {
+                        Label("Zoom In", systemImage: "plus.magnifyingglass")
+                    }
+                }
+                .labelStyle(.iconOnly)
+                .buttonStyle(.bordered)
+                .padding(8)
+                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 8))
+                .padding(.bottom, 18)
+            }
+        }
+        .onChange(of: library.selectedPhotoID) { _, _ in
+            zoomScale = 0
+        }
     }
 }
 
 struct PreviewImagePane: View {
     let label: String?
     let image: NSImage
+    let zoomScale: Double
 
     var body: some View {
         ZStack {
-            Image(nsImage: image)
-                .resizable()
-                .scaledToFit()
-                .padding(32)
+            if zoomScale == 0 {
+                Image(nsImage: image)
+                    .resizable()
+                    .scaledToFit()
+                    .padding(32)
+            } else {
+                ScrollView([.horizontal, .vertical]) {
+                    Image(nsImage: image)
+                        .resizable()
+                        .interpolation(.high)
+                        .aspectRatio(contentMode: .fit)
+                        .frame(
+                            width: max(1, image.size.width * zoomScale),
+                            height: max(1, image.size.height * zoomScale)
+                        )
+                        .padding(32)
+                }
+            }
 
             if let label {
                 VStack {
@@ -423,9 +491,10 @@ struct PreviewImagePane: View {
 struct CompareImagePane: View {
     let label: String
     let image: NSImage
+    let zoomScale: Double
 
     var body: some View {
-        PreviewImagePane(label: label, image: image)
+        PreviewImagePane(label: label, image: image, zoomScale: zoomScale)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 }
