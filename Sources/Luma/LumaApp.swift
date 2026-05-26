@@ -77,6 +77,12 @@ struct LumaApp: App {
                 .keyboardShortcut("r", modifiers: [.command, .shift])
                 .disabled(library.selectedPhoto == nil)
 
+                Button("Create Virtual Copy") {
+                    library.duplicateSelectedPhoto()
+                }
+                .keyboardShortcut("d", modifiers: [.command])
+                .disabled(library.selectedPhoto == nil)
+
                 Divider()
 
                 Button("Copy Adjustments") {

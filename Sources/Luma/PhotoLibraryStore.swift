@@ -300,6 +300,33 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Revealed \(selectedPhoto.fileName) in Finder."
     }
 
+    func duplicateSelectedPhoto() {
+        guard
+            let selectedPhotoID,
+            let index = photos.firstIndex(where: { $0.id == selectedPhotoID })
+        else {
+            return
+        }
+
+        let original = photos[index]
+        let duplicate = PhotoAsset(
+            url: original.url,
+            metadata: original.metadata,
+            histogramBins: original.histogramBins,
+            rgbHistogramBins: original.rgbHistogramBins,
+            thumbnail: original.thumbnail,
+            adjustments: original.adjustments,
+            rating: original.rating,
+            flag: original.flag
+        )
+
+        photos.insert(duplicate, at: photos.index(after: index))
+        self.selectedPhotoID = duplicate.id
+        statusMessage = "Created virtual copy of \(original.fileName)."
+        saveCatalog()
+        renderSelectedPreview()
+    }
+
     func updateSelectedAdjustments(_ update: (inout PhotoAdjustments) -> Void) {
         guard
             let selectedPhotoID,

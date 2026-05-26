@@ -30,6 +30,13 @@ struct MainView: View {
                 .disabled(library.selectedPhoto == nil)
 
                 Button {
+                    library.duplicateSelectedPhoto()
+                } label: {
+                    Label("Virtual Copy", systemImage: "plus.square.on.square")
+                }
+                .disabled(library.selectedPhoto == nil)
+
+                Button {
                     library.undoAdjustment()
                 } label: {
                     Label("Undo", systemImage: "arrow.uturn.backward")
