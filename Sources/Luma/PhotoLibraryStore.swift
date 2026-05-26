@@ -5,6 +5,10 @@ import UniformTypeIdentifiers
 
 @MainActor
 final class PhotoLibraryStore: ObservableObject {
+    private static let defaultExportFormat = ExportFormat.jpeg
+    private static let defaultExportQuality = 0.92
+    private static let defaultExportLongEdge = 0.0
+
     @Published private(set) var photos: [PhotoAsset] = []
     @Published var selectedPhotoID: PhotoAsset.ID?
     @Published private(set) var previewImage: NSImage?
@@ -32,9 +36,9 @@ final class PhotoLibraryStore: ObservableObject {
         }
     }
     @Published var thumbnailSize = 124.0
-    @Published var exportFormat: ExportFormat = .jpeg
-    @Published var exportQuality = 0.92
-    @Published var exportLongEdge: Double = 0
+    @Published var exportFormat: ExportFormat = defaultExportFormat
+    @Published var exportQuality = defaultExportQuality
+    @Published var exportLongEdge: Double = defaultExportLongEdge
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
     @Published var showOriginal = false {
@@ -651,6 +655,13 @@ final class PhotoLibraryStore: ObservableObject {
         exportQuality = preset.jpegQuality
         exportLongEdge = preset.longEdge
         statusMessage = "Applied \(preset.rawValue) export preset."
+    }
+
+    func resetExportSettings() {
+        exportFormat = Self.defaultExportFormat
+        exportQuality = Self.defaultExportQuality
+        exportLongEdge = Self.defaultExportLongEdge
+        statusMessage = "Reset export settings."
     }
 
     func exportSelectedPhoto() {

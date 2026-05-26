@@ -1163,6 +1163,12 @@ struct AdjustmentPanel: View {
                         range: 0...6000,
                         format: "%.0f"
                     )
+
+                    Button {
+                        library.resetExportSettings()
+                    } label: {
+                        Label("Reset Export Settings", systemImage: "arrow.counterclockwise.circle")
+                    }
                 }
                 .padding(.top, 8)
             } label: {
