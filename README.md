@@ -105,7 +105,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 
 - View basic file information.
 - Inspect common EXIF fields such as camera, lens, exposure, focal length, and capture time.
-- Identify system-readable RAW files with a RAW badge.
+- Identify system-readable RAW files with a RAW badge and filter RAW or non-RAW images.
 - Export the selected edited photo as JPEG, PNG, or TIFF.
 - Apply export presets for full-size, large web, social, and thumbnail output.
 - Choose JPEG quality.

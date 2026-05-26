@@ -50,6 +50,7 @@ enum LibraryFilter: String, CaseIterable, Codable, Identifiable {
     case unrated = "Unrated"
     case unflagged = "Unflagged"
     case raw = "RAW"
+    case nonRaw = "Non-RAW"
     case edited = "Edited"
     case unedited = "Unedited"
 
