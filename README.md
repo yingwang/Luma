@@ -34,6 +34,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Non-destructive adjustment model.
 - Before and after comparison.
 - Side-by-side original and edited comparison.
+- Luminance and RGB histogram display.
 - Fit, 100 percent, zoom in, and zoom out controls in the preview.
 - Highlight clipped shadows and highlights in the preview.
 - Undo and redo for adjustment changes.

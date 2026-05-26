@@ -6,6 +6,7 @@ struct PhotoAsset: Identifiable, Equatable {
     let url: URL
     let metadata: PhotoMetadata?
     let histogramBins: [Double]?
+    let rgbHistogramBins: RGBHistogram?
     var thumbnail: NSImage?
     var adjustments = PhotoAdjustments()
     var rating: Int = 0
@@ -20,6 +21,7 @@ struct PhotoAsset: Identifiable, Equatable {
         url: URL,
         metadata: PhotoMetadata?,
         histogramBins: [Double]?,
+        rgbHistogramBins: RGBHistogram? = nil,
         thumbnail: NSImage? = nil,
         adjustments: PhotoAdjustments = .neutral,
         rating: Int = 0,
@@ -29,11 +31,18 @@ struct PhotoAsset: Identifiable, Equatable {
         self.url = url
         self.metadata = metadata
         self.histogramBins = histogramBins
+        self.rgbHistogramBins = rgbHistogramBins
         self.thumbnail = thumbnail
         self.adjustments = adjustments
         self.rating = rating
         self.flag = flag
     }
+}
+
+struct RGBHistogram: Equatable {
+    let red: [Double]
+    let green: [Double]
+    let blue: [Double]
 }
 
 enum PhotoFlag: String, CaseIterable, Codable, Equatable {

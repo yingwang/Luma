@@ -206,7 +206,8 @@ final class PhotoLibraryStore: ObservableObject {
             PhotoAsset(
                 url: $0,
                 metadata: ImageProcessor.shared.metadata(for: $0),
-                histogramBins: ImageProcessor.shared.luminanceHistogram(for: $0)
+                histogramBins: ImageProcessor.shared.luminanceHistogram(for: $0),
+                rgbHistogramBins: ImageProcessor.shared.rgbHistogram(for: $0)
             )
         }
         photos.append(contentsOf: imported)
@@ -943,7 +944,8 @@ final class PhotoLibraryStore: ObservableObject {
                 id: entry.id,
                 url: url,
                 metadata: ImageProcessor.shared.metadata(for: url),
-                histogramBins: ImageProcessor.shared.luminanceHistogram(for: url)
+                histogramBins: ImageProcessor.shared.luminanceHistogram(for: url),
+                rgbHistogramBins: ImageProcessor.shared.rgbHistogram(for: url)
             )
             asset.adjustments = entry.adjustments
             asset.rating = entry.rating

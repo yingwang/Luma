@@ -131,9 +131,63 @@ final class ImageProcessor: @unchecked Sendable {
         return bins.map { $0 / maxValue }
     }
 
+    func rgbHistogram(for url: URL, binCount: Int = 48) -> RGBHistogram? {
+        guard binCount > 0, let cgImage = thumbnailCGImage(for: url, maxPixelSize: 256) else {
+            return nil
+        }
+
+        let width = 128
+        let height = 128
+        var pixels = [UInt8](repeating: 0, count: width * height * 4)
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+
+        guard let context = CGContext(
+            data: &pixels,
+            width: width,
+            height: height,
+            bitsPerComponent: 8,
+            bytesPerRow: width * 4,
+            space: colorSpace,
+            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
+        ) else {
+            return nil
+        }
+
+        context.interpolationQuality = .medium
+        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
+
+        var redBins = [Double](repeating: 0, count: binCount)
+        var greenBins = [Double](repeating: 0, count: binCount)
+        var blueBins = [Double](repeating: 0, count: binCount)
+
+        for index in stride(from: 0, to: pixels.count, by: 4) {
+            let redBin = min(binCount - 1, Int((Double(pixels[index]) / 256) * Double(binCount)))
+            let greenBin = min(binCount - 1, Int((Double(pixels[index + 1]) / 256) * Double(binCount)))
+            let blueBin = min(binCount - 1, Int((Double(pixels[index + 2]) / 256) * Double(binCount)))
+
+            redBins[redBin] += 1
+            greenBins[greenBin] += 1
+            blueBins[blueBin] += 1
+        }
+
+        return RGBHistogram(
+            red: normalizedHistogram(redBins),
+            green: normalizedHistogram(greenBins),
+            blue: normalizedHistogram(blueBins)
+        )
+    }
+
     func clearImageCaches() {
         previewCache.removeAllObjects()
         thumbnailCache.removeAllObjects()
+    }
+
+    private func normalizedHistogram(_ bins: [Double]) -> [Double] {
+        guard let maxValue = bins.max(), maxValue > 0 else {
+            return bins
+        }
+
+        return bins.map { $0 / maxValue }
     }
 
     private func thumbnailCGImage(for url: URL, maxPixelSize: CGFloat) -> CGImage? {

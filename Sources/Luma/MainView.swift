@@ -530,7 +530,10 @@ struct AdjustmentPanel: View {
             }
 
             if let histogramBins = library.selectedPhoto?.histogramBins {
-                HistogramView(bins: histogramBins)
+                HistogramView(
+                    luminanceBins: histogramBins,
+                    rgbBins: library.selectedPhoto?.rgbHistogramBins
+                )
                     .frame(height: 86)
             }
 
@@ -1307,26 +1310,67 @@ struct AdjustmentPanel: View {
 }
 
 struct HistogramView: View {
-    let bins: [Double]
+    let luminanceBins: [Double]
+    let rgbBins: RGBHistogram?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Histogram")
-                .font(.headline)
+            HStack {
+                Text("Histogram")
+                    .font(.headline)
+
+                Spacer()
+
+                HStack(spacing: 6) {
+                    HistogramLegendItem(color: .secondary, label: "L")
+                    HistogramLegendItem(color: .red, label: "R")
+                    HistogramLegendItem(color: .green, label: "G")
+                    HistogramLegendItem(color: .blue, label: "B")
+                }
+            }
 
             GeometryReader { geometry in
-                let barWidth = max(1, geometry.size.width / CGFloat(max(1, bins.count)))
+                let barWidth = max(1, geometry.size.width / CGFloat(max(1, luminanceBins.count)))
 
-                HStack(alignment: .bottom, spacing: 1) {
-                    ForEach(Array(bins.enumerated()), id: \.offset) { _, value in
-                        Rectangle()
-                            .fill(.secondary)
-                            .frame(width: barWidth, height: max(2, geometry.size.height * value))
+                ZStack(alignment: .bottomLeading) {
+                    if let rgbBins {
+                        histogramBars(values: rgbBins.red, color: .red.opacity(0.38), barWidth: barWidth, height: geometry.size.height)
+                        histogramBars(values: rgbBins.green, color: .green.opacity(0.38), barWidth: barWidth, height: geometry.size.height)
+                        histogramBars(values: rgbBins.blue, color: .blue.opacity(0.38), barWidth: barWidth, height: geometry.size.height)
                     }
+
+                    histogramBars(values: luminanceBins, color: .secondary.opacity(0.55), barWidth: barWidth, height: geometry.size.height)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottomLeading)
             }
             .background(.quaternary, in: RoundedRectangle(cornerRadius: 6))
+        }
+    }
+
+    private func histogramBars(values: [Double], color: Color, barWidth: CGFloat, height: CGFloat) -> some View {
+        HStack(alignment: .bottom, spacing: 1) {
+            ForEach(Array(values.enumerated()), id: \.offset) { _, value in
+                Rectangle()
+                    .fill(color)
+                    .frame(width: barWidth, height: max(2, height * value))
+            }
+        }
+    }
+}
+
+struct HistogramLegendItem: View {
+    let color: Color
+    let label: String
+
+    var body: some View {
+        HStack(spacing: 3) {
+            Circle()
+                .fill(color)
+                .frame(width: 6, height: 6)
+
+            Text(label)
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
     }
 }
