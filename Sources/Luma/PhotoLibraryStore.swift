@@ -320,6 +320,17 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Revealed \(selectedPhoto.fileName) in Finder."
     }
 
+    func copySelectedPhotoPath() {
+        guard let selectedPhoto else {
+            return
+        }
+
+        let pasteboard = NSPasteboard.general
+        pasteboard.clearContents()
+        pasteboard.setString(selectedPhoto.url.path, forType: .string)
+        statusMessage = "Copied path for \(selectedPhoto.fileName)."
+    }
+
     func duplicateSelectedPhoto() {
         guard
             let selectedPhotoID,

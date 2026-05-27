@@ -31,6 +31,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Clear rating, flag, and color label from the selected photo in one action.
 - Remove photos from the local catalog without deleting the original file.
 - Reveal the selected original file in Finder.
+- Copy the selected original file path to the clipboard.
 - Create virtual copies for alternate edits without duplicating the original image file.
 
 ### Editing
