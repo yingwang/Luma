@@ -496,6 +496,7 @@ final class ImageProcessor: @unchecked Sendable {
         }
 
         image = rotate(image, turns: adjustments.rotationTurns)
+        image = flip(image, horizontal: adjustments.flipHorizontal, vertical: adjustments.flipVertical)
 
         return image
     }
@@ -668,6 +669,19 @@ final class ImageProcessor: @unchecked Sendable {
         }
 
         return normalizeExtent(rotated)
+    }
+
+    private func flip(_ image: CIImage, horizontal: Bool, vertical: Bool) -> CIImage {
+        guard horizontal || vertical else {
+            return image
+        }
+
+        let extent = image.extent
+        let transform = CGAffineTransform(translationX: extent.midX, y: extent.midY)
+            .scaledBy(x: horizontal ? -1 : 1, y: vertical ? -1 : 1)
+            .translatedBy(x: -extent.midX, y: -extent.midY)
+
+        return normalizeExtent(image.transformed(by: transform))
     }
 
     private func normalizeExtent(_ image: CIImage) -> CIImage {

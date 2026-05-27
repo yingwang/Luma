@@ -637,6 +637,20 @@ final class PhotoLibraryStore: ObservableObject {
         }
     }
 
+    func flipSelectedHorizontal() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.flipHorizontal.toggle()
+        }
+        statusMessage = "Flipped selected photo horizontally."
+    }
+
+    func flipSelectedVertical() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.flipVertical.toggle()
+        }
+        statusMessage = "Flipped selected photo vertically."
+    }
+
     func resetSelectedCropTransform() {
         updateSelectedAdjustments { adjustments in
             adjustments.resetCropTransform()

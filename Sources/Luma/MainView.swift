@@ -722,6 +722,21 @@ struct AdjustmentPanel: View {
                     format: "%.1f"
                 )
 
+                HStack {
+                    Button {
+                        library.flipSelectedHorizontal()
+                    } label: {
+                        Label("Flip H", systemImage: "arrow.left.and.right")
+                    }
+
+                    Button {
+                        library.flipSelectedVertical()
+                    } label: {
+                        Label("Flip V", systemImage: "arrow.up.and.down")
+                    }
+                }
+                .disabled(library.selectedPhoto == nil)
+
                 Button {
                     library.resetSelectedCropTransform()
                 } label: {

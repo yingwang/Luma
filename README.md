@@ -47,6 +47,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - In-memory preview caching for repeated renders.
 - In-memory thumbnail caching for smoother library browsing.
 - Rotate left and right.
+- Flip photos horizontally or vertically.
 - Straighten.
 - Crop to common aspect ratios.
 - Reset crop, straighten, and rotation without changing tone edits.

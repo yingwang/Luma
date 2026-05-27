@@ -103,7 +103,9 @@ final class LumaModelTests: XCTestCase {
             exposure: 0.6,
             straighten: 12,
             rotationTurns: 1,
-            cropAspect: .square
+            cropAspect: .square,
+            flipHorizontal: true,
+            flipVertical: true
         )
 
         adjustments.resetCropTransform()
@@ -112,6 +114,8 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.straighten, 0)
         XCTAssertEqual(adjustments.rotationTurns, 0)
         XCTAssertEqual(adjustments.cropAspect, .original)
+        XCTAssertFalse(adjustments.flipHorizontal)
+        XCTAssertFalse(adjustments.flipVertical)
     }
 
     func testToneAdjustmentsCanBeResetWithoutChangingCropOrLocalAdjustments() {
@@ -122,7 +126,8 @@ final class LumaModelTests: XCTestCase {
             warmth: 250,
             radialExposure: -0.5,
             straighten: 12,
-            cropAspect: .square
+            cropAspect: .square,
+            flipHorizontal: true
         )
 
         adjustments.resetToneAdjustments()
@@ -134,6 +139,7 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.radialExposure, -0.5)
         XCTAssertEqual(adjustments.straighten, 12)
         XCTAssertEqual(adjustments.cropAspect, .square)
+        XCTAssertTrue(adjustments.flipHorizontal)
     }
 
     func testLibrarySortMetadata() {

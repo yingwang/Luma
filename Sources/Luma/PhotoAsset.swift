@@ -254,6 +254,8 @@ struct PhotoAdjustments: Codable, Equatable {
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
+    var flipHorizontal: Bool = false
+    var flipVertical: Bool = false
     var colorMixer = ColorMixerAdjustments()
 
     static let neutral = PhotoAdjustments()
@@ -308,6 +310,8 @@ struct PhotoAdjustments: Codable, Equatable {
         case straighten
         case rotationTurns
         case cropAspect
+        case flipHorizontal
+        case flipVertical
         case colorMixer
     }
 
@@ -361,6 +365,8 @@ struct PhotoAdjustments: Codable, Equatable {
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
+        flipHorizontal: Bool = false,
+        flipVertical: Bool = false,
         colorMixer: ColorMixerAdjustments = ColorMixerAdjustments()
     ) {
         self.exposure = exposure
@@ -412,6 +418,8 @@ struct PhotoAdjustments: Codable, Equatable {
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
+        self.flipHorizontal = flipHorizontal
+        self.flipVertical = flipVertical
         self.colorMixer = colorMixer
     }
 
@@ -466,6 +474,8 @@ struct PhotoAdjustments: Codable, Equatable {
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
+        flipHorizontal = try container.decodeIfPresent(Bool.self, forKey: .flipHorizontal) ?? false
+        flipVertical = try container.decodeIfPresent(Bool.self, forKey: .flipVertical) ?? false
         colorMixer = try container.decodeIfPresent(ColorMixerAdjustments.self, forKey: .colorMixer) ?? ColorMixerAdjustments()
     }
 
@@ -489,6 +499,8 @@ struct PhotoAdjustments: Codable, Equatable {
         straighten = 0
         rotationTurns = 0
         cropAspect = .original
+        flipHorizontal = false
+        flipVertical = false
     }
 
     mutating func resetToneAdjustments() {

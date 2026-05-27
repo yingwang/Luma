@@ -269,6 +269,18 @@ struct LumaApp: App {
                 .keyboardShortcut("r", modifiers: [.command])
                 .disabled(library.selectedPhoto == nil)
 
+                Button("Flip Horizontal") {
+                    library.flipSelectedHorizontal()
+                }
+                .keyboardShortcut("h", modifiers: [.command])
+                .disabled(library.selectedPhoto == nil)
+
+                Button("Flip Vertical") {
+                    library.flipSelectedVertical()
+                }
+                .keyboardShortcut("v", modifiers: [.command, .shift])
+                .disabled(library.selectedPhoto == nil)
+
                 Divider()
 
                 Button("Export Image...") {
