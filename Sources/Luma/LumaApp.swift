@@ -219,6 +219,12 @@ struct LumaApp: App {
                     .disabled(library.selectedPhoto == nil)
                 }
 
+                Button("Clear Marks") {
+                    library.clearSelectedMarks()
+                }
+                .keyboardShortcut("0", modifiers: [.command])
+                .disabled(library.selectedPhoto == nil)
+
                 Divider()
 
                 Button("Clear Rating") {

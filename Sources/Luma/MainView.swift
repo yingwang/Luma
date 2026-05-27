@@ -616,6 +616,13 @@ struct AdjustmentPanel: View {
                     }
                     .disabled(library.selectedPhoto == nil)
                 }
+
+                Button {
+                    library.clearSelectedMarks()
+                } label: {
+                    Label("Clear Marks", systemImage: "tag.slash")
+                }
+                .disabled(library.selectedPhoto == nil)
             }
 
             VStack(alignment: .leading, spacing: 10) {

@@ -418,6 +418,22 @@ final class PhotoLibraryStore: ObservableObject {
         ensureSelectedPhotoIsVisible()
     }
 
+    func clearSelectedMarks() {
+        guard
+            let selectedPhotoID,
+            let index = photos.firstIndex(where: { $0.id == selectedPhotoID })
+        else {
+            return
+        }
+
+        photos[index].rating = 0
+        photos[index].flag = .none
+        photos[index].colorLabel = .none
+        statusMessage = "Cleared marks from \(photos[index].fileName)."
+        saveCatalog()
+        ensureSelectedPhotoIsVisible()
+    }
+
     func removeSelectedPhoto() {
         guard
             let selectedPhotoID,

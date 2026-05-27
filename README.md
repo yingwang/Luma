@@ -28,6 +28,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Use number keys 0-5 to clear or set the selected photo rating.
 - Mark photos as picked or rejected.
 - Add color labels and use number keys 6-9 for red, yellow, green, and blue labels.
+- Clear rating, flag, and color label from the selected photo in one action.
 - Remove photos from the local catalog without deleting the original file.
 - Reveal the selected original file in Finder.
 - Create virtual copies for alternate edits without duplicating the original image file.
