@@ -141,7 +141,7 @@ final class LumaModelTests: XCTestCase {
     }
 
     func testLibraryFilterMetadata() {
-        XCTAssertEqual(LibraryFilter.allCases.map(\.rawValue), ["All", "Picked", "Rejected", "Rated", "Unrated", "Unflagged", "Labeled", "Unlabeled", "RAW", "Non-RAW", "Edited", "Unedited"])
+        XCTAssertEqual(LibraryFilter.allCases.map(\.rawValue), ["All", "Picked", "Rejected", "Rated", "Unrated", "Unflagged", "Labeled", "Unlabeled", "Red Label", "Yellow Label", "Green Label", "Blue Label", "Purple Label", "RAW", "Non-RAW", "Edited", "Unedited"])
     }
 
     func testPhotoColorLabelMetadata() {

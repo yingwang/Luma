@@ -112,6 +112,16 @@ final class PhotoLibraryStore: ObservableObject {
             photos.filter { $0.colorLabel != .none }
         case .unlabeled:
             photos.filter { $0.colorLabel == .none }
+        case .redLabel:
+            photos.filter { $0.colorLabel == .red }
+        case .yellowLabel:
+            photos.filter { $0.colorLabel == .yellow }
+        case .greenLabel:
+            photos.filter { $0.colorLabel == .green }
+        case .blueLabel:
+            photos.filter { $0.colorLabel == .blue }
+        case .purpleLabel:
+            photos.filter { $0.colorLabel == .purple }
         case .raw:
             photos.filter { $0.metadata?.isRaw == true }
         case .nonRaw:
