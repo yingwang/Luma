@@ -18,8 +18,8 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Move to the previous or next visible photo from the toolbar or keyboard.
 - Jump to the first or last visible photo from the Photo menu.
 - Search by filename and clear the active search quickly.
-- Sort by file name, capture date, rating, or flag.
-- Filter by picked, rejected, rated, unrated, unflagged, RAW, non-RAW, edited, unedited, and minimum star rating.
+- Sort by file name, capture date, rating, flag, or color label.
+- Filter by picked, rejected, rated, unrated, unflagged, labeled, unlabeled, RAW, non-RAW, edited, unedited, and minimum star rating.
 - Clear active library filters in one action.
 - Hide rejected photos during everyday browsing.
 - Keep the preview selection aligned with the visible library filter.
@@ -27,6 +27,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Rate photos from zero to five stars.
 - Use number keys 0-5 to clear or set the selected photo rating.
 - Mark photos as picked or rejected.
+- Add color labels and use number keys 6-9 for red, yellow, green, and blue labels.
 - Remove photos from the local catalog without deleting the original file.
 - Reveal the selected original file in Finder.
 - Create virtual copies for alternate edits without duplicating the original image file.

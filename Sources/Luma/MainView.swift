@@ -320,6 +320,14 @@ struct PhotoGridCell: View {
                         .padding(6)
                 }
             }
+            .overlay(alignment: .bottomLeading) {
+                if photo.colorLabel != .none {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(photo.colorLabel.displayColor)
+                        .frame(width: 34, height: 5)
+                        .padding(6)
+                }
+            }
 
             Text(photo.fileName)
                 .font(.caption)
@@ -590,6 +598,24 @@ struct AdjustmentPanel: View {
                     }
                 }
                 .disabled(library.selectedPhoto == nil)
+
+                VStack(alignment: .leading, spacing: 8) {
+                    Text("Color Label")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    HStack(spacing: 8) {
+                        ForEach(PhotoColorLabel.allCases) { colorLabel in
+                            ColorLabelButton(
+                                colorLabel: colorLabel,
+                                isSelected: library.selectedPhoto?.colorLabel == colorLabel
+                            ) {
+                                library.setSelectedColorLabel(colorLabel)
+                            }
+                        }
+                    }
+                    .disabled(library.selectedPhoto == nil)
+                }
             }
 
             VStack(alignment: .leading, spacing: 10) {
@@ -1385,6 +1411,52 @@ struct HistogramLegendItem: View {
             Text(label)
                 .font(.caption2)
                 .foregroundStyle(.secondary)
+        }
+    }
+}
+
+struct ColorLabelButton: View {
+    let colorLabel: PhotoColorLabel
+    let isSelected: Bool
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            Circle()
+                .fill(colorLabel.displayColor)
+                .frame(width: 18, height: 18)
+                .overlay {
+                    Circle()
+                        .stroke(isSelected ? Color.accentColor : Color.secondary.opacity(0.35), lineWidth: isSelected ? 3 : 1)
+                }
+                .overlay {
+                    if colorLabel == .none {
+                        Image(systemName: "slash")
+                            .font(.caption2.weight(.bold))
+                            .foregroundStyle(.secondary)
+                    }
+                }
+        }
+        .buttonStyle(.plain)
+        .help(colorLabel.rawValue)
+    }
+}
+
+private extension PhotoColorLabel {
+    var displayColor: Color {
+        switch self {
+        case .none:
+            Color(nsColor: .controlBackgroundColor)
+        case .red:
+            .red
+        case .yellow:
+            .yellow
+        case .green:
+            .green
+        case .blue:
+            .blue
+        case .purple:
+            .purple
         }
     }
 }

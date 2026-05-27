@@ -11,6 +11,7 @@ struct PhotoAsset: Identifiable, Equatable {
     var adjustments = PhotoAdjustments()
     var rating: Int = 0
     var flag: PhotoFlag = .none
+    var colorLabel: PhotoColorLabel = .none
 
     var fileName: String {
         url.lastPathComponent
@@ -25,7 +26,8 @@ struct PhotoAsset: Identifiable, Equatable {
         thumbnail: NSImage? = nil,
         adjustments: PhotoAdjustments = .neutral,
         rating: Int = 0,
-        flag: PhotoFlag = .none
+        flag: PhotoFlag = .none,
+        colorLabel: PhotoColorLabel = .none
     ) {
         self.id = id
         self.url = url
@@ -36,6 +38,7 @@ struct PhotoAsset: Identifiable, Equatable {
         self.adjustments = adjustments
         self.rating = rating
         self.flag = flag
+        self.colorLabel = colorLabel
     }
 }
 
@@ -51,6 +54,19 @@ enum PhotoFlag: String, CaseIterable, Codable, Equatable {
     case rejected = "Rejected"
 }
 
+enum PhotoColorLabel: String, CaseIterable, Codable, Identifiable, Equatable {
+    case none = "None"
+    case red = "Red"
+    case yellow = "Yellow"
+    case green = "Green"
+    case blue = "Blue"
+    case purple = "Purple"
+
+    var id: String {
+        rawValue
+    }
+}
+
 enum LibraryFilter: String, CaseIterable, Codable, Identifiable {
     case all = "All"
     case picked = "Picked"
@@ -58,6 +74,8 @@ enum LibraryFilter: String, CaseIterable, Codable, Identifiable {
     case rated = "Rated"
     case unrated = "Unrated"
     case unflagged = "Unflagged"
+    case labeled = "Labeled"
+    case unlabeled = "Unlabeled"
     case raw = "RAW"
     case nonRaw = "Non-RAW"
     case edited = "Edited"
@@ -73,6 +91,7 @@ enum LibrarySort: String, CaseIterable, Codable, Identifiable {
     case captureDate = "Capture Date"
     case rating = "Rating"
     case flag = "Flag"
+    case colorLabel = "Color Label"
 
     var id: String {
         rawValue
@@ -540,6 +559,7 @@ struct CatalogEntry: Codable {
     var adjustments: PhotoAdjustments
     var rating: Int
     var flag: PhotoFlag
+    var colorLabel: PhotoColorLabel?
 }
 
 struct PhotoMetadata: Equatable {

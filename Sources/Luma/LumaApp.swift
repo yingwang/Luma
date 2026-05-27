@@ -183,6 +183,44 @@ struct LumaApp: App {
 
                 Divider()
 
+                Menu("Color Label") {
+                    Button("None") {
+                        library.setSelectedColorLabel(.none)
+                    }
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button("Red") {
+                        library.setSelectedColorLabel(.red)
+                    }
+                    .keyboardShortcut("6", modifiers: [])
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button("Yellow") {
+                        library.setSelectedColorLabel(.yellow)
+                    }
+                    .keyboardShortcut("7", modifiers: [])
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button("Green") {
+                        library.setSelectedColorLabel(.green)
+                    }
+                    .keyboardShortcut("8", modifiers: [])
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button("Blue") {
+                        library.setSelectedColorLabel(.blue)
+                    }
+                    .keyboardShortcut("9", modifiers: [])
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button("Purple") {
+                        library.setSelectedColorLabel(.purple)
+                    }
+                    .disabled(library.selectedPhoto == nil)
+                }
+
+                Divider()
+
                 Button("Clear Rating") {
                     library.setSelectedRating(0)
                 }

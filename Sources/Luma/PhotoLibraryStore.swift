@@ -108,6 +108,10 @@ final class PhotoLibraryStore: ObservableObject {
             photos.filter { $0.rating == 0 }
         case .unflagged:
             photos.filter { $0.flag == .none }
+        case .labeled:
+            photos.filter { $0.colorLabel != .none }
+        case .unlabeled:
+            photos.filter { $0.colorLabel == .none }
         case .raw:
             photos.filter { $0.metadata?.isRaw == true }
         case .nonRaw:
@@ -317,7 +321,8 @@ final class PhotoLibraryStore: ObservableObject {
             thumbnail: original.thumbnail,
             adjustments: original.adjustments,
             rating: original.rating,
-            flag: original.flag
+            flag: original.flag,
+            colorLabel: original.colorLabel
         )
 
         photos.insert(duplicate, at: photos.index(after: index))
@@ -395,6 +400,20 @@ final class PhotoLibraryStore: ObservableObject {
 
         photos[index].flag = flag
         statusMessage = "\(flag.rawValue) \(photos[index].fileName)."
+        saveCatalog()
+        ensureSelectedPhotoIsVisible()
+    }
+
+    func setSelectedColorLabel(_ colorLabel: PhotoColorLabel) {
+        guard
+            let selectedPhotoID,
+            let index = photos.firstIndex(where: { $0.id == selectedPhotoID })
+        else {
+            return
+        }
+
+        photos[index].colorLabel = colorLabel
+        statusMessage = "Set \(photos[index].fileName) label to \(colorLabel.rawValue)."
         saveCatalog()
         ensureSelectedPhotoIsVisible()
     }
@@ -833,6 +852,14 @@ final class PhotoLibraryStore: ObservableObject {
 
                 return flagRank($0.flag) > flagRank($1.flag)
             }
+        case .colorLabel:
+            photos.sorted {
+                if $0.colorLabel == $1.colorLabel {
+                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                }
+
+                return colorLabelRank($0.colorLabel) > colorLabelRank($1.colorLabel)
+            }
         }
     }
 
@@ -878,6 +905,23 @@ final class PhotoLibraryStore: ObservableObject {
         case .none:
             1
         case .rejected:
+            0
+        }
+    }
+
+    private func colorLabelRank(_ colorLabel: PhotoColorLabel) -> Int {
+        switch colorLabel {
+        case .red:
+            5
+        case .yellow:
+            4
+        case .green:
+            3
+        case .blue:
+            2
+        case .purple:
+            1
+        case .none:
             0
         }
     }
@@ -986,6 +1030,7 @@ final class PhotoLibraryStore: ObservableObject {
             asset.adjustments = entry.adjustments
             asset.rating = entry.rating
             asset.flag = entry.flag
+            asset.colorLabel = entry.colorLabel ?? .none
             return asset
         }
 
@@ -1009,7 +1054,8 @@ final class PhotoLibraryStore: ObservableObject {
                     path: $0.url.path,
                     adjustments: $0.adjustments,
                     rating: $0.rating,
-                    flag: $0.flag
+                    flag: $0.flag,
+                    colorLabel: $0.colorLabel == .none ? nil : $0.colorLabel
                 )
             })
             let data = try JSONEncoder().encode(catalog)
