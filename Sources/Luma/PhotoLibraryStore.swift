@@ -95,6 +95,8 @@ final class PhotoLibraryStore: ObservableObject {
     }
 
     var filteredPhotos: [PhotoAsset] {
+        let recentCutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? .distantPast
+
         let filteredByFlag = switch libraryFilter {
         case .all:
             photos
@@ -122,6 +124,8 @@ final class PhotoLibraryStore: ObservableObject {
             photos.filter { $0.colorLabel == .blue }
         case .purpleLabel:
             photos.filter { $0.colorLabel == .purple }
+        case .recent:
+            photos.filter { $0.importedAt >= recentCutoff }
         case .raw:
             photos.filter { $0.metadata?.isRaw == true }
         case .nonRaw:
@@ -210,6 +214,7 @@ final class PhotoLibraryStore: ObservableObject {
         let imageURLs = expandedImageURLs(from: urls)
         let existingURLs = Set(photos.map(\.url))
         let newURLs = imageURLs.filter { !existingURLs.contains($0) }
+        let importedAt = Date()
 
         guard !newURLs.isEmpty else {
             statusMessage = "No new readable images were found."
@@ -221,7 +226,8 @@ final class PhotoLibraryStore: ObservableObject {
                 url: $0,
                 metadata: ImageProcessor.shared.metadata(for: $0),
                 histogramBins: ImageProcessor.shared.luminanceHistogram(for: $0),
-                rgbHistogramBins: ImageProcessor.shared.rgbHistogram(for: $0)
+                rgbHistogramBins: ImageProcessor.shared.rgbHistogram(for: $0),
+                importedAt: importedAt
             )
         }
         photos.append(contentsOf: imported)
@@ -332,7 +338,8 @@ final class PhotoLibraryStore: ObservableObject {
             adjustments: original.adjustments,
             rating: original.rating,
             flag: original.flag,
-            colorLabel: original.colorLabel
+            colorLabel: original.colorLabel,
+            importedAt: Date()
         )
 
         photos.insert(duplicate, at: photos.index(after: index))
@@ -886,6 +893,14 @@ final class PhotoLibraryStore: ObservableObject {
 
                 return colorLabelRank($0.colorLabel) > colorLabelRank($1.colorLabel)
             }
+        case .importDate:
+            photos.sorted {
+                if $0.importedAt == $1.importedAt {
+                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                }
+
+                return $0.importedAt > $1.importedAt
+            }
         }
     }
 
@@ -1051,7 +1066,8 @@ final class PhotoLibraryStore: ObservableObject {
                 url: url,
                 metadata: ImageProcessor.shared.metadata(for: url),
                 histogramBins: ImageProcessor.shared.luminanceHistogram(for: url),
-                rgbHistogramBins: ImageProcessor.shared.rgbHistogram(for: url)
+                rgbHistogramBins: ImageProcessor.shared.rgbHistogram(for: url),
+                importedAt: entry.importedAt ?? .distantPast
             )
             asset.adjustments = entry.adjustments
             asset.rating = entry.rating
@@ -1081,7 +1097,8 @@ final class PhotoLibraryStore: ObservableObject {
                     adjustments: $0.adjustments,
                     rating: $0.rating,
                     flag: $0.flag,
-                    colorLabel: $0.colorLabel == .none ? nil : $0.colorLabel
+                    colorLabel: $0.colorLabel == .none ? nil : $0.colorLabel,
+                    importedAt: $0.importedAt
                 )
             })
             let data = try JSONEncoder().encode(catalog)

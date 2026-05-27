@@ -18,8 +18,8 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Move to the previous or next visible photo from the toolbar or keyboard.
 - Jump to the first or last visible photo from the Photo menu.
 - Search by filename and clear the active search quickly.
-- Sort by file name, capture date, rating, flag, or color label.
-- Filter by picked, rejected, rated, unrated, unflagged, labeled, unlabeled, individual color labels, RAW, non-RAW, edited, unedited, and minimum star rating.
+- Sort by file name, capture date, rating, flag, color label, or import date.
+- Filter by picked, rejected, rated, unrated, unflagged, labeled, unlabeled, individual color labels, recent imports, RAW, non-RAW, edited, unedited, and minimum star rating.
 - Clear active library filters in one action.
 - Hide rejected photos during everyday browsing.
 - Keep the preview selection aligned with the visible library filter.

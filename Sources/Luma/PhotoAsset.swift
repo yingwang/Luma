@@ -12,6 +12,7 @@ struct PhotoAsset: Identifiable, Equatable {
     var rating: Int = 0
     var flag: PhotoFlag = .none
     var colorLabel: PhotoColorLabel = .none
+    var importedAt: Date = .distantPast
 
     var fileName: String {
         url.lastPathComponent
@@ -27,7 +28,8 @@ struct PhotoAsset: Identifiable, Equatable {
         adjustments: PhotoAdjustments = .neutral,
         rating: Int = 0,
         flag: PhotoFlag = .none,
-        colorLabel: PhotoColorLabel = .none
+        colorLabel: PhotoColorLabel = .none,
+        importedAt: Date = Date()
     ) {
         self.id = id
         self.url = url
@@ -39,6 +41,7 @@ struct PhotoAsset: Identifiable, Equatable {
         self.rating = rating
         self.flag = flag
         self.colorLabel = colorLabel
+        self.importedAt = importedAt
     }
 }
 
@@ -81,6 +84,7 @@ enum LibraryFilter: String, CaseIterable, Codable, Identifiable {
     case greenLabel = "Green Label"
     case blueLabel = "Blue Label"
     case purpleLabel = "Purple Label"
+    case recent = "Recent"
     case raw = "RAW"
     case nonRaw = "Non-RAW"
     case edited = "Edited"
@@ -97,6 +101,7 @@ enum LibrarySort: String, CaseIterable, Codable, Identifiable {
     case rating = "Rating"
     case flag = "Flag"
     case colorLabel = "Color Label"
+    case importDate = "Import Date"
 
     var id: String {
         rawValue
@@ -565,6 +570,7 @@ struct CatalogEntry: Codable {
     var rating: Int
     var flag: PhotoFlag
     var colorLabel: PhotoColorLabel?
+    var importedAt: Date?
 }
 
 struct PhotoMetadata: Equatable {
