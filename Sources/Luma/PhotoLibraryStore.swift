@@ -8,6 +8,7 @@ final class PhotoLibraryStore: ObservableObject {
     private static let defaultExportFormat = ExportFormat.jpeg
     private static let defaultExportQuality = 0.92
     private static let defaultExportLongEdge = 0.0
+    private static let defaultExportAddsLumaSuffix = true
 
     @Published private(set) var photos: [PhotoAsset] = []
     @Published var selectedPhotoID: PhotoAsset.ID?
@@ -39,6 +40,7 @@ final class PhotoLibraryStore: ObservableObject {
     @Published var exportFormat: ExportFormat = defaultExportFormat
     @Published var exportQuality = defaultExportQuality
     @Published var exportLongEdge: Double = defaultExportLongEdge
+    @Published var exportAddsLumaSuffix = defaultExportAddsLumaSuffix
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
     @Published var showOriginal = false {
@@ -775,6 +777,7 @@ final class PhotoLibraryStore: ObservableObject {
         exportFormat = Self.defaultExportFormat
         exportQuality = Self.defaultExportQuality
         exportLongEdge = Self.defaultExportLongEdge
+        exportAddsLumaSuffix = Self.defaultExportAddsLumaSuffix
         statusMessage = "Reset export settings."
     }
 
@@ -787,9 +790,7 @@ final class PhotoLibraryStore: ObservableObject {
         panel.title = "Export \(exportFormat.rawValue)"
         panel.prompt = "Export"
         panel.allowedContentTypes = [exportContentType]
-        panel.nameFieldStringValue = selectedPhoto.url
-            .deletingPathExtension()
-            .lastPathComponent + "-luma.\(exportFormat.fileExtension)"
+        panel.nameFieldStringValue = exportFileName(for: selectedPhoto)
 
         guard panel.runModal() == .OK, let destination = panel.url else {
             return
@@ -870,7 +871,7 @@ final class PhotoLibraryStore: ObservableObject {
     }
 
     private func uniqueExportURL(for photo: PhotoAsset, in folderURL: URL) -> URL {
-        let baseName = photo.url.deletingPathExtension().lastPathComponent + "-luma"
+        let baseName = exportBaseName(for: photo)
         var destination = folderURL.appendingPathComponent(baseName).appendingPathExtension(exportFormat.fileExtension)
         var suffix = 2
 
@@ -882,6 +883,15 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         return destination
+    }
+
+    private func exportFileName(for photo: PhotoAsset) -> String {
+        exportBaseName(for: photo) + ".\(exportFormat.fileExtension)"
+    }
+
+    private func exportBaseName(for photo: PhotoAsset) -> String {
+        let baseName = photo.url.deletingPathExtension().lastPathComponent
+        return exportAddsLumaSuffix ? baseName + "-luma" : baseName
     }
 
     private func sortedPhotos(_ photos: [PhotoAsset]) -> [PhotoAsset] {

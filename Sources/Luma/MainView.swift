@@ -1298,6 +1298,8 @@ struct AdjustmentPanel: View {
                         format: "%.0f"
                     )
 
+                    Toggle("Add -luma Suffix", isOn: $library.exportAddsLumaSuffix)
+
                     Button {
                         library.resetExportSettings()
                     } label: {
