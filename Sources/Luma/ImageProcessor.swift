@@ -301,7 +301,7 @@ final class ImageProcessor: @unchecked Sendable {
     }
 
     private func processedImage(for url: URL, adjustments: PhotoAdjustments) -> CIImage? {
-        guard var image = CIImage(contentsOf: url, options: [.applyOrientationProperty: true]) else {
+        guard var image = loadBaseImage(at: url) else {
             return nil
         }
 
@@ -503,6 +503,18 @@ final class ImageProcessor: @unchecked Sendable {
         image = flip(image, horizontal: adjustments.flipHorizontal, vertical: adjustments.flipVertical)
 
         return image
+    }
+
+    // RAW files need a demosaicing pass, which CIImage(contentsOf:) does not do.
+    // Route them through CIRAWFilter for a proper decode and fall back to the
+    // standard loader for everything else (the initializer returns nil for
+    // formats that are not RAW).
+    private func loadBaseImage(at url: URL) -> CIImage? {
+        if let rawFilter = CIRAWFilter(imageURL: url) {
+            return rawFilter.outputImage
+        }
+
+        return CIImage(contentsOf: url, options: [.applyOrientationProperty: true])
     }
 
     private func scaledImage(_ image: CIImage, maxLongEdge: CGFloat?) -> CIImage? {
