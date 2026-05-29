@@ -4,9 +4,9 @@ import Foundation
 struct PhotoAsset: Identifiable, Equatable {
     let id: UUID
     let url: URL
-    let metadata: PhotoMetadata?
-    let histogramBins: [Double]?
-    let rgbHistogramBins: RGBHistogram?
+    var metadata: PhotoMetadata?
+    var histogramBins: [Double]?
+    var rgbHistogramBins: RGBHistogram?
     var thumbnail: NSImage?
     var adjustments = PhotoAdjustments()
     var rating: Int = 0

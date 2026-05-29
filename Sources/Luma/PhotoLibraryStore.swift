@@ -10,7 +10,11 @@ final class PhotoLibraryStore: ObservableObject {
     private static let defaultExportLongEdge = 0.0
     private static let defaultExportAddsLumaSuffix = true
 
-    @Published private(set) var photos: [PhotoAsset] = []
+    @Published private(set) var photos: [PhotoAsset] = [] {
+        didSet {
+            photosVersion &+= 1
+        }
+    }
     @Published var selectedPhotoID: PhotoAsset.ID?
     @Published private(set) var previewImage: NSImage?
     @Published private(set) var isRenderingPreview = false
@@ -64,8 +68,12 @@ final class PhotoLibraryStore: ObservableObject {
     @Published private(set) var originalPreviewImage: NSImage?
 
     private var renderTask: Task<Void, Never>?
+    private var saveCatalogTask: Task<Void, Never>?
     private var lastRenderedPhotoID: PhotoAsset.ID?
     private var copiedAdjustments: PhotoAdjustments?
+    private var photosVersion = 0
+    private var filteredPhotosCache: [PhotoAsset]?
+    private var filteredPhotosSignature: FilterSignature?
     private var undoStack: [AdjustmentHistoryEntry] = []
     private var redoStack: [AdjustmentHistoryEntry] = []
     private let catalogURL = PhotoLibraryStore.defaultCatalogURL
@@ -98,6 +106,30 @@ final class PhotoLibraryStore: ObservableObject {
     }
 
     var filteredPhotos: [PhotoAsset] {
+        let signature = currentFilterSignature
+
+        if let filteredPhotosCache, filteredPhotosSignature == signature {
+            return filteredPhotosCache
+        }
+
+        let result = computeFilteredPhotos()
+        filteredPhotosCache = result
+        filteredPhotosSignature = signature
+        return result
+    }
+
+    private var currentFilterSignature: FilterSignature {
+        FilterSignature(
+            photosVersion: photosVersion,
+            filter: libraryFilter,
+            sort: librarySort,
+            minimumRating: minimumRating,
+            searchText: searchText,
+            hideRejected: hideRejected
+        )
+    }
+
+    private func computeFilteredPhotos() -> [PhotoAsset] {
         let recentCutoff = Calendar.current.date(byAdding: .day, value: -7, to: Date()) ?? .distantPast
 
         let filteredByFlag = switch libraryFilter {
@@ -225,20 +257,14 @@ final class PhotoLibraryStore: ObservableObject {
         }
 
         let imported = newURLs.map {
-            PhotoAsset(
-                url: $0,
-                metadata: ImageProcessor.shared.metadata(for: $0),
-                histogramBins: ImageProcessor.shared.luminanceHistogram(for: $0),
-                rgbHistogramBins: ImageProcessor.shared.rgbHistogram(for: $0),
-                importedAt: importedAt
-            )
+            PhotoAsset(url: $0, metadata: nil, histogramBins: nil, importedAt: importedAt)
         }
         photos.append(contentsOf: imported)
         selectedPhotoID = imported.first?.id
         showOriginal = false
         statusMessage = "Imported \(newURLs.count) photo\(newURLs.count == 1 ? "" : "s")."
 
-        generateThumbnails(for: imported)
+        loadDerivedData(for: imported)
         renderSelectedPreview()
         saveCatalog()
     }
@@ -871,6 +897,34 @@ final class PhotoLibraryStore: ObservableObject {
         }
     }
 
+    // Metadata and histograms each decode the image, so computing them on the
+    // main actor froze the UI while importing or restoring large libraries.
+    // Compute them on a background task and fill each asset in by id instead.
+    private func loadDerivedData(for assets: [PhotoAsset]) {
+        for asset in assets {
+            let id = asset.id
+            let url = asset.url
+
+            Task.detached(priority: .utility) {
+                let metadata = ImageProcessor.shared.metadata(for: url)
+                let luminanceHistogram = ImageProcessor.shared.luminanceHistogram(for: url)
+                let rgbHistogram = ImageProcessor.shared.rgbHistogram(for: url)
+                let thumbnail = ImageProcessor.shared.thumbnail(for: url)
+
+                await MainActor.run {
+                    guard let index = self.photos.firstIndex(where: { $0.id == id }) else {
+                        return
+                    }
+
+                    self.photos[index].metadata = metadata
+                    self.photos[index].histogramBins = luminanceHistogram
+                    self.photos[index].rgbHistogramBins = rgbHistogram
+                    self.photos[index].thumbnail = thumbnail
+                }
+            }
+        }
+    }
+
     private func uniqueExportURL(for photo: PhotoAsset, in folderURL: URL) -> URL {
         let baseName = exportBaseName(for: photo)
         var destination = folderURL.appendingPathComponent(baseName).appendingPathExtension(exportFormat.fileExtension)
@@ -1110,9 +1164,8 @@ final class PhotoLibraryStore: ObservableObject {
             var asset = PhotoAsset(
                 id: entry.id,
                 url: url,
-                metadata: ImageProcessor.shared.metadata(for: url),
-                histogramBins: ImageProcessor.shared.luminanceHistogram(for: url),
-                rgbHistogramBins: ImageProcessor.shared.rgbHistogram(for: url),
+                metadata: nil,
+                histogramBins: nil,
                 importedAt: entry.importedAt ?? .distantPast
             )
             asset.adjustments = entry.adjustments
@@ -1125,32 +1178,61 @@ final class PhotoLibraryStore: ObservableObject {
         photos = loadedPhotos
         selectedPhotoID = loadedPhotos.first?.id
         statusMessage = loadedPhotos.isEmpty ? "Import photos to begin." : "Loaded \(loadedPhotos.count) photo\(loadedPhotos.count == 1 ? "" : "s")."
-        generateThumbnails(for: loadedPhotos)
+        loadDerivedData(for: loadedPhotos)
         renderSelectedPreview()
     }
 
+    // Editing fires a save on every slider tick. Encoding plus an atomic write
+    // on the main actor each time caused hitches, so coalesce rapid saves and
+    // do the encode and disk write on a background task.
     private func saveCatalog() {
-        do {
-            try FileManager.default.createDirectory(
-                at: catalogURL.deletingLastPathComponent(),
-                withIntermediateDirectories: true
+        let catalog = CatalogFile(entries: photos.map {
+            CatalogEntry(
+                id: $0.id,
+                path: $0.url.path,
+                adjustments: $0.adjustments,
+                rating: $0.rating,
+                flag: $0.flag,
+                colorLabel: $0.colorLabel == .none ? nil : $0.colorLabel,
+                importedAt: $0.importedAt
             )
+        })
+        let url = catalogURL
 
-            let catalog = CatalogFile(entries: photos.map {
-                CatalogEntry(
-                    id: $0.id,
-                    path: $0.url.path,
-                    adjustments: $0.adjustments,
-                    rating: $0.rating,
-                    flag: $0.flag,
-                    colorLabel: $0.colorLabel == .none ? nil : $0.colorLabel,
-                    importedAt: $0.importedAt
-                )
-            })
-            let data = try JSONEncoder().encode(catalog)
-            try data.write(to: catalogURL, options: .atomic)
-        } catch {
-            statusMessage = "Could not save catalog: \(error.localizedDescription)"
+        saveCatalogTask?.cancel()
+        saveCatalogTask = Task { [weak self] in
+            try? await Task.sleep(nanoseconds: 400_000_000)
+
+            guard !Task.isCancelled else {
+                return
+            }
+
+            if let errorMessage = await Self.writeCatalog(catalog, to: url) {
+                self?.statusMessage = errorMessage
+            }
         }
     }
+
+    nonisolated private static func writeCatalog(_ catalog: CatalogFile, to url: URL) async -> String? {
+        do {
+            try FileManager.default.createDirectory(
+                at: url.deletingLastPathComponent(),
+                withIntermediateDirectories: true
+            )
+            let data = try JSONEncoder().encode(catalog)
+            try data.write(to: url, options: .atomic)
+            return nil
+        } catch {
+            return "Could not save catalog: \(error.localizedDescription)"
+        }
+    }
+}
+
+private struct FilterSignature: Equatable {
+    let photosVersion: Int
+    let filter: LibraryFilter
+    let sort: LibrarySort
+    let minimumRating: Int
+    let searchText: String
+    let hideRejected: Bool
 }
