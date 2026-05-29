@@ -12,6 +12,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Drag photos or folders into the workspace to import them.
 - Click the empty workspace to open the system file picker.
 - Restore the local catalog across launches.
+- Load photo metadata, histograms, and thumbnails in the background so importing and restoring large libraries stays responsive.
 - Browse thumbnails and preview the selected photo.
 - Adjust the thumbnail grid size from the library sidebar.
 - Keep thumbnail cells stable while showing rating and flag state.
@@ -45,6 +46,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Undo and redo for adjustment changes.
 - Collapse advanced adjustment panel sections.
 - In-memory preview caching for repeated renders.
+- Keep the current preview on screen while edits re-render, showing a small progress indicator instead of a full-screen spinner.
 - In-memory thumbnail caching for smoother library browsing.
 - Rotate left and right.
 - Flip photos horizontally or vertically.
@@ -114,6 +116,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - View basic file information.
 - Inspect common EXIF fields such as camera, lens, exposure, focal length, and capture time.
 - Identify system-readable RAW files with a RAW badge and filter RAW or non-RAW images.
+- Render and export in a color-managed sRGB space, so exported files are correctly tagged and match the on-screen preview.
 - Export the selected edited photo as JPEG, PNG, or TIFF.
 - Apply export presets for full-size, large web, social, and thumbnail output.
 - Choose JPEG quality.
@@ -145,7 +148,7 @@ swift test
 ## Current Limits
 
 - RAW support depends on what macOS ImageIO and Core Image can decode on the current machine.
-- RAW processing is still basic. Luma does not yet provide a full camera-profile, demosaic, lens-correction, or color-management pipeline.
+- RAW files are decoded through the Core Image RAW pipeline (CIRAWFilter), which handles demosaicing. Luma does not yet expose camera-profile, lens-correction, or wide-gamut controls, and the working and output space is sRGB rather than a full ICC color-management pipeline.
 - Portrait retouching is simple Core Image based processing. It is useful for quick edits, but it is not yet a semantic face/body retouching engine.
 - Healing and masking are not complete yet.
 - Preview and thumbnail caching are in memory only. Very large libraries and large RAW files still need disk-backed caching and more scheduling work.
@@ -155,7 +158,5 @@ swift test
 - More local adjustment mask types.
 - Brush and more gradient tools.
 - Multi-point healing and spot removal.
-- Disk-backed preview cache.
-- More complete RAW and color pipeline.
-- Side-by-side compare view.
-- Export presets and metadata options.
+- Disk-backed preview and thumbnail cache for very large libraries.
+- More complete RAW and color pipeline, including camera profiles, lens correction, and wide-gamut output.
