@@ -369,6 +369,14 @@ struct PreviewPane: View {
         library.previewImage != nil || library.originalPreviewImage != nil
     }
 
+    private var hasDisplayableContent: Bool {
+        if library.compareSideBySide {
+            return library.originalPreviewImage != nil && library.previewImage != nil
+        }
+
+        return library.previewImage != nil
+    }
+
     private var zoomLabel: String {
         zoomScale == 0 ? "Fit" : "\(Int((zoomScale * 100).rounded()))%"
     }
@@ -387,34 +395,36 @@ struct PreviewPane: View {
                 .onTapGesture {
                     library.importPhotos()
                 }
+            } else if library.compareSideBySide,
+                      let originalPreviewImage = library.originalPreviewImage,
+                      let previewImage = library.previewImage {
+                HStack(spacing: 0) {
+                    CompareImagePane(label: "Original", image: originalPreviewImage, zoomScale: zoomScale)
+
+                    Divider()
+
+                    CompareImagePane(label: "Edited", image: previewImage, zoomScale: zoomScale)
+                }
+            } else if !library.compareSideBySide, let previewImage = library.previewImage {
+                PreviewImagePane(label: library.showOriginal ? "Original" : nil, image: previewImage, zoomScale: zoomScale)
             } else if library.isRenderingPreview {
                 ProgressView()
                     .controlSize(.large)
-            } else if library.compareSideBySide {
-                if let originalPreviewImage = library.originalPreviewImage,
-                   let previewImage = library.previewImage {
-                    HStack(spacing: 0) {
-                        CompareImagePane(label: "Original", image: originalPreviewImage, zoomScale: zoomScale)
-
-                        Divider()
-
-                        CompareImagePane(label: "Edited", image: previewImage, zoomScale: zoomScale)
-                    }
-                } else {
-                    ContentUnavailableView(
-                        "Preview Unavailable",
-                        systemImage: "exclamationmark.triangle",
-                        description: Text("Luma could not render this comparison.")
-                    )
-                }
-            } else if let previewImage = library.previewImage {
-                PreviewImagePane(label: library.showOriginal ? "Original" : nil, image: previewImage, zoomScale: zoomScale)
             } else {
                 ContentUnavailableView(
                     "Preview Unavailable",
                     systemImage: "exclamationmark.triangle",
                     description: Text("Luma could not render this image.")
                 )
+            }
+
+            if library.isRenderingPreview, hasDisplayableContent {
+                ProgressView()
+                    .controlSize(.small)
+                    .padding(10)
+                    .background(.ultraThinMaterial, in: Circle())
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .padding(20)
             }
         }
         .overlay(alignment: .bottom) {

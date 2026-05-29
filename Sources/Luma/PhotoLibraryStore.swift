@@ -64,6 +64,7 @@ final class PhotoLibraryStore: ObservableObject {
     @Published private(set) var originalPreviewImage: NSImage?
 
     private var renderTask: Task<Void, Never>?
+    private var lastRenderedPhotoID: PhotoAsset.ID?
     private var copiedAdjustments: PhotoAdjustments?
     private var undoStack: [AdjustmentHistoryEntry] = []
     private var redoStack: [AdjustmentHistoryEntry] = []
@@ -1019,13 +1020,23 @@ final class PhotoLibraryStore: ObservableObject {
 
     private func renderSelectedPreview() {
         renderTask?.cancel()
-        previewImage = nil
-        originalPreviewImage = nil
 
         guard let selectedPhoto else {
+            previewImage = nil
+            originalPreviewImage = nil
             isRenderingPreview = false
+            lastRenderedPhotoID = nil
             return
         }
+
+        // Keep the current preview visible while re-rendering the same photo so
+        // adjustment edits update smoothly instead of flashing to a spinner.
+        // Only clear stale frames when switching to a different photo.
+        if selectedPhoto.id != lastRenderedPhotoID {
+            previewImage = nil
+            originalPreviewImage = nil
+        }
+        lastRenderedPhotoID = selectedPhoto.id
 
         isRenderingPreview = true
         let url = selectedPhoto.url
