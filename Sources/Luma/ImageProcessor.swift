@@ -9,12 +9,16 @@ final class ImageProcessor: @unchecked Sendable {
     static let shared = ImageProcessor()
 
     private let context: CIContext
+    private let outputColorSpace: CGColorSpace
     private let previewCache = NSCache<NSString, NSImage>()
     private let thumbnailCache = NSCache<NSString, NSImage>()
 
     private init() {
+        let colorSpace = CGColorSpace(name: CGColorSpace.sRGB) ?? CGColorSpaceCreateDeviceRGB()
+        outputColorSpace = colorSpace
         context = CIContext(options: [
-            .cacheIntermediates: false
+            .cacheIntermediates: false,
+            .outputColorSpace: colorSpace
         ])
         previewCache.countLimit = 80
         previewCache.totalCostLimit = 256 * 1024 * 1024
@@ -271,7 +275,7 @@ final class ImageProcessor: @unchecked Sendable {
         guard
             let processedImage = processedImage(for: url, adjustments: adjustments),
             let image = scaledImage(processedImage, maxLongEdge: maxLongEdge),
-            let cgImage = context.createCGImage(image, from: image.extent),
+            let cgImage = context.createCGImage(image, from: image.extent, format: .RGBA8, colorSpace: outputColorSpace),
             let destinationRef = CGImageDestinationCreateWithURL(
                 destination as CFURL,
                 format.typeIdentifier as CFString,
@@ -1011,7 +1015,7 @@ final class ImageProcessor: @unchecked Sendable {
     }
 
     private func render(_ image: CIImage) -> NSImage? {
-        guard let cgImage = context.createCGImage(image, from: image.extent) else {
+        guard let cgImage = context.createCGImage(image, from: image.extent, format: .RGBA8, colorSpace: outputColorSpace) else {
             return nil
         }
 
