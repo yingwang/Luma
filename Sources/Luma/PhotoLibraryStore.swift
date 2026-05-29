@@ -596,26 +596,14 @@ final class PhotoLibraryStore: ObservableObject {
 
     func resetSelectedBeautyAdjustments() {
         updateSelectedAdjustments { adjustments in
-            adjustments.beautySmooth = 0
-            adjustments.beautyWrinkle = 0
-            adjustments.beautyBlemish = 0
-            adjustments.beautyBrighten = 0
-            adjustments.beautyWhiten = 0
-            adjustments.beautyRosy = 0
-            adjustments.beautyGlow = 0
-            adjustments.beautySoften = 0
-            adjustments.beautyDetail = 0
-            adjustments.beautyWarmth = 0
-            adjustments.eyeEnlarge = 0
-            adjustments.faceSlim = 0
-            adjustments.bodySlim = 0
+            adjustments.resetBeautyAdjustments()
         }
         statusMessage = "Reset beauty adjustments."
     }
 
     func resetSelectedColorMixer() {
         updateSelectedAdjustments { adjustments in
-            adjustments.colorMixer = ColorMixerAdjustments()
+            adjustments.resetColorMixer()
         }
         statusMessage = "Reset color mixer."
     }
@@ -676,45 +664,21 @@ final class PhotoLibraryStore: ObservableObject {
 
     func resetSelectedLocalAdjustments() {
         updateSelectedAdjustments { adjustments in
-            adjustments.radialExposure = 0
-            adjustments.radialCenterX = 0.5
-            adjustments.radialCenterY = 0.5
-            adjustments.radialRadius = 0.35
-            adjustments.radialFeather = 0.25
-            adjustments.radialInvert = false
-            adjustments.linearExposure = 0
-            adjustments.linearStartY = 1
-            adjustments.linearEndY = 0.65
-            adjustments.linearInvert = false
-            adjustments.spotHealAmount = 0
-            adjustments.spotHealX = 0.5
-            adjustments.spotHealY = 0.5
-            adjustments.spotHealRadius = 0.06
-            adjustments.spotHealFeather = 0.04
-            adjustments.spotHealSourceOffsetX = 0.08
-            adjustments.spotHealSourceOffsetY = 0
+            adjustments.resetLocalAdjustments()
         }
         statusMessage = "Reset local adjustments."
     }
 
     func resetSelectedRadialAdjustment() {
         updateSelectedAdjustments { adjustments in
-            adjustments.radialExposure = 0
-            adjustments.radialCenterX = 0.5
-            adjustments.radialCenterY = 0.5
-            adjustments.radialRadius = 0.35
-            adjustments.radialFeather = 0.25
-            adjustments.radialInvert = false
+            adjustments.resetRadialAdjustment()
         }
         statusMessage = "Reset radial adjustment."
     }
 
     func resetSelectedLinearAdjustment() {
         updateSelectedAdjustments { adjustments in
-            adjustments.linearExposure = 0
-            adjustments.linearStartY = 1
-            adjustments.linearEndY = 0.65
-            adjustments.linearInvert = false
+            adjustments.resetLinearAdjustment()
         }
         statusMessage = "Reset linear adjustment."
     }
@@ -728,13 +692,7 @@ final class PhotoLibraryStore: ObservableObject {
 
     func resetSelectedSpotHeal() {
         updateSelectedAdjustments { adjustments in
-            adjustments.spotHealAmount = 0
-            adjustments.spotHealX = 0.5
-            adjustments.spotHealY = 0.5
-            adjustments.spotHealRadius = 0.06
-            adjustments.spotHealFeather = 0.04
-            adjustments.spotHealSourceOffsetX = 0.08
-            adjustments.spotHealSourceOffsetY = 0
+            adjustments.resetSpotHeal()
         }
         statusMessage = "Reset spot heal."
     }
