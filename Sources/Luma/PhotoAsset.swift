@@ -521,6 +521,58 @@ struct PhotoAdjustments: Codable, Equatable {
         sharpness = 0
         vignette = 0
     }
+
+    mutating func resetRadialAdjustment() {
+        radialExposure = PhotoAdjustments.neutral.radialExposure
+        radialCenterX = PhotoAdjustments.neutral.radialCenterX
+        radialCenterY = PhotoAdjustments.neutral.radialCenterY
+        radialRadius = PhotoAdjustments.neutral.radialRadius
+        radialFeather = PhotoAdjustments.neutral.radialFeather
+        radialInvert = PhotoAdjustments.neutral.radialInvert
+    }
+
+    mutating func resetLinearAdjustment() {
+        linearExposure = PhotoAdjustments.neutral.linearExposure
+        linearStartY = PhotoAdjustments.neutral.linearStartY
+        linearEndY = PhotoAdjustments.neutral.linearEndY
+        linearInvert = PhotoAdjustments.neutral.linearInvert
+    }
+
+    mutating func resetSpotHeal() {
+        spotHealAmount = PhotoAdjustments.neutral.spotHealAmount
+        spotHealX = PhotoAdjustments.neutral.spotHealX
+        spotHealY = PhotoAdjustments.neutral.spotHealY
+        spotHealRadius = PhotoAdjustments.neutral.spotHealRadius
+        spotHealFeather = PhotoAdjustments.neutral.spotHealFeather
+        spotHealSourceOffsetX = PhotoAdjustments.neutral.spotHealSourceOffsetX
+        spotHealSourceOffsetY = PhotoAdjustments.neutral.spotHealSourceOffsetY
+    }
+
+    mutating func resetLocalAdjustments() {
+        resetRadialAdjustment()
+        resetLinearAdjustment()
+        resetSpotHeal()
+    }
+
+    mutating func resetBeautyAdjustments() {
+        beautySmooth = 0
+        beautyWrinkle = 0
+        beautyBlemish = 0
+        beautyBrighten = 0
+        beautyWhiten = 0
+        beautyRosy = 0
+        beautyGlow = 0
+        beautySoften = 0
+        beautyDetail = 0
+        beautyWarmth = 0
+        eyeEnlarge = 0
+        faceSlim = 0
+        bodySlim = 0
+    }
+
+    mutating func resetColorMixer() {
+        colorMixer = ColorMixerAdjustments()
+    }
 }
 
 struct ColorMixerAdjustments: Codable, Equatable {

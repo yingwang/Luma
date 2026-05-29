@@ -142,6 +142,145 @@ final class LumaModelTests: XCTestCase {
         XCTAssertTrue(adjustments.flipHorizontal)
     }
 
+    func testResetRadialAdjustmentRestoresDefaultsWithoutChangingOtherEdits() {
+        var adjustments = PhotoAdjustments(
+            exposure: 0.5,
+            radialExposure: -0.8,
+            radialCenterX: 0.2,
+            radialCenterY: 0.3,
+            radialRadius: 0.6,
+            radialFeather: 0.5,
+            radialInvert: true,
+            linearExposure: 0.4,
+            spotHealAmount: 0.7
+        )
+
+        adjustments.resetRadialAdjustment()
+
+        XCTAssertEqual(adjustments.radialExposure, 0)
+        XCTAssertEqual(adjustments.radialCenterX, 0.5)
+        XCTAssertEqual(adjustments.radialCenterY, 0.5)
+        XCTAssertEqual(adjustments.radialRadius, 0.35)
+        XCTAssertEqual(adjustments.radialFeather, 0.25)
+        XCTAssertFalse(adjustments.radialInvert)
+        XCTAssertEqual(adjustments.exposure, 0.5)
+        XCTAssertEqual(adjustments.linearExposure, 0.4)
+        XCTAssertEqual(adjustments.spotHealAmount, 0.7)
+    }
+
+    func testResetLinearAdjustmentRestoresDefaultsWithoutChangingOtherEdits() {
+        var adjustments = PhotoAdjustments(
+            linearExposure: 0.9,
+            linearStartY: 0.2,
+            linearEndY: 0.1,
+            linearInvert: true,
+            radialExposure: -0.3
+        )
+
+        adjustments.resetLinearAdjustment()
+
+        XCTAssertEqual(adjustments.linearExposure, 0)
+        XCTAssertEqual(adjustments.linearStartY, 1)
+        XCTAssertEqual(adjustments.linearEndY, 0.65)
+        XCTAssertFalse(adjustments.linearInvert)
+        XCTAssertEqual(adjustments.radialExposure, -0.3)
+    }
+
+    func testResetSpotHealRestoresDefaultsWithoutChangingOtherEdits() {
+        var adjustments = PhotoAdjustments(
+            spotHealAmount: 0.8,
+            spotHealX: 0.1,
+            spotHealY: 0.9,
+            spotHealRadius: 0.3,
+            spotHealFeather: 0.2,
+            spotHealSourceOffsetX: 0.4,
+            spotHealSourceOffsetY: -0.4,
+            radialExposure: 0.5
+        )
+
+        adjustments.resetSpotHeal()
+
+        XCTAssertEqual(adjustments.spotHealAmount, 0)
+        XCTAssertEqual(adjustments.spotHealX, 0.5)
+        XCTAssertEqual(adjustments.spotHealY, 0.5)
+        XCTAssertEqual(adjustments.spotHealRadius, 0.06)
+        XCTAssertEqual(adjustments.spotHealFeather, 0.04)
+        XCTAssertEqual(adjustments.spotHealSourceOffsetX, 0.08)
+        XCTAssertEqual(adjustments.spotHealSourceOffsetY, 0)
+        XCTAssertEqual(adjustments.radialExposure, 0.5)
+    }
+
+    func testResetLocalAdjustmentsClearsAllLocalEditsButKeepsToneEdits() {
+        var adjustments = PhotoAdjustments(
+            exposure: 0.6,
+            contrast: 1.3,
+            radialExposure: -0.7,
+            radialInvert: true,
+            linearExposure: 0.5,
+            linearInvert: true,
+            spotHealAmount: 0.9
+        )
+
+        adjustments.resetLocalAdjustments()
+
+        XCTAssertEqual(adjustments.radialExposure, 0)
+        XCTAssertFalse(adjustments.radialInvert)
+        XCTAssertEqual(adjustments.linearExposure, 0)
+        XCTAssertFalse(adjustments.linearInvert)
+        XCTAssertEqual(adjustments.spotHealAmount, 0)
+        XCTAssertEqual(adjustments.exposure, 0.6)
+        XCTAssertEqual(adjustments.contrast, 1.3)
+    }
+
+    func testResetBeautyAdjustmentsClearsBeautyEditsButKeepsToneEdits() {
+        var adjustments = PhotoAdjustments(
+            exposure: 0.4,
+            beautySmooth: 0.5,
+            beautyWrinkle: 0.4,
+            beautyBlemish: 0.3,
+            beautyBrighten: 0.2,
+            beautyWhiten: 0.3,
+            beautyRosy: 0.2,
+            beautyGlow: 0.4,
+            beautySoften: 0.3,
+            beautyDetail: 0.2,
+            beautyWarmth: 0.5,
+            eyeEnlarge: 0.3,
+            faceSlim: 0.2,
+            bodySlim: 0.4
+        )
+
+        adjustments.resetBeautyAdjustments()
+
+        XCTAssertEqual(adjustments.beautySmooth, 0)
+        XCTAssertEqual(adjustments.beautyWrinkle, 0)
+        XCTAssertEqual(adjustments.beautyBlemish, 0)
+        XCTAssertEqual(adjustments.beautyBrighten, 0)
+        XCTAssertEqual(adjustments.beautyWhiten, 0)
+        XCTAssertEqual(adjustments.beautyRosy, 0)
+        XCTAssertEqual(adjustments.beautyGlow, 0)
+        XCTAssertEqual(adjustments.beautySoften, 0)
+        XCTAssertEqual(adjustments.beautyDetail, 0)
+        XCTAssertEqual(adjustments.beautyWarmth, 0)
+        XCTAssertEqual(adjustments.eyeEnlarge, 0)
+        XCTAssertEqual(adjustments.faceSlim, 0)
+        XCTAssertEqual(adjustments.bodySlim, 0)
+        XCTAssertEqual(adjustments.exposure, 0.4)
+    }
+
+    func testResetColorMixerClearsMixerButKeepsToneEdits() {
+        var mixer = ColorMixerAdjustments()
+        mixer.blue = -0.5
+        mixer.orange = 0.3
+        var adjustments = PhotoAdjustments(saturation: 1.2, colorMixer: mixer)
+
+        adjustments.resetColorMixer()
+
+        XCTAssertFalse(adjustments.colorMixer.hasAdjustments)
+        XCTAssertEqual(adjustments.colorMixer, ColorMixerAdjustments())
+        XCTAssertEqual(adjustments.saturation, 1.2)
+    }
+
     func testLibrarySortMetadata() {
         XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag", "Color Label", "Import Date"])
     }
