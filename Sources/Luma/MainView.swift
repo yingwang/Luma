@@ -550,6 +550,7 @@ struct AdjustmentPanel: View {
     @State private var isColorMixerExpanded = false
     @State private var isInfoExpanded = false
     @State private var isExportExpanded = true
+    @State private var selectedSpotHealID: SpotHealPoint.ID?
 
     var body: some View {
         ScrollView {
@@ -985,61 +986,102 @@ struct AdjustmentPanel: View {
 
             DisclosureGroup(isExpanded: $isHealExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
+                    HStack {
+                        Button {
+                            selectedSpotHealID = library.addSelectedSpotHealPoint()
+                        } label: {
+                            Label("Add Spot", systemImage: "plus.circle")
+                        }
+                        .disabled(library.selectedPhoto == nil)
+
+                        Button(role: .destructive) {
+                            if let activeSpotHealID {
+                                library.removeSelectedSpotHealPoint(id: activeSpotHealID)
+                                selectedSpotHealID = nil
+                            }
+                        } label: {
+                            Label("Delete", systemImage: "minus.circle")
+                        }
+                        .disabled(activeSpotHealID == nil)
+                    }
+
+                    if spotHealPoints.isEmpty {
+                        Text("Add a spot, then tune the target and source offsets.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        Picker("Point", selection: spotHealSelectionBinding) {
+                            ForEach(Array(spotHealPoints.enumerated()), id: \.element.id) { index, point in
+                                Text("Spot \(index + 1)").tag(Optional(point.id))
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .disabled(library.selectedPhoto == nil)
+                    }
+
                     AdjustmentSlider(
                         title: "Amount",
-                        value: adjustmentBinding(\.spotHealAmount),
+                        value: spotHealPointBinding(\.amount),
                         range: 0...1,
                         format: "%.2f"
                     )
+                    .disabled(activeSpotHealID == nil)
 
                     AdjustmentSlider(
                         title: "Target X",
-                        value: adjustmentBinding(\.spotHealX),
+                        value: spotHealPointBinding(\.x),
                         range: 0...1,
                         format: "%.2f"
                     )
+                    .disabled(activeSpotHealID == nil)
 
                     AdjustmentSlider(
                         title: "Target Y",
-                        value: adjustmentBinding(\.spotHealY),
+                        value: spotHealPointBinding(\.y),
                         range: 0...1,
                         format: "%.2f"
                     )
+                    .disabled(activeSpotHealID == nil)
 
                     AdjustmentSlider(
                         title: "Radius",
-                        value: adjustmentBinding(\.spotHealRadius),
+                        value: spotHealPointBinding(\.radius),
                         range: 0.01...0.2,
                         format: "%.2f"
                     )
+                    .disabled(activeSpotHealID == nil)
 
                     AdjustmentSlider(
                         title: "Feather",
-                        value: adjustmentBinding(\.spotHealFeather),
+                        value: spotHealPointBinding(\.feather),
                         range: 0.005...0.2,
                         format: "%.2f"
                     )
+                    .disabled(activeSpotHealID == nil)
 
                     AdjustmentSlider(
                         title: "Source X",
-                        value: adjustmentBinding(\.spotHealSourceOffsetX),
+                        value: spotHealPointBinding(\.sourceOffsetX),
                         range: -0.5...0.5,
                         format: "%.2f"
                     )
+                    .disabled(activeSpotHealID == nil)
 
                     AdjustmentSlider(
                         title: "Source Y",
-                        value: adjustmentBinding(\.spotHealSourceOffsetY),
+                        value: spotHealPointBinding(\.sourceOffsetY),
                         range: -0.5...0.5,
                         format: "%.2f"
                     )
+                    .disabled(activeSpotHealID == nil)
 
                     Button {
                         library.resetSelectedSpotHeal()
+                        selectedSpotHealID = nil
                     } label: {
-                        Label("Reset Spot", systemImage: "arrow.counterclockwise.circle")
+                        Label("Reset Spots", systemImage: "arrow.counterclockwise.circle")
                     }
-                    .disabled(library.selectedPhoto == nil)
+                    .disabled(spotHealPoints.isEmpty)
                 }
                 .padding(.top, 8)
             } label: {
@@ -1350,6 +1392,37 @@ struct AdjustmentPanel: View {
         }
         .padding(18)
         }
+        .onChange(of: library.selectedPhotoID) { _, _ in
+            selectedSpotHealID = nil
+        }
+    }
+
+    private var spotHealPoints: [SpotHealPoint] {
+        library.selectedAdjustments.effectiveSpotHealPoints
+    }
+
+    private var activeSpotHealID: SpotHealPoint.ID? {
+        if let selectedSpotHealID, spotHealPoints.contains(where: { $0.id == selectedSpotHealID }) {
+            return selectedSpotHealID
+        }
+
+        return spotHealPoints.first?.id
+    }
+
+    private var activeSpotHealPoint: SpotHealPoint? {
+        guard let activeSpotHealID else {
+            return nil
+        }
+
+        return spotHealPoints.first { $0.id == activeSpotHealID }
+    }
+
+    private var spotHealSelectionBinding: Binding<SpotHealPoint.ID?> {
+        Binding {
+            activeSpotHealID
+        } set: { value in
+            selectedSpotHealID = value
+        }
     }
 
     private func adjustmentBinding(_ keyPath: WritableKeyPath<PhotoAdjustments, Double>) -> Binding<Double> {
@@ -1379,6 +1452,21 @@ struct AdjustmentPanel: View {
             library.updateSelectedAdjustments { adjustments in
                 adjustments[keyPath: keyPath] = value
             }
+        }
+    }
+
+    private func spotHealPointBinding(_ keyPath: WritableKeyPath<SpotHealPoint, Double>) -> Binding<Double> {
+        Binding {
+            activeSpotHealPoint?[keyPath: keyPath] ?? SpotHealPoint()[keyPath: keyPath]
+        } set: { value in
+            guard let activeSpotHealID else {
+                return
+            }
+
+            library.updateSelectedSpotHealPoint(id: activeSpotHealID) { point in
+                point[keyPath: keyPath] = value
+            }
+            selectedSpotHealID = activeSpotHealID
         }
     }
 

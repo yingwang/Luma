@@ -50,6 +50,53 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.spotHealFeather, 0.04)
         XCTAssertEqual(adjustments.spotHealSourceOffsetX, 0.08)
         XCTAssertEqual(adjustments.spotHealSourceOffsetY, 0)
+        XCTAssertTrue(adjustments.spotHealPoints.isEmpty)
+    }
+
+    func testLegacySpotHealFieldsBecomeEditableSpotPoint() throws {
+        let data = """
+        {
+          "spotHealAmount": 0.7,
+          "spotHealX": 0.25,
+          "spotHealY": 0.75,
+          "spotHealRadius": 0.08,
+          "spotHealFeather": 0.03,
+          "spotHealSourceOffsetX": -0.12,
+          "spotHealSourceOffsetY": 0.06
+        }
+        """.data(using: .utf8)!
+
+        let adjustments = try JSONDecoder().decode(PhotoAdjustments.self, from: data)
+        let point = try XCTUnwrap(adjustments.effectiveSpotHealPoints.first)
+
+        XCTAssertEqual(adjustments.effectiveSpotHealPoints.count, 1)
+        XCTAssertEqual(point.amount, 0.7)
+        XCTAssertEqual(point.x, 0.25)
+        XCTAssertEqual(point.y, 0.75)
+        XCTAssertEqual(point.radius, 0.08)
+        XCTAssertEqual(point.feather, 0.03)
+        XCTAssertEqual(point.sourceOffsetX, -0.12)
+        XCTAssertEqual(point.sourceOffsetY, 0.06)
+    }
+
+    func testSpotHealPointsRoundTrip() throws {
+        let point = SpotHealPoint(
+            id: UUID(uuidString: "11111111-1111-1111-1111-111111111111")!,
+            amount: 0.6,
+            x: 0.2,
+            y: 0.4,
+            radius: 0.05,
+            feather: 0.02,
+            sourceOffsetX: 0.1,
+            sourceOffsetY: -0.1
+        )
+        let original = PhotoAdjustments(spotHealPoints: [point])
+
+        let data = try JSONEncoder().encode(original)
+        let decoded = try JSONDecoder().decode(PhotoAdjustments.self, from: data)
+
+        XCTAssertEqual(decoded.spotHealPoints, [point])
+        XCTAssertEqual(decoded.effectiveSpotHealPoints, [point])
     }
 
     func testCropAspectRatios() {

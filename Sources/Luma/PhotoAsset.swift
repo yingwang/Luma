@@ -213,6 +213,37 @@ enum ExportFormat: String, CaseIterable, Identifiable {
     }
 }
 
+struct SpotHealPoint: Codable, Equatable, Identifiable {
+    let id: UUID
+    var amount: Double
+    var x: Double
+    var y: Double
+    var radius: Double
+    var feather: Double
+    var sourceOffsetX: Double
+    var sourceOffsetY: Double
+
+    init(
+        id: UUID = UUID(),
+        amount: Double = 0.85,
+        x: Double = 0.5,
+        y: Double = 0.5,
+        radius: Double = 0.04,
+        feather: Double = 0.035,
+        sourceOffsetX: Double = 0.08,
+        sourceOffsetY: Double = 0
+    ) {
+        self.id = id
+        self.amount = amount
+        self.x = x
+        self.y = y
+        self.radius = radius
+        self.feather = feather
+        self.sourceOffsetX = sourceOffsetX
+        self.sourceOffsetY = sourceOffsetY
+    }
+}
+
 struct PhotoAdjustments: Codable, Equatable {
     var exposure: Double = 0
     var highlights: Double = 0
@@ -260,6 +291,7 @@ struct PhotoAdjustments: Codable, Equatable {
     var spotHealFeather: Double = 0.04
     var spotHealSourceOffsetX: Double = 0.08
     var spotHealSourceOffsetY: Double = 0
+    var spotHealPoints: [SpotHealPoint] = []
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
@@ -316,6 +348,7 @@ struct PhotoAdjustments: Codable, Equatable {
         case spotHealFeather
         case spotHealSourceOffsetX
         case spotHealSourceOffsetY
+        case spotHealPoints
         case straighten
         case rotationTurns
         case cropAspect
@@ -371,6 +404,7 @@ struct PhotoAdjustments: Codable, Equatable {
         spotHealFeather: Double = 0.04,
         spotHealSourceOffsetX: Double = 0.08,
         spotHealSourceOffsetY: Double = 0,
+        spotHealPoints: [SpotHealPoint] = [],
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
@@ -424,6 +458,16 @@ struct PhotoAdjustments: Codable, Equatable {
         self.spotHealFeather = spotHealFeather
         self.spotHealSourceOffsetX = spotHealSourceOffsetX
         self.spotHealSourceOffsetY = spotHealSourceOffsetY
+        self.spotHealPoints = Self.normalizedSpotHealPoints(
+            points: spotHealPoints,
+            legacyAmount: spotHealAmount,
+            legacyX: spotHealX,
+            legacyY: spotHealY,
+            legacyRadius: spotHealRadius,
+            legacyFeather: spotHealFeather,
+            legacySourceOffsetX: spotHealSourceOffsetX,
+            legacySourceOffsetY: spotHealSourceOffsetY
+        )
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
@@ -480,12 +524,82 @@ struct PhotoAdjustments: Codable, Equatable {
         spotHealFeather = try container.decodeIfPresent(Double.self, forKey: .spotHealFeather) ?? 0.04
         spotHealSourceOffsetX = try container.decodeIfPresent(Double.self, forKey: .spotHealSourceOffsetX) ?? 0.08
         spotHealSourceOffsetY = try container.decodeIfPresent(Double.self, forKey: .spotHealSourceOffsetY) ?? 0
+        let decodedSpotHealPoints = try container.decodeIfPresent([SpotHealPoint].self, forKey: .spotHealPoints) ?? []
+        spotHealPoints = Self.normalizedSpotHealPoints(
+            points: decodedSpotHealPoints,
+            legacyAmount: spotHealAmount,
+            legacyX: spotHealX,
+            legacyY: spotHealY,
+            legacyRadius: spotHealRadius,
+            legacyFeather: spotHealFeather,
+            legacySourceOffsetX: spotHealSourceOffsetX,
+            legacySourceOffsetY: spotHealSourceOffsetY
+        )
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
         flipHorizontal = try container.decodeIfPresent(Bool.self, forKey: .flipHorizontal) ?? false
         flipVertical = try container.decodeIfPresent(Bool.self, forKey: .flipVertical) ?? false
         colorMixer = try container.decodeIfPresent(ColorMixerAdjustments.self, forKey: .colorMixer) ?? ColorMixerAdjustments()
+    }
+
+    var effectiveSpotHealPoints: [SpotHealPoint] {
+        if !spotHealPoints.isEmpty {
+            return spotHealPoints
+        }
+
+        return Self.normalizedSpotHealPoints(
+            points: [],
+            legacyAmount: spotHealAmount,
+            legacyX: spotHealX,
+            legacyY: spotHealY,
+            legacyRadius: spotHealRadius,
+            legacyFeather: spotHealFeather,
+            legacySourceOffsetX: spotHealSourceOffsetX,
+            legacySourceOffsetY: spotHealSourceOffsetY
+        )
+    }
+
+    mutating func resetSpotHeal() {
+        spotHealAmount = 0
+        spotHealX = 0.5
+        spotHealY = 0.5
+        spotHealRadius = 0.06
+        spotHealFeather = 0.04
+        spotHealSourceOffsetX = 0.08
+        spotHealSourceOffsetY = 0
+        spotHealPoints = []
+    }
+
+    private static func normalizedSpotHealPoints(
+        points: [SpotHealPoint],
+        legacyAmount: Double,
+        legacyX: Double,
+        legacyY: Double,
+        legacyRadius: Double,
+        legacyFeather: Double,
+        legacySourceOffsetX: Double,
+        legacySourceOffsetY: Double
+    ) -> [SpotHealPoint] {
+        if !points.isEmpty {
+            return points
+        }
+
+        guard legacyAmount > 0 else {
+            return []
+        }
+
+        return [
+            SpotHealPoint(
+                amount: legacyAmount,
+                x: legacyX,
+                y: legacyY,
+                radius: legacyRadius,
+                feather: legacyFeather,
+                sourceOffsetX: legacySourceOffsetX,
+                sourceOffsetY: legacySourceOffsetY
+            )
+        ]
     }
 
     mutating func invertLinearGradientDirection() {

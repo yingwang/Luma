@@ -88,8 +88,8 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Invert radial and linear local masks.
 - Flip linear gradient direction without changing the exposure amount.
 - Reset radial and linear local adjustments independently.
-- Single-point spot healing with source offset, radius, feather, and strength controls.
-- Reset only the active spot-heal controls.
+- Multi-point spot healing with source offset, radius, feather, and strength controls.
+- Add, select, delete, and reset spot-heal points.
 - Reset local adjustments without changing global edits.
 - Per-color saturation controls for red, orange, yellow, green, aqua, blue, purple, and magenta.
 - Reset color mixer channels without changing other edits.
@@ -151,13 +151,13 @@ swift test
 - RAW support depends on what macOS ImageIO and Core Image can decode on the current machine.
 - RAW files are decoded through the Core Image RAW pipeline (CIRAWFilter), which handles demosaicing. Luma does not yet expose camera-profile, lens-correction, or wide-gamut controls, and the working and output space is sRGB rather than a full ICC color-management pipeline.
 - Portrait retouching is simple Core Image based processing. It is useful for quick edits, but it is not yet a semantic face/body retouching engine.
-- Healing and masking are not complete yet.
+- Healing and masking are still early, and brush-based retouching is not complete yet.
 - Preview and thumbnail caching are in memory only. Very large libraries and large RAW files still need disk-backed caching and more scheduling work.
 
 ## Next Work
 
 - More local adjustment mask types.
 - Brush and more gradient tools.
-- Multi-point healing and spot removal.
+- Brush-based healing and spot removal.
 - Disk-backed preview and thumbnail cache for very large libraries.
 - More complete RAW and color pipeline, including camera profiles, lens correction, and wide-gamut output.
