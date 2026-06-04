@@ -25,6 +25,7 @@ final class PhotoLibraryStore: ObservableObject {
         }
     }
     @Published var librarySort: LibrarySort = .fileName
+    @Published var librarySortOrder: LibrarySortOrder = .standard
     @Published var minimumRating = 0 {
         didSet {
             ensureSelectedPhotoIsVisible()
@@ -884,14 +885,14 @@ final class PhotoLibraryStore: ObservableObject {
     private func generateThumbnails(for imported: [PhotoAsset]) {
         for photo in imported {
             Task.detached(priority: .utility) {
-                let thumbnail = ImageProcessor.shared.thumbnail(for: photo.url)
+                let thumbnailData = ImageProcessor.shared.thumbnail(for: photo.url)?.tiffRepresentation
 
                 await MainActor.run {
                     guard let index = self.photos.firstIndex(where: { $0.id == photo.id }) else {
                         return
                     }
 
-                    self.photos[index].thumbnail = thumbnail
+                    self.photos[index].thumbnail = thumbnailData.flatMap { NSImage(data: $0) }
                 }
             }
         }
@@ -909,7 +910,7 @@ final class PhotoLibraryStore: ObservableObject {
                 let metadata = ImageProcessor.shared.metadata(for: url)
                 let luminanceHistogram = ImageProcessor.shared.luminanceHistogram(for: url)
                 let rgbHistogram = ImageProcessor.shared.rgbHistogram(for: url)
-                let thumbnail = ImageProcessor.shared.thumbnail(for: url)
+                let thumbnailData = ImageProcessor.shared.thumbnail(for: url)?.tiffRepresentation
 
                 await MainActor.run {
                     guard let index = self.photos.firstIndex(where: { $0.id == id }) else {
@@ -919,7 +920,7 @@ final class PhotoLibraryStore: ObservableObject {
                     self.photos[index].metadata = metadata
                     self.photos[index].histogramBins = luminanceHistogram
                     self.photos[index].rgbHistogramBins = rgbHistogram
-                    self.photos[index].thumbnail = thumbnail
+                    self.photos[index].thumbnail = thumbnailData.flatMap { NSImage(data: $0) }
                 }
             }
         }
@@ -950,7 +951,7 @@ final class PhotoLibraryStore: ObservableObject {
     }
 
     private func sortedPhotos(_ photos: [PhotoAsset]) -> [PhotoAsset] {
-        switch librarySort {
+        let sorted = switch librarySort {
         case .fileName:
             photos.sorted {
                 $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
@@ -992,6 +993,8 @@ final class PhotoLibraryStore: ObservableObject {
                 return $0.importedAt > $1.importedAt
             }
         }
+
+        return librarySortOrder == .standard ? sorted : Array(sorted.reversed())
     }
 
     private func selectAdjacentPhoto(offset: Int) {
@@ -1100,17 +1103,17 @@ final class PhotoLibraryStore: ObservableObject {
         let renderClippingWarnings = showClippingWarnings
 
         renderTask = Task.detached(priority: .userInitiated) {
-            let image = ImageProcessor.shared.preview(
+            let imageData = ImageProcessor.shared.preview(
                 for: url,
                 adjustments: renderOriginal && !renderComparison ? .neutral : adjustments,
                 showClippingWarnings: renderClippingWarnings
-            )
-            let originalImage = renderComparison
+            )?.tiffRepresentation
+            let originalImageData = renderComparison
                 ? ImageProcessor.shared.preview(
                     for: url,
                     adjustments: .neutral,
                     showClippingWarnings: renderClippingWarnings
-                )
+                )?.tiffRepresentation
                 : nil
 
             await MainActor.run {
@@ -1118,8 +1121,8 @@ final class PhotoLibraryStore: ObservableObject {
                     return
                 }
 
-                self.previewImage = image
-                self.originalPreviewImage = originalImage
+                self.previewImage = imageData.flatMap { NSImage(data: $0) }
+                self.originalPreviewImage = originalImageData.flatMap { NSImage(data: $0) }
                 self.isRenderingPreview = false
             }
         }

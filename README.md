@@ -20,6 +20,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Jump to the first or last visible photo from the Photo menu.
 - Search by filename and clear the active search quickly.
 - Sort by file name, capture date, rating, flag, color label, or import date.
+- Reverse the current library sort order.
 - Filter by picked, rejected, rated, unrated, unflagged, labeled, unlabeled, individual color labels, recent imports, RAW, non-RAW, edited, unedited, and minimum star rating.
 - Clear active library filters in one action.
 - Hide rejected photos during everyday browsing.

@@ -146,6 +146,10 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag", "Color Label", "Import Date"])
     }
 
+    func testLibrarySortOrderMetadata() {
+        XCTAssertEqual(LibrarySortOrder.allCases.map(\.rawValue), ["Standard", "Reverse"])
+    }
+
     func testLibraryFilterMetadata() {
         XCTAssertEqual(LibraryFilter.allCases.map(\.rawValue), ["All", "Picked", "Rejected", "Rated", "Unrated", "Unflagged", "Labeled", "Unlabeled", "Red Label", "Yellow Label", "Green Label", "Blue Label", "Purple Label", "Recent", "RAW", "Non-RAW", "Edited", "Unedited"])
     }

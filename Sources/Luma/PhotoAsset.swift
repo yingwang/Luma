@@ -108,6 +108,15 @@ enum LibrarySort: String, CaseIterable, Codable, Identifiable {
     }
 }
 
+enum LibrarySortOrder: String, CaseIterable, Codable, Identifiable {
+    case standard = "Standard"
+    case reverse = "Reverse"
+
+    var id: String {
+        rawValue
+    }
+}
+
 enum PhotoPreset: String, CaseIterable, Identifiable {
     case neutral = "Neutral"
     case vivid = "Vivid"

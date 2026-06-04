@@ -158,12 +158,22 @@ struct LibrarySidebar: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 
-            Picker("Sort", selection: $library.librarySort) {
-                ForEach(LibrarySort.allCases) { sort in
-                    Text(sort.rawValue).tag(sort)
+            HStack {
+                Picker("Sort", selection: $library.librarySort) {
+                    ForEach(LibrarySort.allCases) { sort in
+                        Text(sort.rawValue).tag(sort)
+                    }
                 }
+                .pickerStyle(.menu)
+
+                Picker("Order", selection: $library.librarySortOrder) {
+                    ForEach(LibrarySortOrder.allCases) { order in
+                        Text(order.rawValue).tag(order)
+                    }
+                }
+                .pickerStyle(.menu)
+                .frame(width: 112)
             }
-            .pickerStyle(.menu)
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
 
