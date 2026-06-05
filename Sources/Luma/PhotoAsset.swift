@@ -262,6 +262,9 @@ struct PhotoAdjustments: Codable, Equatable {
     var noiseReduction: Double = 0
     var sharpness: Double = 0
     var vignette: Double = 0
+    var grainAmount: Double = 0
+    var grainSize: Double = 0.35
+    var grainRoughness: Double = 0.5
     var toneCurveShadows: Double = 0
     var toneCurveDarks: Double = 0
     var toneCurveLights: Double = 0
@@ -327,6 +330,9 @@ struct PhotoAdjustments: Codable, Equatable {
         case noiseReduction
         case sharpness
         case vignette
+        case grainAmount
+        case grainSize
+        case grainRoughness
         case toneCurveShadows
         case toneCurveDarks
         case toneCurveLights
@@ -391,6 +397,9 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction: Double = 0,
         sharpness: Double = 0,
         vignette: Double = 0,
+        grainAmount: Double = 0,
+        grainSize: Double = 0.35,
+        grainRoughness: Double = 0.5,
         toneCurveShadows: Double = 0,
         toneCurveDarks: Double = 0,
         toneCurveLights: Double = 0,
@@ -453,6 +462,9 @@ struct PhotoAdjustments: Codable, Equatable {
         self.noiseReduction = noiseReduction
         self.sharpness = sharpness
         self.vignette = vignette
+        self.grainAmount = grainAmount
+        self.grainSize = grainSize
+        self.grainRoughness = grainRoughness
         self.toneCurveShadows = toneCurveShadows
         self.toneCurveDarks = toneCurveDarks
         self.toneCurveLights = toneCurveLights
@@ -527,6 +539,9 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction = try container.decodeIfPresent(Double.self, forKey: .noiseReduction) ?? 0
         sharpness = try container.decodeIfPresent(Double.self, forKey: .sharpness) ?? 0
         vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
+        grainAmount = try container.decodeIfPresent(Double.self, forKey: .grainAmount) ?? 0
+        grainSize = try container.decodeIfPresent(Double.self, forKey: .grainSize) ?? 0.35
+        grainRoughness = try container.decodeIfPresent(Double.self, forKey: .grainRoughness) ?? 0.5
         toneCurveShadows = try container.decodeIfPresent(Double.self, forKey: .toneCurveShadows) ?? 0
         toneCurveDarks = try container.decodeIfPresent(Double.self, forKey: .toneCurveDarks) ?? 0
         toneCurveLights = try container.decodeIfPresent(Double.self, forKey: .toneCurveLights) ?? 0
@@ -690,6 +705,9 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction = 0
         sharpness = 0
         vignette = 0
+        grainAmount = 0
+        grainSize = 0.35
+        grainRoughness = 0.5
         toneCurveShadows = 0
         toneCurveDarks = 0
         toneCurveLights = 0

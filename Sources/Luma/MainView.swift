@@ -1024,6 +1024,27 @@ struct AdjustmentPanel: View {
                 format: "%.2f"
             )
 
+            AdjustmentSlider(
+                title: "Grain Amount",
+                value: adjustmentBinding(\.grainAmount),
+                range: 0...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Grain Size",
+                value: adjustmentBinding(\.grainSize),
+                range: 0...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
+                title: "Grain Roughness",
+                value: adjustmentBinding(\.grainRoughness),
+                range: 0...1,
+                format: "%.2f"
+            )
+
             DisclosureGroup(isExpanded: $isToneCurveExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
                     AdjustmentSlider(

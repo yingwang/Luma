@@ -515,6 +515,8 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        image = applyGrain(adjustments, to: image)
+
         if adjustments.colorMixer.hasAdjustments {
             image = applyColorMixer(adjustments.colorMixer, to: image)
         }
@@ -963,6 +965,47 @@ final class ImageProcessor: @unchecked Sendable {
         filter.setValue(CIVector(x: 0.7, y: clipped(0.7 + adjustments.toneCurveLights * 0.2)), forKey: "inputPoint3")
         filter.setValue(CIVector(x: 1, y: clipped(1 + adjustments.toneCurveHighlights * 0.18)), forKey: "inputPoint4")
         return filter.outputImage ?? image
+    }
+
+    private func applyGrain(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.grainAmount > 0,
+              let random = CIFilter(name: "CIRandomGenerator")?.outputImage,
+              let monochrome = CIFilter(name: "CIColorControls"),
+              let softLight = CIFilter(name: "CISoftLightBlendMode"),
+              let maskGenerator = CIFilter(name: "CIConstantColorGenerator"),
+              let blend = CIFilter(name: "CIBlendWithAlphaMask") else {
+            return image
+        }
+
+        let extent = image.extent
+        let amount = clipped(adjustments.grainAmount)
+        let scale = CGFloat(1 + clipped(adjustments.grainSize) * 4)
+        let roughness = 1 + clipped(adjustments.grainRoughness) * 2.2
+        var grain = random
+            .transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+            .cropped(to: extent)
+
+        monochrome.setValue(grain, forKey: kCIInputImageKey)
+        monochrome.setValue(0, forKey: kCIInputSaturationKey)
+        monochrome.setValue(roughness, forKey: kCIInputContrastKey)
+        grain = monochrome.outputImage?.cropped(to: extent) ?? grain
+
+        softLight.setValue(grain, forKey: kCIInputImageKey)
+        softLight.setValue(image, forKey: kCIInputBackgroundImageKey)
+
+        guard let grained = softLight.outputImage?.cropped(to: extent) else {
+            return image
+        }
+
+        maskGenerator.setValue(CIColor(red: 1, green: 1, blue: 1, alpha: amount * 0.55), forKey: kCIInputColorKey)
+        guard let mask = maskGenerator.outputImage?.cropped(to: extent) else {
+            return grained
+        }
+
+        blend.setValue(grained, forKey: kCIInputImageKey)
+        blend.setValue(image, forKey: kCIInputBackgroundImageKey)
+        blend.setValue(mask, forKey: kCIInputMaskImageKey)
+        return blend.outputImage?.cropped(to: extent) ?? grained
     }
 
     private func applySpotHeal(_ points: [SpotHealPoint], to image: CIImage) -> CIImage {

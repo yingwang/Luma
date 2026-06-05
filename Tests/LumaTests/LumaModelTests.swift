@@ -27,6 +27,9 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.cropCenterY, 0.5)
         XCTAssertEqual(adjustments.colorMixer, ColorMixerAdjustments())
         XCTAssertEqual(adjustments.texture, 0)
+        XCTAssertEqual(adjustments.grainAmount, 0)
+        XCTAssertEqual(adjustments.grainSize, 0.35)
+        XCTAssertEqual(adjustments.grainRoughness, 0.5)
         XCTAssertEqual(adjustments.beautySmooth, 0)
         XCTAssertEqual(adjustments.beautyWrinkle, 0)
         XCTAssertEqual(adjustments.beautyBlemish, 0)
@@ -224,6 +227,9 @@ final class LumaModelTests: XCTestCase {
             saturation: 0.7,
             warmth: 250,
             texture: 0.35,
+            grainAmount: 0.5,
+            grainSize: 0.8,
+            grainRoughness: 0.2,
             toneCurveShadows: 0.2,
             toneCurveDarks: -0.1,
             toneCurveLights: 0.12,
@@ -244,6 +250,9 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.saturation, 1)
         XCTAssertEqual(adjustments.warmth, 0)
         XCTAssertEqual(adjustments.texture, 0)
+        XCTAssertEqual(adjustments.grainAmount, 0)
+        XCTAssertEqual(adjustments.grainSize, 0.35)
+        XCTAssertEqual(adjustments.grainRoughness, 0.5)
         XCTAssertEqual(adjustments.toneCurveShadows, 0)
         XCTAssertEqual(adjustments.toneCurveDarks, 0)
         XCTAssertEqual(adjustments.toneCurveLights, 0)
