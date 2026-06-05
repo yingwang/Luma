@@ -700,9 +700,107 @@ struct ColorMixerAdjustments: Codable, Equatable {
     var blue: Double = 0
     var purple: Double = 0
     var magenta: Double = 0
+    var redLuminance: Double = 0
+    var orangeLuminance: Double = 0
+    var yellowLuminance: Double = 0
+    var greenLuminance: Double = 0
+    var aquaLuminance: Double = 0
+    var blueLuminance: Double = 0
+    var purpleLuminance: Double = 0
+    var magentaLuminance: Double = 0
+
+    private enum CodingKeys: String, CodingKey {
+        case red
+        case orange
+        case yellow
+        case green
+        case aqua
+        case blue
+        case purple
+        case magenta
+        case redLuminance
+        case orangeLuminance
+        case yellowLuminance
+        case greenLuminance
+        case aquaLuminance
+        case blueLuminance
+        case purpleLuminance
+        case magentaLuminance
+    }
+
+    init(
+        red: Double = 0,
+        orange: Double = 0,
+        yellow: Double = 0,
+        green: Double = 0,
+        aqua: Double = 0,
+        blue: Double = 0,
+        purple: Double = 0,
+        magenta: Double = 0,
+        redLuminance: Double = 0,
+        orangeLuminance: Double = 0,
+        yellowLuminance: Double = 0,
+        greenLuminance: Double = 0,
+        aquaLuminance: Double = 0,
+        blueLuminance: Double = 0,
+        purpleLuminance: Double = 0,
+        magentaLuminance: Double = 0
+    ) {
+        self.red = red
+        self.orange = orange
+        self.yellow = yellow
+        self.green = green
+        self.aqua = aqua
+        self.blue = blue
+        self.purple = purple
+        self.magenta = magenta
+        self.redLuminance = redLuminance
+        self.orangeLuminance = orangeLuminance
+        self.yellowLuminance = yellowLuminance
+        self.greenLuminance = greenLuminance
+        self.aquaLuminance = aquaLuminance
+        self.blueLuminance = blueLuminance
+        self.purpleLuminance = purpleLuminance
+        self.magentaLuminance = magentaLuminance
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        red = try container.decodeIfPresent(Double.self, forKey: .red) ?? 0
+        orange = try container.decodeIfPresent(Double.self, forKey: .orange) ?? 0
+        yellow = try container.decodeIfPresent(Double.self, forKey: .yellow) ?? 0
+        green = try container.decodeIfPresent(Double.self, forKey: .green) ?? 0
+        aqua = try container.decodeIfPresent(Double.self, forKey: .aqua) ?? 0
+        blue = try container.decodeIfPresent(Double.self, forKey: .blue) ?? 0
+        purple = try container.decodeIfPresent(Double.self, forKey: .purple) ?? 0
+        magenta = try container.decodeIfPresent(Double.self, forKey: .magenta) ?? 0
+        redLuminance = try container.decodeIfPresent(Double.self, forKey: .redLuminance) ?? 0
+        orangeLuminance = try container.decodeIfPresent(Double.self, forKey: .orangeLuminance) ?? 0
+        yellowLuminance = try container.decodeIfPresent(Double.self, forKey: .yellowLuminance) ?? 0
+        greenLuminance = try container.decodeIfPresent(Double.self, forKey: .greenLuminance) ?? 0
+        aquaLuminance = try container.decodeIfPresent(Double.self, forKey: .aquaLuminance) ?? 0
+        blueLuminance = try container.decodeIfPresent(Double.self, forKey: .blueLuminance) ?? 0
+        purpleLuminance = try container.decodeIfPresent(Double.self, forKey: .purpleLuminance) ?? 0
+        magentaLuminance = try container.decodeIfPresent(Double.self, forKey: .magentaLuminance) ?? 0
+    }
 
     var hasAdjustments: Bool {
-        red != 0 || orange != 0 || yellow != 0 || green != 0 || aqua != 0 || blue != 0 || purple != 0 || magenta != 0
+        red != 0 ||
+            orange != 0 ||
+            yellow != 0 ||
+            green != 0 ||
+            aqua != 0 ||
+            blue != 0 ||
+            purple != 0 ||
+            magenta != 0 ||
+            redLuminance != 0 ||
+            orangeLuminance != 0 ||
+            yellowLuminance != 0 ||
+            greenLuminance != 0 ||
+            aquaLuminance != 0 ||
+            blueLuminance != 0 ||
+            purpleLuminance != 0 ||
+            magentaLuminance != 0
     }
 }
 

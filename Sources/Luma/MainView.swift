@@ -1385,6 +1385,10 @@ struct AdjustmentPanel: View {
 
             DisclosureGroup(isExpanded: $isColorMixerExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
+                    Text("Saturation")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
                     AdjustmentSlider(
                         title: "Red Sat",
                         value: colorMixerBinding(\.red),
@@ -1437,6 +1441,68 @@ struct AdjustmentPanel: View {
                     AdjustmentSlider(
                         title: "Magenta Sat",
                         value: colorMixerBinding(\.magenta),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    Divider()
+
+                    Text("Luminance")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    AdjustmentSlider(
+                        title: "Red Lum",
+                        value: colorMixerBinding(\.redLuminance),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Orange Lum",
+                        value: colorMixerBinding(\.orangeLuminance),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Yellow Lum",
+                        value: colorMixerBinding(\.yellowLuminance),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Green Lum",
+                        value: colorMixerBinding(\.greenLuminance),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Aqua Lum",
+                        value: colorMixerBinding(\.aquaLuminance),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Blue Lum",
+                        value: colorMixerBinding(\.blueLuminance),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Purple Lum",
+                        value: colorMixerBinding(\.purpleLuminance),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Magenta Lum",
+                        value: colorMixerBinding(\.magentaLuminance),
                         range: -1...1,
                         format: "%.2f"
                     )

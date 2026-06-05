@@ -726,8 +726,9 @@ final class ImageProcessor: @unchecked Sendable {
                     let green = Double(greenIndex) / Double(dimension - 1)
                     let blue = Double(blueIndex) / Double(dimension - 1)
                     let hsv = rgbToHSV(red: red, green: green, blue: blue)
-                    let saturation = clipped(hsv.saturation * (1 + colorMixerAmount(for: hsv.hue, mixer: mixer)))
-                    let rgb = hsvToRGB(hue: hsv.hue, saturation: saturation, value: hsv.value)
+                    let saturation = clipped(hsv.saturation * (1 + colorMixerSaturationAmount(for: hsv.hue, mixer: mixer)))
+                    let value = clipped(hsv.value + colorMixerLuminanceAmount(for: hsv.hue, mixer: mixer) * 0.24)
+                    let rgb = hsvToRGB(hue: hsv.hue, saturation: saturation, value: value)
 
                     cube.append(Float(rgb.red))
                     cube.append(Float(rgb.green))
@@ -1003,7 +1004,7 @@ final class ImageProcessor: @unchecked Sendable {
         return detector?.features(in: image).compactMap { $0 as? CIFaceFeature } ?? []
     }
 
-    private func colorMixerAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {
+    private func colorMixerSaturationAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {
         let controls: [(center: Double, amount: Double)] = [
             (0, mixer.red),
             (30, mixer.orange),
@@ -1014,6 +1015,26 @@ final class ImageProcessor: @unchecked Sendable {
             (280, mixer.purple),
             (320, mixer.magenta),
             (360, mixer.red)
+        ]
+
+        return controls.reduce(0) { result, control in
+            let distance = abs(hue - control.center)
+            let weight = max(0, 1 - distance / 35)
+            return result + control.amount * weight
+        }
+    }
+
+    private func colorMixerLuminanceAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {
+        let controls: [(center: Double, amount: Double)] = [
+            (0, mixer.redLuminance),
+            (30, mixer.orangeLuminance),
+            (60, mixer.yellowLuminance),
+            (120, mixer.greenLuminance),
+            (180, mixer.aquaLuminance),
+            (240, mixer.blueLuminance),
+            (280, mixer.purpleLuminance),
+            (320, mixer.magentaLuminance),
+            (360, mixer.redLuminance)
         ]
 
         return controls.reduce(0) { result, control in

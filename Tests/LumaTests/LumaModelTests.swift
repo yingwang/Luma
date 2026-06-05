@@ -121,6 +121,27 @@ final class LumaModelTests: XCTestCase {
         mixer.blue = -0.35
 
         XCTAssertTrue(mixer.hasAdjustments)
+
+        mixer = ColorMixerAdjustments()
+        mixer.orangeLuminance = 0.25
+
+        XCTAssertTrue(mixer.hasAdjustments)
+    }
+
+    func testColorMixerDecodesLegacySaturationFields() throws {
+        let data = """
+        {
+          "orange": 0.2,
+          "blue": -0.35
+        }
+        """.data(using: .utf8)!
+
+        let mixer = try JSONDecoder().decode(ColorMixerAdjustments.self, from: data)
+
+        XCTAssertEqual(mixer.orange, 0.2)
+        XCTAssertEqual(mixer.blue, -0.35)
+        XCTAssertEqual(mixer.orangeLuminance, 0)
+        XCTAssertEqual(mixer.blueLuminance, 0)
     }
 
     func testLinearGradientDirectionCanBeInverted() {
