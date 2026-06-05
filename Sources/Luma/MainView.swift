@@ -908,6 +908,14 @@ struct AdjustmentPanel: View {
                     .disabled(library.selectedPhoto == nil)
 
                     AdjustmentSlider(
+                        title: "Defringe",
+                        value: adjustmentBinding(\.chromaticAberrationReduction),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+                    .disabled(library.selectedPhoto == nil)
+
+                    AdjustmentSlider(
                         title: "Vignette Correction",
                         value: adjustmentBinding(\.lensVignetteCorrection),
                         range: 0...1,

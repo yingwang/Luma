@@ -318,6 +318,7 @@ final class ImageProcessor: @unchecked Sendable {
             horizontal: adjustments.perspectiveHorizontal
         )
         image = applyLensDistortionCorrection(adjustments, to: image)
+        image = applyChromaticAberrationReduction(adjustments, to: image)
         image = applyLensVignetteCorrection(adjustments, to: image)
 
         if adjustments.exposure != 0 {
@@ -1035,6 +1036,44 @@ final class ImageProcessor: @unchecked Sendable {
         filter.setValue(radius, forKey: kCIInputRadiusKey)
         filter.setValue(amount * 0.42, forKey: kCIInputScaleKey)
         return filter.outputImage?.cropped(to: extent) ?? image
+    }
+
+    private func applyChromaticAberrationReduction(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.chromaticAberrationReduction > 0,
+              let edges = CIFilter(name: "CIEdges"),
+              let maskControls = CIFilter(name: "CIColorControls"),
+              let desaturate = CIFilter(name: "CIColorControls"),
+              let blend = CIFilter(name: "CIBlendWithMask") else {
+            return image
+        }
+
+        let extent = image.extent
+        let amount = clipped(adjustments.chromaticAberrationReduction)
+
+        edges.setValue(image, forKey: kCIInputImageKey)
+        edges.setValue(2 + amount * 6, forKey: kCIInputIntensityKey)
+
+        guard let edgeImage = edges.outputImage?.cropped(to: extent) else {
+            return image
+        }
+
+        maskControls.setValue(edgeImage, forKey: kCIInputImageKey)
+        maskControls.setValue(0, forKey: kCIInputSaturationKey)
+        maskControls.setValue(2.8 + amount * 3, forKey: kCIInputContrastKey)
+        maskControls.setValue(-0.28, forKey: kCIInputBrightnessKey)
+
+        desaturate.setValue(image, forKey: kCIInputImageKey)
+        desaturate.setValue(1 - amount * 0.72, forKey: kCIInputSaturationKey)
+
+        guard let corrected = desaturate.outputImage?.cropped(to: extent),
+              let mask = maskControls.outputImage?.cropped(to: extent) else {
+            return image
+        }
+
+        blend.setValue(corrected, forKey: kCIInputImageKey)
+        blend.setValue(image, forKey: kCIInputBackgroundImageKey)
+        blend.setValue(mask, forKey: kCIInputMaskImageKey)
+        return blend.outputImage?.cropped(to: extent) ?? image
     }
 
     private func applyToneCurve(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {

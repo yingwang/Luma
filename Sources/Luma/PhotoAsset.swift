@@ -299,6 +299,7 @@ struct PhotoAdjustments: Codable, Equatable {
     var linearEndY: Double = 0.65
     var linearInvert: Bool = false
     var lensDistortionCorrection: Double = 0
+    var chromaticAberrationReduction: Double = 0
     var lensVignetteCorrection: Double = 0
     var spotHealAmount: Double = 0
     var spotHealX: Double = 0.5
@@ -376,6 +377,7 @@ struct PhotoAdjustments: Codable, Equatable {
         case linearEndY
         case linearInvert
         case lensDistortionCorrection
+        case chromaticAberrationReduction
         case lensVignetteCorrection
         case spotHealAmount
         case spotHealX
@@ -452,6 +454,7 @@ struct PhotoAdjustments: Codable, Equatable {
         linearEndY: Double = 0.65,
         linearInvert: Bool = false,
         lensDistortionCorrection: Double = 0,
+        chromaticAberrationReduction: Double = 0,
         lensVignetteCorrection: Double = 0,
         spotHealAmount: Double = 0,
         spotHealX: Double = 0.5,
@@ -526,6 +529,7 @@ struct PhotoAdjustments: Codable, Equatable {
         self.linearEndY = linearEndY
         self.linearInvert = linearInvert
         self.lensDistortionCorrection = lensDistortionCorrection
+        self.chromaticAberrationReduction = chromaticAberrationReduction
         self.lensVignetteCorrection = lensVignetteCorrection
         self.spotHealAmount = spotHealAmount
         self.spotHealX = spotHealX
@@ -612,6 +616,7 @@ struct PhotoAdjustments: Codable, Equatable {
         linearEndY = try container.decodeIfPresent(Double.self, forKey: .linearEndY) ?? 0.65
         linearInvert = try container.decodeIfPresent(Bool.self, forKey: .linearInvert) ?? false
         lensDistortionCorrection = try container.decodeIfPresent(Double.self, forKey: .lensDistortionCorrection) ?? 0
+        chromaticAberrationReduction = try container.decodeIfPresent(Double.self, forKey: .chromaticAberrationReduction) ?? 0
         lensVignetteCorrection = try container.decodeIfPresent(Double.self, forKey: .lensVignetteCorrection) ?? 0
         spotHealAmount = try container.decodeIfPresent(Double.self, forKey: .spotHealAmount) ?? 0
         spotHealX = try container.decodeIfPresent(Double.self, forKey: .spotHealX) ?? 0.5
@@ -732,6 +737,7 @@ struct PhotoAdjustments: Codable, Equatable {
 
     mutating func resetLensCorrections() {
         lensDistortionCorrection = 0
+        chromaticAberrationReduction = 0
         lensVignetteCorrection = 0
     }
 

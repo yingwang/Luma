@@ -69,6 +69,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 ### Lens Corrections
 
 - Lens distortion correction for mild barrel or pincushion adjustment.
+- Defringe control for reducing color fringing on high-contrast edges.
 - Lens vignette correction for brightening dark corners.
 - Reset lens corrections without changing crop, tone, local, or retouching edits.
 
