@@ -90,6 +90,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Reset radial and linear local adjustments independently.
 - Multi-point spot healing with source offset, radius, feather, and strength controls.
 - Add, select, delete, and reset spot-heal points.
+- Click the preview image to place a selected spot-heal point directly on the photo.
 - Reset local adjustments without changing global edits.
 - Per-color saturation controls for red, orange, yellow, green, aqua, blue, purple, and magenta.
 - Reset color mixer channels without changing other edits.

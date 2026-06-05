@@ -15,7 +15,14 @@ final class PhotoLibraryStore: ObservableObject {
             photosVersion &+= 1
         }
     }
-    @Published var selectedPhotoID: PhotoAsset.ID?
+    @Published var selectedPhotoID: PhotoAsset.ID? {
+        didSet {
+            if selectedPhotoID != oldValue {
+                selectedSpotHealID = nil
+            }
+        }
+    }
+    @Published var selectedSpotHealID: SpotHealPoint.ID?
     @Published private(set) var previewImage: NSImage?
     @Published private(set) var isRenderingPreview = false
     @Published var statusMessage = "Import photos to begin."
@@ -93,6 +100,26 @@ final class PhotoLibraryStore: ObservableObject {
 
     var selectedAdjustments: PhotoAdjustments {
         selectedPhoto?.adjustments ?? .neutral
+    }
+
+    var selectedSpotHealPoints: [SpotHealPoint] {
+        selectedAdjustments.effectiveSpotHealPoints
+    }
+
+    var activeSpotHealID: SpotHealPoint.ID? {
+        if let selectedSpotHealID, selectedSpotHealPoints.contains(where: { $0.id == selectedSpotHealID }) {
+            return selectedSpotHealID
+        }
+
+        return selectedSpotHealPoints.first?.id
+    }
+
+    var activeSpotHealPoint: SpotHealPoint? {
+        guard let activeSpotHealID else {
+            return nil
+        }
+
+        return selectedSpotHealPoints.first { $0.id == activeSpotHealID }
     }
 
     var pickedPhotoCount: Int {
@@ -752,16 +779,17 @@ final class PhotoLibraryStore: ObservableObject {
         updateSelectedAdjustments { adjustments in
             adjustments.resetSpotHeal()
         }
+        selectedSpotHealID = nil
         statusMessage = "Reset spot healing."
     }
 
-    func addSelectedSpotHealPoint() -> SpotHealPoint.ID? {
+    func addSelectedSpotHealPoint(x: Double = 0.5, y: Double = 0.5) -> SpotHealPoint.ID? {
         guard selectedPhoto != nil else {
             statusMessage = "Select a photo before adding a spot."
             return nil
         }
 
-        let point = SpotHealPoint()
+        let point = SpotHealPoint(x: x, y: y)
 
         updateSelectedAdjustments { adjustments in
             adjustments.spotHealPoints = adjustments.effectiveSpotHealPoints
@@ -769,6 +797,7 @@ final class PhotoLibraryStore: ObservableObject {
             adjustments.spotHealAmount = 0
         }
 
+        selectedSpotHealID = point.id
         statusMessage = "Added spot heal point."
         return point.id
     }
@@ -787,14 +816,19 @@ final class PhotoLibraryStore: ObservableObject {
             update(&adjustments.spotHealPoints[pointIndex])
             adjustments.spotHealAmount = 0
         }
+        selectedSpotHealID = id
     }
 
     func removeSelectedSpotHealPoint(id: SpotHealPoint.ID) {
+        var nextSpotHealID: SpotHealPoint.ID?
+
         updateSelectedAdjustments { adjustments in
             adjustments.spotHealPoints = adjustments.effectiveSpotHealPoints
             adjustments.spotHealPoints.removeAll { $0.id == id }
             adjustments.spotHealAmount = 0
+            nextSpotHealID = adjustments.spotHealPoints.first?.id
         }
+        selectedSpotHealID = nextSpotHealID
         statusMessage = "Removed spot heal point."
     }
 

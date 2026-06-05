@@ -416,7 +416,15 @@ struct PreviewPane: View {
                     CompareImagePane(label: "Edited", image: previewImage, zoomScale: zoomScale)
                 }
             } else if !library.compareSideBySide, let previewImage = library.previewImage {
-                PreviewImagePane(label: library.showOriginal ? "Original" : nil, image: previewImage, zoomScale: zoomScale)
+                PreviewImagePane(
+                    label: library.showOriginal ? "Original" : nil,
+                    image: previewImage,
+                    zoomScale: zoomScale,
+                    spotHealPoints: library.selectedSpotHealPoints,
+                    activeSpotHealID: library.activeSpotHealID
+                ) { point in
+                    _ = library.addSelectedSpotHealPoint(x: point.x, y: point.y)
+                }
             } else if library.isRenderingPreview {
                 ProgressView()
                     .controlSize(.large)
@@ -488,14 +496,26 @@ struct PreviewImagePane: View {
     let label: String?
     let image: NSImage
     let zoomScale: Double
+    var spotHealPoints: [SpotHealPoint] = []
+    var activeSpotHealID: SpotHealPoint.ID?
+    var onImageTap: ((CGPoint) -> Void)?
 
     var body: some View {
         ZStack {
             if zoomScale == 0 {
-                Image(nsImage: image)
-                    .resizable()
-                    .scaledToFit()
-                    .padding(32)
+                GeometryReader { geometry in
+                    let fittedSize = fittedImageSize(in: geometry.size)
+
+                    ZStack {
+                        Image(nsImage: image)
+                            .resizable()
+                            .scaledToFit()
+                            .padding(32)
+
+                        spotHealOverlay(size: fittedSize)
+                    }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                }
             } else {
                 ScrollView([.horizontal, .vertical]) {
                     Image(nsImage: image)
@@ -528,6 +548,53 @@ struct PreviewImagePane: View {
             }
         }
     }
+
+    private func spotHealOverlay(size: CGSize) -> some View {
+        ZStack {
+            ForEach(spotHealPoints) { point in
+                SpotHealMarker(isActive: point.id == activeSpotHealID)
+                    .position(
+                        x: CGFloat(point.x) * size.width,
+                        y: CGFloat(1 - point.y) * size.height
+                    )
+            }
+
+            if let onImageTap {
+                Color.clear
+                    .contentShape(Rectangle())
+                    .gesture(
+                        DragGesture(minimumDistance: 0)
+                            .onEnded { value in
+                                let x = clamp(Double(value.location.x / max(1, size.width)))
+                                let y = 1 - clamp(Double(value.location.y / max(1, size.height)))
+                                onImageTap(CGPoint(x: x, y: y))
+                            }
+                    )
+            }
+        }
+        .frame(width: size.width, height: size.height)
+    }
+
+    private func fittedImageSize(in containerSize: CGSize) -> CGSize {
+        let availableWidth = max(1, containerSize.width - 64)
+        let availableHeight = max(1, containerSize.height - 64)
+        let imageWidth = max(1, image.size.width)
+        let imageHeight = max(1, image.size.height)
+        let imageAspect = imageWidth / imageHeight
+        let availableAspect = availableWidth / availableHeight
+
+        if availableAspect > imageAspect {
+            let height = availableHeight
+            return CGSize(width: height * imageAspect, height: height)
+        }
+
+        let width = availableWidth
+        return CGSize(width: width, height: width / imageAspect)
+    }
+
+    private func clamp(_ value: Double) -> Double {
+        min(1, max(0, value))
+    }
 }
 
 struct CompareImagePane: View {
@@ -541,6 +608,27 @@ struct CompareImagePane: View {
     }
 }
 
+struct SpotHealMarker: View {
+    let isActive: Bool
+
+    var body: some View {
+        ZStack {
+            Circle()
+                .fill(.black.opacity(0.36))
+
+            Circle()
+                .stroke(.white.opacity(0.9), lineWidth: 1)
+
+            Circle()
+                .stroke(isActive ? Color.accentColor : Color.white.opacity(0.65), lineWidth: isActive ? 3 : 1.5)
+                .frame(width: isActive ? 18 : 14, height: isActive ? 18 : 14)
+        }
+        .frame(width: 22, height: 22)
+        .shadow(color: .black.opacity(0.4), radius: 3, x: 0, y: 1)
+        .allowsHitTesting(false)
+    }
+}
+
 struct AdjustmentPanel: View {
     @EnvironmentObject private var library: PhotoLibraryStore
     @State private var isLocalExpanded = false
@@ -550,7 +638,6 @@ struct AdjustmentPanel: View {
     @State private var isColorMixerExpanded = false
     @State private var isInfoExpanded = false
     @State private var isExportExpanded = true
-    @State private var selectedSpotHealID: SpotHealPoint.ID?
 
     var body: some View {
         ScrollView {
@@ -988,7 +1075,7 @@ struct AdjustmentPanel: View {
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
                         Button {
-                            selectedSpotHealID = library.addSelectedSpotHealPoint()
+                            _ = library.addSelectedSpotHealPoint()
                         } label: {
                             Label("Add Spot", systemImage: "plus.circle")
                         }
@@ -997,7 +1084,6 @@ struct AdjustmentPanel: View {
                         Button(role: .destructive) {
                             if let activeSpotHealID {
                                 library.removeSelectedSpotHealPoint(id: activeSpotHealID)
-                                selectedSpotHealID = nil
                             }
                         } label: {
                             Label("Delete", systemImage: "minus.circle")
@@ -1077,7 +1163,6 @@ struct AdjustmentPanel: View {
 
                     Button {
                         library.resetSelectedSpotHeal()
-                        selectedSpotHealID = nil
                     } label: {
                         Label("Reset Spots", systemImage: "arrow.counterclockwise.circle")
                     }
@@ -1392,36 +1477,25 @@ struct AdjustmentPanel: View {
         }
         .padding(18)
         }
-        .onChange(of: library.selectedPhotoID) { _, _ in
-            selectedSpotHealID = nil
-        }
     }
 
     private var spotHealPoints: [SpotHealPoint] {
-        library.selectedAdjustments.effectiveSpotHealPoints
+        library.selectedSpotHealPoints
     }
 
     private var activeSpotHealID: SpotHealPoint.ID? {
-        if let selectedSpotHealID, spotHealPoints.contains(where: { $0.id == selectedSpotHealID }) {
-            return selectedSpotHealID
-        }
-
-        return spotHealPoints.first?.id
+        library.activeSpotHealID
     }
 
     private var activeSpotHealPoint: SpotHealPoint? {
-        guard let activeSpotHealID else {
-            return nil
-        }
-
-        return spotHealPoints.first { $0.id == activeSpotHealID }
+        library.activeSpotHealPoint
     }
 
     private var spotHealSelectionBinding: Binding<SpotHealPoint.ID?> {
         Binding {
             activeSpotHealID
         } set: { value in
-            selectedSpotHealID = value
+            library.selectedSpotHealID = value
         }
     }
 
@@ -1466,7 +1540,6 @@ struct AdjustmentPanel: View {
             library.updateSelectedSpotHealPoint(id: activeSpotHealID) { point in
                 point[keyPath: keyPath] = value
             }
-            selectedSpotHealID = activeSpotHealID
         }
     }
 
