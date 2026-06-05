@@ -375,6 +375,8 @@ final class ImageProcessor: @unchecked Sendable {
             image = filter.outputImage ?? image
         }
 
+        image = applyToneCurve(adjustments, to: image)
+
         if adjustments.clarity > 0, let filter = CIFilter(name: "CIUnsharpMask") {
             filter.setValue(image, forKey: kCIInputImageKey)
             filter.setValue(2 + adjustments.clarity * 4, forKey: kCIInputRadiusKey)
@@ -929,6 +931,24 @@ final class ImageProcessor: @unchecked Sendable {
         blend.setValue(image, forKey: kCIInputBackgroundImageKey)
         blend.setValue(mask, forKey: kCIInputMaskImageKey)
         return blend.outputImage?.cropped(to: extent) ?? image
+    }
+
+    private func applyToneCurve(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.toneCurveShadows != 0 ||
+              adjustments.toneCurveDarks != 0 ||
+              adjustments.toneCurveLights != 0 ||
+              adjustments.toneCurveHighlights != 0,
+              let filter = CIFilter(name: "CIToneCurve") else {
+            return image
+        }
+
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(CIVector(x: 0, y: 0), forKey: "inputPoint0")
+        filter.setValue(CIVector(x: 0.25, y: clipped(0.25 + adjustments.toneCurveShadows * 0.25)), forKey: "inputPoint1")
+        filter.setValue(CIVector(x: 0.45, y: clipped(0.45 + adjustments.toneCurveDarks * 0.2)), forKey: "inputPoint2")
+        filter.setValue(CIVector(x: 0.7, y: clipped(0.7 + adjustments.toneCurveLights * 0.2)), forKey: "inputPoint3")
+        filter.setValue(CIVector(x: 1, y: clipped(1 + adjustments.toneCurveHighlights * 0.18)), forKey: "inputPoint4")
+        return filter.outputImage ?? image
     }
 
     private func applySpotHeal(_ points: [SpotHealPoint], to image: CIImage) -> CIImage {

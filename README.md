@@ -88,6 +88,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Noise reduction.
 - Sharpness.
 - Vignette.
+- Tone curve controls for shadows, darks, lights, and highlights.
 - Radial local exposure with center, radius, and feather controls.
 - Linear gradient exposure with start and end controls.
 - Invert radial and linear local masks.

@@ -46,6 +46,10 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.linearEndY, 0.65)
         XCTAssertFalse(adjustments.linearInvert)
         XCTAssertEqual(adjustments.lensVignetteCorrection, 0)
+        XCTAssertEqual(adjustments.toneCurveShadows, 0)
+        XCTAssertEqual(adjustments.toneCurveDarks, 0)
+        XCTAssertEqual(adjustments.toneCurveLights, 0)
+        XCTAssertEqual(adjustments.toneCurveHighlights, 0)
         XCTAssertEqual(adjustments.spotHealAmount, 0)
         XCTAssertEqual(adjustments.spotHealX, 0.5)
         XCTAssertEqual(adjustments.spotHealY, 0.5)
@@ -190,6 +194,10 @@ final class LumaModelTests: XCTestCase {
             contrast: 1.4,
             saturation: 0.7,
             warmth: 250,
+            toneCurveShadows: 0.2,
+            toneCurveDarks: -0.1,
+            toneCurveLights: 0.12,
+            toneCurveHighlights: -0.18,
             radialExposure: -0.5,
             lensVignetteCorrection: 0.45,
             straighten: 12,
@@ -205,6 +213,10 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.contrast, 1)
         XCTAssertEqual(adjustments.saturation, 1)
         XCTAssertEqual(adjustments.warmth, 0)
+        XCTAssertEqual(adjustments.toneCurveShadows, 0)
+        XCTAssertEqual(adjustments.toneCurveDarks, 0)
+        XCTAssertEqual(adjustments.toneCurveLights, 0)
+        XCTAssertEqual(adjustments.toneCurveHighlights, 0)
         XCTAssertEqual(adjustments.radialExposure, -0.5)
         XCTAssertEqual(adjustments.lensVignetteCorrection, 0.45)
         XCTAssertEqual(adjustments.straighten, 12)

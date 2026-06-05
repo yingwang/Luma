@@ -634,6 +634,7 @@ struct AdjustmentPanel: View {
     @State private var isLocalExpanded = false
     @State private var isLinearExpanded = false
     @State private var isLensExpanded = false
+    @State private var isToneCurveExpanded = false
     @State private var isHealExpanded = false
     @State private var isBeautyExpanded = false
     @State private var isColorMixerExpanded = false
@@ -1004,6 +1005,42 @@ struct AdjustmentPanel: View {
                 range: 0...1,
                 format: "%.2f"
             )
+
+            DisclosureGroup(isExpanded: $isToneCurveExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    AdjustmentSlider(
+                        title: "Shadows",
+                        value: adjustmentBinding(\.toneCurveShadows),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Darks",
+                        value: adjustmentBinding(\.toneCurveDarks),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Lights",
+                        value: adjustmentBinding(\.toneCurveLights),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Highlights",
+                        value: adjustmentBinding(\.toneCurveHighlights),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+                }
+                .padding(.top, 8)
+            } label: {
+                Label("Tone Curve", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
+                    .font(.headline)
+            }
 
             Button {
                 library.resetSelectedToneAdjustments()

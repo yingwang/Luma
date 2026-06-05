@@ -261,6 +261,10 @@ struct PhotoAdjustments: Codable, Equatable {
     var noiseReduction: Double = 0
     var sharpness: Double = 0
     var vignette: Double = 0
+    var toneCurveShadows: Double = 0
+    var toneCurveDarks: Double = 0
+    var toneCurveLights: Double = 0
+    var toneCurveHighlights: Double = 0
     var beautySmooth: Double = 0
     var beautyWrinkle: Double = 0
     var beautyBlemish: Double = 0
@@ -321,6 +325,10 @@ struct PhotoAdjustments: Codable, Equatable {
         case noiseReduction
         case sharpness
         case vignette
+        case toneCurveShadows
+        case toneCurveDarks
+        case toneCurveLights
+        case toneCurveHighlights
         case beautySmooth
         case beautyWrinkle
         case beautyBlemish
@@ -380,6 +388,10 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction: Double = 0,
         sharpness: Double = 0,
         vignette: Double = 0,
+        toneCurveShadows: Double = 0,
+        toneCurveDarks: Double = 0,
+        toneCurveLights: Double = 0,
+        toneCurveHighlights: Double = 0,
         beautySmooth: Double = 0,
         beautyWrinkle: Double = 0,
         beautyBlemish: Double = 0,
@@ -437,6 +449,10 @@ struct PhotoAdjustments: Codable, Equatable {
         self.noiseReduction = noiseReduction
         self.sharpness = sharpness
         self.vignette = vignette
+        self.toneCurveShadows = toneCurveShadows
+        self.toneCurveDarks = toneCurveDarks
+        self.toneCurveLights = toneCurveLights
+        self.toneCurveHighlights = toneCurveHighlights
         self.beautySmooth = beautySmooth
         self.beautyWrinkle = beautyWrinkle
         self.beautyBlemish = beautyBlemish
@@ -506,6 +522,10 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction = try container.decodeIfPresent(Double.self, forKey: .noiseReduction) ?? 0
         sharpness = try container.decodeIfPresent(Double.self, forKey: .sharpness) ?? 0
         vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
+        toneCurveShadows = try container.decodeIfPresent(Double.self, forKey: .toneCurveShadows) ?? 0
+        toneCurveDarks = try container.decodeIfPresent(Double.self, forKey: .toneCurveDarks) ?? 0
+        toneCurveLights = try container.decodeIfPresent(Double.self, forKey: .toneCurveLights) ?? 0
+        toneCurveHighlights = try container.decodeIfPresent(Double.self, forKey: .toneCurveHighlights) ?? 0
         beautySmooth = try container.decodeIfPresent(Double.self, forKey: .beautySmooth) ?? 0
         beautyWrinkle = try container.decodeIfPresent(Double.self, forKey: .beautyWrinkle) ?? 0
         beautyBlemish = try container.decodeIfPresent(Double.self, forKey: .beautyBlemish) ?? 0
@@ -664,6 +684,10 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction = 0
         sharpness = 0
         vignette = 0
+        toneCurveShadows = 0
+        toneCurveDarks = 0
+        toneCurveLights = 0
+        toneCurveHighlights = 0
     }
 }
 
