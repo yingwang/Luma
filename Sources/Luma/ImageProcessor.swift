@@ -312,6 +312,11 @@ final class ImageProcessor: @unchecked Sendable {
             centerY: adjustments.cropCenterY
         )
         image = straighten(image, degrees: adjustments.straighten)
+        image = perspectiveTransform(
+            image,
+            vertical: adjustments.perspectiveVertical,
+            horizontal: adjustments.perspectiveHorizontal
+        )
         image = applyLensVignetteCorrection(adjustments, to: image)
 
         if adjustments.exposure != 0 {
@@ -683,6 +688,29 @@ final class ImageProcessor: @unchecked Sendable {
             .translatedBy(x: -center.x, y: -center.y)
 
         return normalizeExtent(image.transformed(by: transform))
+    }
+
+    private func perspectiveTransform(_ image: CIImage, vertical: Double, horizontal: Double) -> CIImage {
+        guard vertical != 0 || horizontal != 0,
+              let filter = CIFilter(name: "CIPerspectiveTransform") else {
+            return image
+        }
+
+        let extent = image.extent
+        let verticalAmount = CGFloat(max(-1, min(1, vertical))) * extent.width * 0.18
+        let horizontalAmount = CGFloat(max(-1, min(1, horizontal))) * extent.height * 0.18
+        let topInset = max(0, verticalAmount)
+        let bottomInset = max(0, -verticalAmount)
+        let rightInset = max(0, horizontalAmount)
+        let leftInset = max(0, -horizontalAmount)
+
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(CIVector(x: extent.minX + topInset, y: extent.maxY - leftInset), forKey: "inputTopLeft")
+        filter.setValue(CIVector(x: extent.maxX - topInset, y: extent.maxY - rightInset), forKey: "inputTopRight")
+        filter.setValue(CIVector(x: extent.maxX - bottomInset, y: extent.minY + rightInset), forKey: "inputBottomRight")
+        filter.setValue(CIVector(x: extent.minX + bottomInset, y: extent.minY + leftInset), forKey: "inputBottomLeft")
+
+        return normalizeExtent(filter.outputImage?.cropped(to: extent) ?? image)
     }
 
     private func rotate(_ image: CIImage, turns: Int) -> CIImage {

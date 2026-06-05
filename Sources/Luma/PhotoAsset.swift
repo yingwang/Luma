@@ -308,6 +308,8 @@ struct PhotoAdjustments: Codable, Equatable {
     var spotHealSourceOffsetY: Double = 0
     var spotHealPoints: [SpotHealPoint] = []
     var straighten: Double = 0
+    var perspectiveVertical: Double = 0
+    var perspectiveHorizontal: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
     var cropCenterX: Double = 0.5
@@ -382,6 +384,8 @@ struct PhotoAdjustments: Codable, Equatable {
         case spotHealSourceOffsetY
         case spotHealPoints
         case straighten
+        case perspectiveVertical
+        case perspectiveHorizontal
         case rotationTurns
         case cropAspect
         case cropCenterX
@@ -455,6 +459,8 @@ struct PhotoAdjustments: Codable, Equatable {
         spotHealSourceOffsetY: Double = 0,
         spotHealPoints: [SpotHealPoint] = [],
         straighten: Double = 0,
+        perspectiveVertical: Double = 0,
+        perspectiveHorizontal: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
         cropCenterX: Double = 0.5,
@@ -535,6 +541,8 @@ struct PhotoAdjustments: Codable, Equatable {
             legacySourceOffsetY: spotHealSourceOffsetY
         )
         self.straighten = straighten
+        self.perspectiveVertical = perspectiveVertical
+        self.perspectiveHorizontal = perspectiveHorizontal
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
         self.cropCenterX = cropCenterX
@@ -619,6 +627,8 @@ struct PhotoAdjustments: Codable, Equatable {
             legacySourceOffsetY: spotHealSourceOffsetY
         )
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
+        perspectiveVertical = try container.decodeIfPresent(Double.self, forKey: .perspectiveVertical) ?? 0
+        perspectiveHorizontal = try container.decodeIfPresent(Double.self, forKey: .perspectiveHorizontal) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
         cropCenterX = try container.decodeIfPresent(Double.self, forKey: .cropCenterX) ?? 0.5
@@ -705,6 +715,8 @@ struct PhotoAdjustments: Codable, Equatable {
 
     mutating func resetCropTransform() {
         straighten = 0
+        perspectiveVertical = 0
+        perspectiveHorizontal = 0
         rotationTurns = 0
         cropAspect = .original
         cropCenterX = 0.5

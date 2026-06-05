@@ -23,6 +23,8 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.highlights, 0)
         XCTAssertEqual(adjustments.shadows, 0)
         XCTAssertEqual(adjustments.cropAspect, .original)
+        XCTAssertEqual(adjustments.perspectiveVertical, 0)
+        XCTAssertEqual(adjustments.perspectiveHorizontal, 0)
         XCTAssertEqual(adjustments.cropCenterX, 0.5)
         XCTAssertEqual(adjustments.cropCenterY, 0.5)
         XCTAssertEqual(adjustments.colorMixer, ColorMixerAdjustments())
@@ -206,6 +208,8 @@ final class LumaModelTests: XCTestCase {
         var adjustments = PhotoAdjustments(
             exposure: 0.6,
             straighten: 12,
+            perspectiveVertical: 0.4,
+            perspectiveHorizontal: -0.3,
             rotationTurns: 1,
             cropAspect: .square,
             cropCenterX: 0.12,
@@ -218,6 +222,8 @@ final class LumaModelTests: XCTestCase {
 
         XCTAssertEqual(adjustments.exposure, 0.6)
         XCTAssertEqual(adjustments.straighten, 0)
+        XCTAssertEqual(adjustments.perspectiveVertical, 0)
+        XCTAssertEqual(adjustments.perspectiveHorizontal, 0)
         XCTAssertEqual(adjustments.rotationTurns, 0)
         XCTAssertEqual(adjustments.cropAspect, .original)
         XCTAssertEqual(adjustments.cropCenterX, 0.5)
@@ -249,6 +255,8 @@ final class LumaModelTests: XCTestCase {
             radialExposure: -0.5,
             lensVignetteCorrection: 0.45,
             straighten: 12,
+            perspectiveVertical: 0.25,
+            perspectiveHorizontal: -0.15,
             cropAspect: .square,
             cropCenterX: 0.22,
             cropCenterY: 0.78,
@@ -278,6 +286,8 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.radialExposure, -0.5)
         XCTAssertEqual(adjustments.lensVignetteCorrection, 0.45)
         XCTAssertEqual(adjustments.straighten, 12)
+        XCTAssertEqual(adjustments.perspectiveVertical, 0.25)
+        XCTAssertEqual(adjustments.perspectiveHorizontal, -0.15)
         XCTAssertEqual(adjustments.cropAspect, .square)
         XCTAssertEqual(adjustments.cropCenterX, 0.22)
         XCTAssertEqual(adjustments.cropCenterY, 0.78)

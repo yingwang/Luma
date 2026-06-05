@@ -860,6 +860,20 @@ struct AdjustmentPanel: View {
                     format: "%.1f"
                 )
 
+                AdjustmentSlider(
+                    title: "Vertical",
+                    value: adjustmentBinding(\.perspectiveVertical),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
+                AdjustmentSlider(
+                    title: "Horizontal",
+                    value: adjustmentBinding(\.perspectiveHorizontal),
+                    range: -1...1,
+                    format: "%.2f"
+                )
+
                 HStack {
                     Button {
                         library.flipSelectedHorizontal()
