@@ -317,6 +317,7 @@ final class ImageProcessor: @unchecked Sendable {
             vertical: adjustments.perspectiveVertical,
             horizontal: adjustments.perspectiveHorizontal
         )
+        image = applyLensDistortionCorrection(adjustments, to: image)
         image = applyLensVignetteCorrection(adjustments, to: image)
 
         if adjustments.exposure != 0 {
@@ -1017,6 +1018,23 @@ final class ImageProcessor: @unchecked Sendable {
         blend.setValue(image, forKey: kCIInputBackgroundImageKey)
         blend.setValue(mask, forKey: kCIInputMaskImageKey)
         return blend.outputImage?.cropped(to: extent) ?? image
+    }
+
+    private func applyLensDistortionCorrection(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.lensDistortionCorrection != 0,
+              let filter = CIFilter(name: "CIBumpDistortion") else {
+            return image
+        }
+
+        let extent = image.extent
+        let amount = max(-1, min(1, adjustments.lensDistortionCorrection))
+        let radius = sqrt(extent.width * extent.width + extent.height * extent.height) * 0.58
+
+        filter.setValue(image.clampedToExtent(), forKey: kCIInputImageKey)
+        filter.setValue(CIVector(x: extent.midX, y: extent.midY), forKey: kCIInputCenterKey)
+        filter.setValue(radius, forKey: kCIInputRadiusKey)
+        filter.setValue(amount * 0.42, forKey: kCIInputScaleKey)
+        return filter.outputImage?.cropped(to: extent) ?? image
     }
 
     private func applyToneCurve(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {

@@ -900,6 +900,14 @@ struct AdjustmentPanel: View {
             DisclosureGroup(isExpanded: $isLensExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
                     AdjustmentSlider(
+                        title: "Distortion",
+                        value: adjustmentBinding(\.lensDistortionCorrection),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+                    .disabled(library.selectedPhoto == nil)
+
+                    AdjustmentSlider(
                         title: "Vignette Correction",
                         value: adjustmentBinding(\.lensVignetteCorrection),
                         range: 0...1,

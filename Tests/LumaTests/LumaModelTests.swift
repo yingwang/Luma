@@ -57,6 +57,7 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.linearStartY, 1)
         XCTAssertEqual(adjustments.linearEndY, 0.65)
         XCTAssertFalse(adjustments.linearInvert)
+        XCTAssertEqual(adjustments.lensDistortionCorrection, 0)
         XCTAssertEqual(adjustments.lensVignetteCorrection, 0)
         XCTAssertEqual(adjustments.toneCurveShadows, 0)
         XCTAssertEqual(adjustments.toneCurveDarks, 0)
@@ -175,12 +176,14 @@ final class LumaModelTests: XCTestCase {
     func testLensCorrectionsCanBeResetWithoutChangingToneAdjustments() {
         var adjustments = PhotoAdjustments(
             exposure: 0.6,
+            lensDistortionCorrection: -0.4,
             lensVignetteCorrection: 0.7
         )
 
         adjustments.resetLensCorrections()
 
         XCTAssertEqual(adjustments.exposure, 0.6)
+        XCTAssertEqual(adjustments.lensDistortionCorrection, 0)
         XCTAssertEqual(adjustments.lensVignetteCorrection, 0)
     }
 
@@ -253,6 +256,7 @@ final class LumaModelTests: XCTestCase {
             colorGradeHighlightsHue: 38,
             colorGradeHighlightsSaturation: 0.35,
             radialExposure: -0.5,
+            lensDistortionCorrection: -0.35,
             lensVignetteCorrection: 0.45,
             straighten: 12,
             perspectiveVertical: 0.25,
@@ -284,6 +288,7 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.colorGradeHighlightsHue, 45)
         XCTAssertEqual(adjustments.colorGradeHighlightsSaturation, 0)
         XCTAssertEqual(adjustments.radialExposure, -0.5)
+        XCTAssertEqual(adjustments.lensDistortionCorrection, -0.35)
         XCTAssertEqual(adjustments.lensVignetteCorrection, 0.45)
         XCTAssertEqual(adjustments.straighten, 12)
         XCTAssertEqual(adjustments.perspectiveVertical, 0.25)
