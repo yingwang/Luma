@@ -983,6 +983,13 @@ struct AdjustmentPanel: View {
             )
 
             AdjustmentSlider(
+                title: "Texture",
+                value: adjustmentBinding(\.texture),
+                range: -1...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
                 title: "Clarity",
                 value: adjustmentBinding(\.clarity),
                 range: 0...1,

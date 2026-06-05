@@ -377,6 +377,18 @@ final class ImageProcessor: @unchecked Sendable {
 
         image = applyToneCurve(adjustments, to: image)
 
+        if adjustments.texture > 0, let filter = CIFilter(name: "CIUnsharpMask") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(1.1 + adjustments.texture * 1.6, forKey: kCIInputRadiusKey)
+            filter.setValue(adjustments.texture * 0.45, forKey: kCIInputIntensityKey)
+            image = filter.outputImage ?? image
+        } else if adjustments.texture < 0, let filter = CIFilter(name: "CINoiseReduction") {
+            filter.setValue(image, forKey: kCIInputImageKey)
+            filter.setValue(abs(adjustments.texture) * 0.07, forKey: "inputNoiseLevel")
+            filter.setValue(0.16, forKey: kCIInputSharpnessKey)
+            image = filter.outputImage ?? image
+        }
+
         if adjustments.clarity > 0, let filter = CIFilter(name: "CIUnsharpMask") {
             filter.setValue(image, forKey: kCIInputImageKey)
             filter.setValue(2 + adjustments.clarity * 4, forKey: kCIInputRadiusKey)

@@ -83,6 +83,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Warmth.
 - Tint.
 - Vibrance.
+- Texture.
 - Clarity.
 - Dehaze.
 - Noise reduction.
