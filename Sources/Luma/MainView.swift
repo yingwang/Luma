@@ -1764,6 +1764,13 @@ struct AdjustmentPanel: View {
                         format: "%.0f"
                     )
 
+                    AdjustmentSlider(
+                        title: "Export Sharpening",
+                        value: $library.exportSharpening,
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
                     Toggle("Add -luma Suffix", isOn: $library.exportAddsLumaSuffix)
 
                     Button {

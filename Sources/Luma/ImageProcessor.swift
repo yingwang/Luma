@@ -252,7 +252,8 @@ final class ImageProcessor: @unchecked Sendable {
         adjustments: PhotoAdjustments,
         to destination: URL,
         quality: CGFloat = 0.92,
-        maxLongEdge: CGFloat? = nil
+        maxLongEdge: CGFloat? = nil,
+        outputSharpening: Double = 0
     ) throws {
         try exportImage(
             from: url,
@@ -260,7 +261,8 @@ final class ImageProcessor: @unchecked Sendable {
             to: destination,
             format: .jpeg,
             quality: quality,
-            maxLongEdge: maxLongEdge
+            maxLongEdge: maxLongEdge,
+            outputSharpening: outputSharpening
         )
     }
 
@@ -270,11 +272,13 @@ final class ImageProcessor: @unchecked Sendable {
         to destination: URL,
         format: ExportFormat,
         quality: CGFloat = 0.92,
-        maxLongEdge: CGFloat? = nil
+        maxLongEdge: CGFloat? = nil,
+        outputSharpening: Double = 0
     ) throws {
         guard
             let processedImage = processedImage(for: url, adjustments: adjustments),
-            let image = scaledImage(processedImage, maxLongEdge: maxLongEdge),
+            let scaledImage = scaledImage(processedImage, maxLongEdge: maxLongEdge),
+            let image = exportSharpenedImage(scaledImage, amount: outputSharpening),
             let cgImage = context.createCGImage(image, from: image.extent, format: .RGBA8, colorSpace: outputColorSpace),
             let destinationRef = CGImageDestinationCreateWithURL(
                 destination as CFURL,
@@ -559,6 +563,16 @@ final class ImageProcessor: @unchecked Sendable {
 
         let scale = maxLongEdge / longEdge
         return image.transformed(by: CGAffineTransform(scaleX: scale, y: scale))
+    }
+
+    private func exportSharpenedImage(_ image: CIImage, amount: Double) -> CIImage? {
+        guard amount > 0, let filter = CIFilter(name: "CISharpenLuminance") else {
+            return image
+        }
+
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(clipped(amount) * 0.9, forKey: kCIInputSharpnessKey)
+        return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
     private func previewCacheKey(

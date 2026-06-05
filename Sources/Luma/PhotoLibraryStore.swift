@@ -8,6 +8,7 @@ final class PhotoLibraryStore: ObservableObject {
     private static let defaultExportFormat = ExportFormat.jpeg
     private static let defaultExportQuality = 0.92
     private static let defaultExportLongEdge = 0.0
+    private static let defaultExportSharpening = 0.0
     private static let defaultExportAddsLumaSuffix = true
 
     @Published private(set) var photos: [PhotoAsset] = [] {
@@ -52,6 +53,7 @@ final class PhotoLibraryStore: ObservableObject {
     @Published var exportFormat: ExportFormat = defaultExportFormat
     @Published var exportQuality = defaultExportQuality
     @Published var exportLongEdge: Double = defaultExportLongEdge
+    @Published var exportSharpening: Double = defaultExportSharpening
     @Published var exportAddsLumaSuffix = defaultExportAddsLumaSuffix
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
@@ -870,6 +872,7 @@ final class PhotoLibraryStore: ObservableObject {
     func applyExportPreset(_ preset: ExportPreset) {
         exportQuality = preset.jpegQuality
         exportLongEdge = preset.longEdge
+        exportSharpening = preset.outputSharpening
         statusMessage = "Applied \(preset.rawValue) export preset."
     }
 
@@ -877,6 +880,7 @@ final class PhotoLibraryStore: ObservableObject {
         exportFormat = Self.defaultExportFormat
         exportQuality = Self.defaultExportQuality
         exportLongEdge = Self.defaultExportLongEdge
+        exportSharpening = Self.defaultExportSharpening
         exportAddsLumaSuffix = Self.defaultExportAddsLumaSuffix
         statusMessage = "Reset export settings."
     }
@@ -903,7 +907,8 @@ final class PhotoLibraryStore: ObservableObject {
                 to: destination,
                 format: exportFormat,
                 quality: exportQuality,
-                maxLongEdge: exportMaxLongEdge
+                maxLongEdge: exportMaxLongEdge,
+                outputSharpening: exportSharpening
             )
             statusMessage = "Exported \(destination.lastPathComponent)."
         } catch {
@@ -942,7 +947,8 @@ final class PhotoLibraryStore: ObservableObject {
                     to: destination,
                     format: exportFormat,
                     quality: exportQuality,
-                    maxLongEdge: exportMaxLongEdge
+                    maxLongEdge: exportMaxLongEdge,
+                    outputSharpening: exportSharpening
                 )
                 exportedCount += 1
             } catch {

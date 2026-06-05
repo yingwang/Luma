@@ -179,6 +179,19 @@ enum ExportPreset: String, CaseIterable, Identifiable {
             800
         }
     }
+
+    var outputSharpening: Double {
+        switch self {
+        case .fullSize:
+            0.15
+        case .largeWeb:
+            0.35
+        case .social:
+            0.45
+        case .thumbnail:
+            0.55
+        }
+    }
 }
 
 enum ExportFormat: String, CaseIterable, Identifiable {

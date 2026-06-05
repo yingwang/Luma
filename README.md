@@ -135,6 +135,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Apply export presets for full-size, large web, social, and thumbnail output.
 - Choose JPEG quality.
 - Resize exports by long edge.
+- Apply output sharpening after export resizing.
 - Choose whether exported filenames get a `-luma` suffix.
 - Reset export settings to the default JPEG output.
 - Batch export all picked photos as JPEG, PNG, or TIFF.

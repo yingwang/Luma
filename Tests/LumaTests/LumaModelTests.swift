@@ -323,9 +323,13 @@ final class LumaModelTests: XCTestCase {
     func testExportPresetSettings() {
         XCTAssertEqual(ExportPreset.fullSize.jpegQuality, 0.95)
         XCTAssertEqual(ExportPreset.fullSize.longEdge, 0)
+        XCTAssertEqual(ExportPreset.fullSize.outputSharpening, 0.15)
         XCTAssertEqual(ExportPreset.largeWeb.longEdge, 2560)
+        XCTAssertEqual(ExportPreset.largeWeb.outputSharpening, 0.35)
         XCTAssertEqual(ExportPreset.social.longEdge, 1600)
+        XCTAssertEqual(ExportPreset.social.outputSharpening, 0.45)
         XCTAssertEqual(ExportPreset.thumbnail.longEdge, 800)
+        XCTAssertEqual(ExportPreset.thumbnail.outputSharpening, 0.55)
     }
 
     func testExportFormatMetadata() {
