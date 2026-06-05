@@ -692,6 +692,14 @@ struct PhotoAdjustments: Codable, Equatable {
 }
 
 struct ColorMixerAdjustments: Codable, Equatable {
+    var redHue: Double = 0
+    var orangeHue: Double = 0
+    var yellowHue: Double = 0
+    var greenHue: Double = 0
+    var aquaHue: Double = 0
+    var blueHue: Double = 0
+    var purpleHue: Double = 0
+    var magentaHue: Double = 0
     var red: Double = 0
     var orange: Double = 0
     var yellow: Double = 0
@@ -710,6 +718,14 @@ struct ColorMixerAdjustments: Codable, Equatable {
     var magentaLuminance: Double = 0
 
     private enum CodingKeys: String, CodingKey {
+        case redHue
+        case orangeHue
+        case yellowHue
+        case greenHue
+        case aquaHue
+        case blueHue
+        case purpleHue
+        case magentaHue
         case red
         case orange
         case yellow
@@ -729,6 +745,14 @@ struct ColorMixerAdjustments: Codable, Equatable {
     }
 
     init(
+        redHue: Double = 0,
+        orangeHue: Double = 0,
+        yellowHue: Double = 0,
+        greenHue: Double = 0,
+        aquaHue: Double = 0,
+        blueHue: Double = 0,
+        purpleHue: Double = 0,
+        magentaHue: Double = 0,
         red: Double = 0,
         orange: Double = 0,
         yellow: Double = 0,
@@ -746,6 +770,14 @@ struct ColorMixerAdjustments: Codable, Equatable {
         purpleLuminance: Double = 0,
         magentaLuminance: Double = 0
     ) {
+        self.redHue = redHue
+        self.orangeHue = orangeHue
+        self.yellowHue = yellowHue
+        self.greenHue = greenHue
+        self.aquaHue = aquaHue
+        self.blueHue = blueHue
+        self.purpleHue = purpleHue
+        self.magentaHue = magentaHue
         self.red = red
         self.orange = orange
         self.yellow = yellow
@@ -766,6 +798,14 @@ struct ColorMixerAdjustments: Codable, Equatable {
 
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        redHue = try container.decodeIfPresent(Double.self, forKey: .redHue) ?? 0
+        orangeHue = try container.decodeIfPresent(Double.self, forKey: .orangeHue) ?? 0
+        yellowHue = try container.decodeIfPresent(Double.self, forKey: .yellowHue) ?? 0
+        greenHue = try container.decodeIfPresent(Double.self, forKey: .greenHue) ?? 0
+        aquaHue = try container.decodeIfPresent(Double.self, forKey: .aquaHue) ?? 0
+        blueHue = try container.decodeIfPresent(Double.self, forKey: .blueHue) ?? 0
+        purpleHue = try container.decodeIfPresent(Double.self, forKey: .purpleHue) ?? 0
+        magentaHue = try container.decodeIfPresent(Double.self, forKey: .magentaHue) ?? 0
         red = try container.decodeIfPresent(Double.self, forKey: .red) ?? 0
         orange = try container.decodeIfPresent(Double.self, forKey: .orange) ?? 0
         yellow = try container.decodeIfPresent(Double.self, forKey: .yellow) ?? 0
@@ -785,7 +825,15 @@ struct ColorMixerAdjustments: Codable, Equatable {
     }
 
     var hasAdjustments: Bool {
-        red != 0 ||
+        redHue != 0 ||
+            orangeHue != 0 ||
+            yellowHue != 0 ||
+            greenHue != 0 ||
+            aquaHue != 0 ||
+            blueHue != 0 ||
+            purpleHue != 0 ||
+            magentaHue != 0 ||
+            red != 0 ||
             orange != 0 ||
             yellow != 0 ||
             green != 0 ||

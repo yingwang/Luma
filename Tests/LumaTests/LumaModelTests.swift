@@ -126,6 +126,11 @@ final class LumaModelTests: XCTestCase {
         mixer.orangeLuminance = 0.25
 
         XCTAssertTrue(mixer.hasAdjustments)
+
+        mixer = ColorMixerAdjustments()
+        mixer.greenHue = -0.2
+
+        XCTAssertTrue(mixer.hasAdjustments)
     }
 
     func testColorMixerDecodesLegacySaturationFields() throws {
@@ -140,6 +145,8 @@ final class LumaModelTests: XCTestCase {
 
         XCTAssertEqual(mixer.orange, 0.2)
         XCTAssertEqual(mixer.blue, -0.35)
+        XCTAssertEqual(mixer.orangeHue, 0)
+        XCTAssertEqual(mixer.blueHue, 0)
         XCTAssertEqual(mixer.orangeLuminance, 0)
         XCTAssertEqual(mixer.blueLuminance, 0)
     }

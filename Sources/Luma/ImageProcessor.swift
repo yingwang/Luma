@@ -726,9 +726,10 @@ final class ImageProcessor: @unchecked Sendable {
                     let green = Double(greenIndex) / Double(dimension - 1)
                     let blue = Double(blueIndex) / Double(dimension - 1)
                     let hsv = rgbToHSV(red: red, green: green, blue: blue)
+                    let hue = normalizedHue(hsv.hue + colorMixerHueAmount(for: hsv.hue, mixer: mixer) * 45)
                     let saturation = clipped(hsv.saturation * (1 + colorMixerSaturationAmount(for: hsv.hue, mixer: mixer)))
                     let value = clipped(hsv.value + colorMixerLuminanceAmount(for: hsv.hue, mixer: mixer) * 0.24)
-                    let rgb = hsvToRGB(hue: hsv.hue, saturation: saturation, value: value)
+                    let rgb = hsvToRGB(hue: hue, saturation: saturation, value: value)
 
                     cube.append(Float(rgb.red))
                     cube.append(Float(rgb.green))
@@ -1004,6 +1005,26 @@ final class ImageProcessor: @unchecked Sendable {
         return detector?.features(in: image).compactMap { $0 as? CIFaceFeature } ?? []
     }
 
+    private func colorMixerHueAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {
+        let controls: [(center: Double, amount: Double)] = [
+            (0, mixer.redHue),
+            (30, mixer.orangeHue),
+            (60, mixer.yellowHue),
+            (120, mixer.greenHue),
+            (180, mixer.aquaHue),
+            (240, mixer.blueHue),
+            (280, mixer.purpleHue),
+            (320, mixer.magentaHue),
+            (360, mixer.redHue)
+        ]
+
+        return controls.reduce(0) { result, control in
+            let distance = abs(hue - control.center)
+            let weight = max(0, 1 - distance / 35)
+            return result + control.amount * weight
+        }
+    }
+
     private func colorMixerSaturationAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {
         let controls: [(center: Double, amount: Double)] = [
             (0, mixer.red),
@@ -1060,9 +1081,13 @@ final class ImageProcessor: @unchecked Sendable {
             hue = 60 * ((red - green) / delta + 4)
         }
 
-        let normalizedHue = hue < 0 ? hue + 360 : hue
         let saturation = maxValue == 0 ? 0 : delta / maxValue
-        return (normalizedHue, saturation, maxValue)
+        return (normalizedHue(hue), saturation, maxValue)
+    }
+
+    private func normalizedHue(_ hue: Double) -> Double {
+        let normalized = hue.truncatingRemainder(dividingBy: 360)
+        return normalized < 0 ? normalized + 360 : normalized
     }
 
     private func hsvToRGB(hue: Double, saturation: Double, value: Double) -> (red: Double, green: Double, blue: Double) {

@@ -629,6 +629,16 @@ struct SpotHealMarker: View {
     }
 }
 
+private enum ColorMixerMode: String, CaseIterable, Identifiable {
+    case hue = "Hue"
+    case saturation = "Saturation"
+    case luminance = "Luminance"
+
+    var id: String {
+        rawValue
+    }
+}
+
 struct AdjustmentPanel: View {
     @EnvironmentObject private var library: PhotoLibraryStore
     @State private var isLocalExpanded = false
@@ -638,6 +648,7 @@ struct AdjustmentPanel: View {
     @State private var isHealExpanded = false
     @State private var isBeautyExpanded = false
     @State private var isColorMixerExpanded = false
+    @State private var colorMixerMode: ColorMixerMode = .saturation
     @State private var isInfoExpanded = false
     @State private var isExportExpanded = true
 
@@ -1385,127 +1396,183 @@ struct AdjustmentPanel: View {
 
             DisclosureGroup(isExpanded: $isColorMixerExpanded) {
                 VStack(alignment: .leading, spacing: 10) {
-                    Text("Saturation")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                    Picker("Mode", selection: $colorMixerMode) {
+                        ForEach(ColorMixerMode.allCases) { mode in
+                            Text(mode.rawValue).tag(mode)
+                        }
+                    }
+                    .pickerStyle(.segmented)
 
-                    AdjustmentSlider(
-                        title: "Red Sat",
-                        value: colorMixerBinding(\.red),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                    switch colorMixerMode {
+                    case .hue:
+                        AdjustmentSlider(
+                            title: "Red Hue",
+                            value: colorMixerBinding(\.redHue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Orange Sat",
-                        value: colorMixerBinding(\.orange),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Orange Hue",
+                            value: colorMixerBinding(\.orangeHue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Yellow Sat",
-                        value: colorMixerBinding(\.yellow),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Yellow Hue",
+                            value: colorMixerBinding(\.yellowHue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Green Sat",
-                        value: colorMixerBinding(\.green),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Green Hue",
+                            value: colorMixerBinding(\.greenHue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Aqua Sat",
-                        value: colorMixerBinding(\.aqua),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Aqua Hue",
+                            value: colorMixerBinding(\.aquaHue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Blue Sat",
-                        value: colorMixerBinding(\.blue),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Blue Hue",
+                            value: colorMixerBinding(\.blueHue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Purple Sat",
-                        value: colorMixerBinding(\.purple),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Purple Hue",
+                            value: colorMixerBinding(\.purpleHue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Magenta Sat",
-                        value: colorMixerBinding(\.magenta),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Magenta Hue",
+                            value: colorMixerBinding(\.magentaHue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
+                    case .saturation:
+                        AdjustmentSlider(
+                            title: "Red Sat",
+                            value: colorMixerBinding(\.red),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    Divider()
+                        AdjustmentSlider(
+                            title: "Orange Sat",
+                            value: colorMixerBinding(\.orange),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    Text("Luminance")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
+                        AdjustmentSlider(
+                            title: "Yellow Sat",
+                            value: colorMixerBinding(\.yellow),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Red Lum",
-                        value: colorMixerBinding(\.redLuminance),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Green Sat",
+                            value: colorMixerBinding(\.green),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Orange Lum",
-                        value: colorMixerBinding(\.orangeLuminance),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Aqua Sat",
+                            value: colorMixerBinding(\.aqua),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Yellow Lum",
-                        value: colorMixerBinding(\.yellowLuminance),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Blue Sat",
+                            value: colorMixerBinding(\.blue),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Green Lum",
-                        value: colorMixerBinding(\.greenLuminance),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Purple Sat",
+                            value: colorMixerBinding(\.purple),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Aqua Lum",
-                        value: colorMixerBinding(\.aquaLuminance),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Magenta Sat",
+                            value: colorMixerBinding(\.magenta),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
+                    case .luminance:
+                        AdjustmentSlider(
+                            title: "Red Lum",
+                            value: colorMixerBinding(\.redLuminance),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Blue Lum",
-                        value: colorMixerBinding(\.blueLuminance),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Orange Lum",
+                            value: colorMixerBinding(\.orangeLuminance),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Purple Lum",
-                        value: colorMixerBinding(\.purpleLuminance),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Yellow Lum",
+                            value: colorMixerBinding(\.yellowLuminance),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
 
-                    AdjustmentSlider(
-                        title: "Magenta Lum",
-                        value: colorMixerBinding(\.magentaLuminance),
-                        range: -1...1,
-                        format: "%.2f"
-                    )
+                        AdjustmentSlider(
+                            title: "Green Lum",
+                            value: colorMixerBinding(\.greenLuminance),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
+
+                        AdjustmentSlider(
+                            title: "Aqua Lum",
+                            value: colorMixerBinding(\.aquaLuminance),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
+
+                        AdjustmentSlider(
+                            title: "Blue Lum",
+                            value: colorMixerBinding(\.blueLuminance),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
+
+                        AdjustmentSlider(
+                            title: "Purple Lum",
+                            value: colorMixerBinding(\.purpleLuminance),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
+
+                        AdjustmentSlider(
+                            title: "Magenta Lum",
+                            value: colorMixerBinding(\.magentaLuminance),
+                            range: -1...1,
+                            format: "%.2f"
+                        )
+                    }
 
                     Button {
                         library.resetSelectedColorMixer()
