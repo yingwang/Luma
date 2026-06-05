@@ -745,6 +745,13 @@ struct AdjustmentPanel: View {
                     Label("Clear Marks", systemImage: "tag.slash")
                 }
                 .disabled(library.selectedPhoto == nil)
+
+                Button {
+                    library.syncSelectedRatingAndLabelToPicked()
+                } label: {
+                    Label("Sync Rating/Label", systemImage: "tag")
+                }
+                .disabled(library.selectedPhoto == nil || library.pickedPhotoCount == 0)
             }
 
             VStack(alignment: .leading, spacing: 10) {

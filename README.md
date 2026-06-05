@@ -31,6 +31,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Mark photos as picked or rejected.
 - Add color labels and use number keys 6-9 for red, yellow, green, and blue labels.
 - Clear rating, flag, and color label from the selected photo in one action.
+- Sync the selected rating and color label to all picked photos.
 - Remove photos from the local catalog without deleting the original file.
 - Reveal the selected original file in Finder.
 - Copy the selected original file path to the clipboard.

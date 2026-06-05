@@ -521,6 +521,30 @@ final class PhotoLibraryStore: ObservableObject {
         ensureSelectedPhotoIsVisible()
     }
 
+    func syncSelectedRatingAndLabelToPicked() {
+        guard let selectedPhoto else {
+            return
+        }
+
+        let pickedIndexes = photos.indices.filter {
+            photos[$0].flag == .picked
+        }
+
+        guard !pickedIndexes.isEmpty else {
+            statusMessage = "No picked photos to sync."
+            return
+        }
+
+        for index in pickedIndexes {
+            photos[index].rating = selectedPhoto.rating
+            photos[index].colorLabel = selectedPhoto.colorLabel
+        }
+
+        statusMessage = "Synced rating and color label to \(pickedIndexes.count) picked photo\(pickedIndexes.count == 1 ? "" : "s")."
+        saveCatalog()
+        ensureSelectedPhotoIsVisible()
+    }
+
     func removeSelectedPhoto() {
         guard
             let selectedPhotoID,
