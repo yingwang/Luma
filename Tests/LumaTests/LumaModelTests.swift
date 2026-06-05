@@ -23,6 +23,8 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.highlights, 0)
         XCTAssertEqual(adjustments.shadows, 0)
         XCTAssertEqual(adjustments.cropAspect, .original)
+        XCTAssertEqual(adjustments.cropCenterX, 0.5)
+        XCTAssertEqual(adjustments.cropCenterY, 0.5)
         XCTAssertEqual(adjustments.colorMixer, ColorMixerAdjustments())
         XCTAssertEqual(adjustments.beautySmooth, 0)
         XCTAssertEqual(adjustments.beautyWrinkle, 0)
@@ -151,6 +153,8 @@ final class LumaModelTests: XCTestCase {
             straighten: 12,
             rotationTurns: 1,
             cropAspect: .square,
+            cropCenterX: 0.12,
+            cropCenterY: 0.88,
             flipHorizontal: true,
             flipVertical: true
         )
@@ -161,6 +165,8 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.straighten, 0)
         XCTAssertEqual(adjustments.rotationTurns, 0)
         XCTAssertEqual(adjustments.cropAspect, .original)
+        XCTAssertEqual(adjustments.cropCenterX, 0.5)
+        XCTAssertEqual(adjustments.cropCenterY, 0.5)
         XCTAssertFalse(adjustments.flipHorizontal)
         XCTAssertFalse(adjustments.flipVertical)
     }
@@ -174,6 +180,8 @@ final class LumaModelTests: XCTestCase {
             radialExposure: -0.5,
             straighten: 12,
             cropAspect: .square,
+            cropCenterX: 0.22,
+            cropCenterY: 0.78,
             flipHorizontal: true
         )
 
@@ -186,6 +194,8 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.radialExposure, -0.5)
         XCTAssertEqual(adjustments.straighten, 12)
         XCTAssertEqual(adjustments.cropAspect, .square)
+        XCTAssertEqual(adjustments.cropCenterX, 0.22)
+        XCTAssertEqual(adjustments.cropCenterY, 0.78)
         XCTAssertTrue(adjustments.flipHorizontal)
     }
 

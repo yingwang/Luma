@@ -305,7 +305,12 @@ final class ImageProcessor: @unchecked Sendable {
             return nil
         }
 
-        image = centerCrop(image, aspect: adjustments.cropAspect)
+        image = centerCrop(
+            image,
+            aspect: adjustments.cropAspect,
+            centerX: adjustments.cropCenterX,
+            centerY: adjustments.cropCenterY
+        )
         image = straighten(image, degrees: adjustments.straighten)
 
         if adjustments.exposure != 0 {
@@ -615,7 +620,7 @@ final class ImageProcessor: @unchecked Sendable {
         return width * height * 4
     }
 
-    private func centerCrop(_ image: CIImage, aspect: CropAspect) -> CIImage {
+    private func centerCrop(_ image: CIImage, aspect: CropAspect, centerX: Double, centerY: Double) -> CIImage {
         guard let targetRatio = aspect.ratio else {
             return normalizeExtent(image)
         }
@@ -626,17 +631,19 @@ final class ImageProcessor: @unchecked Sendable {
 
         if currentRatio > targetRatio {
             let width = extent.height * targetRatio
+            let x = extent.minX + (extent.width - width) * CGFloat(clipped(centerX))
             cropRect = CGRect(
-                x: extent.midX - width / 2,
+                x: min(max(extent.minX, x), extent.maxX - width),
                 y: extent.minY,
                 width: width,
                 height: extent.height
             )
         } else {
             let height = extent.width / targetRatio
+            let y = extent.minY + (extent.height - height) * CGFloat(clipped(centerY))
             cropRect = CGRect(
                 x: extent.minX,
-                y: extent.midY - height / 2,
+                y: min(max(extent.minY, y), extent.maxY - height),
                 width: extent.width,
                 height: height
             )

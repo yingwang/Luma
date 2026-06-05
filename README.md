@@ -52,8 +52,8 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Rotate left and right.
 - Flip photos horizontally or vertically.
 - Straighten.
-- Crop to common aspect ratios.
-- Reset crop, straighten, and rotation without changing tone edits.
+- Crop to common aspect ratios and adjust the crop framing position.
+- Reset crop framing, straighten, and rotation without changing tone edits.
 - Apply built-in presets.
 - Apply one-click Auto Enhance.
 - Apply a one-click black and white look from the panel or Photo menu.

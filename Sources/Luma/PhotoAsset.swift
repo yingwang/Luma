@@ -295,6 +295,8 @@ struct PhotoAdjustments: Codable, Equatable {
     var straighten: Double = 0
     var rotationTurns: Int = 0
     var cropAspect: CropAspect = .original
+    var cropCenterX: Double = 0.5
+    var cropCenterY: Double = 0.5
     var flipHorizontal: Bool = false
     var flipVertical: Bool = false
     var colorMixer = ColorMixerAdjustments()
@@ -352,6 +354,8 @@ struct PhotoAdjustments: Codable, Equatable {
         case straighten
         case rotationTurns
         case cropAspect
+        case cropCenterX
+        case cropCenterY
         case flipHorizontal
         case flipVertical
         case colorMixer
@@ -408,6 +412,8 @@ struct PhotoAdjustments: Codable, Equatable {
         straighten: Double = 0,
         rotationTurns: Int = 0,
         cropAspect: CropAspect = .original,
+        cropCenterX: Double = 0.5,
+        cropCenterY: Double = 0.5,
         flipHorizontal: Bool = false,
         flipVertical: Bool = false,
         colorMixer: ColorMixerAdjustments = ColorMixerAdjustments()
@@ -471,6 +477,8 @@ struct PhotoAdjustments: Codable, Equatable {
         self.straighten = straighten
         self.rotationTurns = rotationTurns
         self.cropAspect = cropAspect
+        self.cropCenterX = cropCenterX
+        self.cropCenterY = cropCenterY
         self.flipHorizontal = flipHorizontal
         self.flipVertical = flipVertical
         self.colorMixer = colorMixer
@@ -538,6 +546,8 @@ struct PhotoAdjustments: Codable, Equatable {
         straighten = try container.decodeIfPresent(Double.self, forKey: .straighten) ?? 0
         rotationTurns = try container.decodeIfPresent(Int.self, forKey: .rotationTurns) ?? 0
         cropAspect = try container.decodeIfPresent(CropAspect.self, forKey: .cropAspect) ?? .original
+        cropCenterX = try container.decodeIfPresent(Double.self, forKey: .cropCenterX) ?? 0.5
+        cropCenterY = try container.decodeIfPresent(Double.self, forKey: .cropCenterY) ?? 0.5
         flipHorizontal = try container.decodeIfPresent(Bool.self, forKey: .flipHorizontal) ?? false
         flipVertical = try container.decodeIfPresent(Bool.self, forKey: .flipVertical) ?? false
         colorMixer = try container.decodeIfPresent(ColorMixerAdjustments.self, forKey: .colorMixer) ?? ColorMixerAdjustments()
@@ -622,6 +632,8 @@ struct PhotoAdjustments: Codable, Equatable {
         straighten = 0
         rotationTurns = 0
         cropAspect = .original
+        cropCenterX = 0.5
+        cropCenterY = 0.5
         flipHorizontal = false
         flipVertical = false
     }

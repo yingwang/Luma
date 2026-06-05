@@ -824,6 +824,22 @@ struct AdjustmentPanel: View {
                 .disabled(library.selectedPhoto == nil)
 
                 AdjustmentSlider(
+                    title: "Crop X",
+                    value: adjustmentBinding(\.cropCenterX),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+                .disabled(cropPositionDisabled)
+
+                AdjustmentSlider(
+                    title: "Crop Y",
+                    value: adjustmentBinding(\.cropCenterY),
+                    range: 0...1,
+                    format: "%.2f"
+                )
+                .disabled(cropPositionDisabled)
+
+                AdjustmentSlider(
                     title: "Straighten",
                     value: adjustmentBinding(\.straighten),
                     range: -45...45,
@@ -1489,6 +1505,10 @@ struct AdjustmentPanel: View {
 
     private var activeSpotHealPoint: SpotHealPoint? {
         library.activeSpotHealPoint
+    }
+
+    private var cropPositionDisabled: Bool {
+        library.selectedPhoto == nil || library.selectedAdjustments.cropAspect == .original
     }
 
     private var spotHealSelectionBinding: Binding<SpotHealPoint.ID?> {
