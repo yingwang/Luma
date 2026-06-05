@@ -269,6 +269,12 @@ struct PhotoAdjustments: Codable, Equatable {
     var toneCurveDarks: Double = 0
     var toneCurveLights: Double = 0
     var toneCurveHighlights: Double = 0
+    var colorGradeShadowsHue: Double = 220
+    var colorGradeShadowsSaturation: Double = 0
+    var colorGradeMidtonesHue: Double = 40
+    var colorGradeMidtonesSaturation: Double = 0
+    var colorGradeHighlightsHue: Double = 45
+    var colorGradeHighlightsSaturation: Double = 0
     var beautySmooth: Double = 0
     var beautyWrinkle: Double = 0
     var beautyBlemish: Double = 0
@@ -337,6 +343,12 @@ struct PhotoAdjustments: Codable, Equatable {
         case toneCurveDarks
         case toneCurveLights
         case toneCurveHighlights
+        case colorGradeShadowsHue
+        case colorGradeShadowsSaturation
+        case colorGradeMidtonesHue
+        case colorGradeMidtonesSaturation
+        case colorGradeHighlightsHue
+        case colorGradeHighlightsSaturation
         case beautySmooth
         case beautyWrinkle
         case beautyBlemish
@@ -404,6 +416,12 @@ struct PhotoAdjustments: Codable, Equatable {
         toneCurveDarks: Double = 0,
         toneCurveLights: Double = 0,
         toneCurveHighlights: Double = 0,
+        colorGradeShadowsHue: Double = 220,
+        colorGradeShadowsSaturation: Double = 0,
+        colorGradeMidtonesHue: Double = 40,
+        colorGradeMidtonesSaturation: Double = 0,
+        colorGradeHighlightsHue: Double = 45,
+        colorGradeHighlightsSaturation: Double = 0,
         beautySmooth: Double = 0,
         beautyWrinkle: Double = 0,
         beautyBlemish: Double = 0,
@@ -469,6 +487,12 @@ struct PhotoAdjustments: Codable, Equatable {
         self.toneCurveDarks = toneCurveDarks
         self.toneCurveLights = toneCurveLights
         self.toneCurveHighlights = toneCurveHighlights
+        self.colorGradeShadowsHue = colorGradeShadowsHue
+        self.colorGradeShadowsSaturation = colorGradeShadowsSaturation
+        self.colorGradeMidtonesHue = colorGradeMidtonesHue
+        self.colorGradeMidtonesSaturation = colorGradeMidtonesSaturation
+        self.colorGradeHighlightsHue = colorGradeHighlightsHue
+        self.colorGradeHighlightsSaturation = colorGradeHighlightsSaturation
         self.beautySmooth = beautySmooth
         self.beautyWrinkle = beautyWrinkle
         self.beautyBlemish = beautyBlemish
@@ -546,6 +570,12 @@ struct PhotoAdjustments: Codable, Equatable {
         toneCurveDarks = try container.decodeIfPresent(Double.self, forKey: .toneCurveDarks) ?? 0
         toneCurveLights = try container.decodeIfPresent(Double.self, forKey: .toneCurveLights) ?? 0
         toneCurveHighlights = try container.decodeIfPresent(Double.self, forKey: .toneCurveHighlights) ?? 0
+        colorGradeShadowsHue = try container.decodeIfPresent(Double.self, forKey: .colorGradeShadowsHue) ?? 220
+        colorGradeShadowsSaturation = try container.decodeIfPresent(Double.self, forKey: .colorGradeShadowsSaturation) ?? 0
+        colorGradeMidtonesHue = try container.decodeIfPresent(Double.self, forKey: .colorGradeMidtonesHue) ?? 40
+        colorGradeMidtonesSaturation = try container.decodeIfPresent(Double.self, forKey: .colorGradeMidtonesSaturation) ?? 0
+        colorGradeHighlightsHue = try container.decodeIfPresent(Double.self, forKey: .colorGradeHighlightsHue) ?? 45
+        colorGradeHighlightsSaturation = try container.decodeIfPresent(Double.self, forKey: .colorGradeHighlightsSaturation) ?? 0
         beautySmooth = try container.decodeIfPresent(Double.self, forKey: .beautySmooth) ?? 0
         beautyWrinkle = try container.decodeIfPresent(Double.self, forKey: .beautyWrinkle) ?? 0
         beautyBlemish = try container.decodeIfPresent(Double.self, forKey: .beautyBlemish) ?? 0
@@ -712,6 +742,12 @@ struct PhotoAdjustments: Codable, Equatable {
         toneCurveDarks = 0
         toneCurveLights = 0
         toneCurveHighlights = 0
+        colorGradeShadowsHue = 220
+        colorGradeShadowsSaturation = 0
+        colorGradeMidtonesHue = 40
+        colorGradeMidtonesSaturation = 0
+        colorGradeHighlightsHue = 45
+        colorGradeHighlightsSaturation = 0
     }
 }
 

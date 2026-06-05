@@ -30,6 +30,12 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.grainAmount, 0)
         XCTAssertEqual(adjustments.grainSize, 0.35)
         XCTAssertEqual(adjustments.grainRoughness, 0.5)
+        XCTAssertEqual(adjustments.colorGradeShadowsHue, 220)
+        XCTAssertEqual(adjustments.colorGradeShadowsSaturation, 0)
+        XCTAssertEqual(adjustments.colorGradeMidtonesHue, 40)
+        XCTAssertEqual(adjustments.colorGradeMidtonesSaturation, 0)
+        XCTAssertEqual(adjustments.colorGradeHighlightsHue, 45)
+        XCTAssertEqual(adjustments.colorGradeHighlightsSaturation, 0)
         XCTAssertEqual(adjustments.beautySmooth, 0)
         XCTAssertEqual(adjustments.beautyWrinkle, 0)
         XCTAssertEqual(adjustments.beautyBlemish, 0)
@@ -234,6 +240,12 @@ final class LumaModelTests: XCTestCase {
             toneCurveDarks: -0.1,
             toneCurveLights: 0.12,
             toneCurveHighlights: -0.18,
+            colorGradeShadowsHue: 210,
+            colorGradeShadowsSaturation: 0.4,
+            colorGradeMidtonesHue: 75,
+            colorGradeMidtonesSaturation: 0.2,
+            colorGradeHighlightsHue: 38,
+            colorGradeHighlightsSaturation: 0.35,
             radialExposure: -0.5,
             lensVignetteCorrection: 0.45,
             straighten: 12,
@@ -257,6 +269,12 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.toneCurveDarks, 0)
         XCTAssertEqual(adjustments.toneCurveLights, 0)
         XCTAssertEqual(adjustments.toneCurveHighlights, 0)
+        XCTAssertEqual(adjustments.colorGradeShadowsHue, 220)
+        XCTAssertEqual(adjustments.colorGradeShadowsSaturation, 0)
+        XCTAssertEqual(adjustments.colorGradeMidtonesHue, 40)
+        XCTAssertEqual(adjustments.colorGradeMidtonesSaturation, 0)
+        XCTAssertEqual(adjustments.colorGradeHighlightsHue, 45)
+        XCTAssertEqual(adjustments.colorGradeHighlightsSaturation, 0)
         XCTAssertEqual(adjustments.radialExposure, -0.5)
         XCTAssertEqual(adjustments.lensVignetteCorrection, 0.45)
         XCTAssertEqual(adjustments.straighten, 12)

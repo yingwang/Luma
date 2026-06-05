@@ -645,6 +645,7 @@ struct AdjustmentPanel: View {
     @State private var isLinearExpanded = false
     @State private var isLensExpanded = false
     @State private var isToneCurveExpanded = false
+    @State private var isColorGradingExpanded = false
     @State private var isHealExpanded = false
     @State private var isBeautyExpanded = false
     @State private var isColorMixerExpanded = false
@@ -1078,6 +1079,56 @@ struct AdjustmentPanel: View {
                 .padding(.top, 8)
             } label: {
                 Label("Tone Curve", systemImage: "point.topleft.down.curvedto.point.bottomright.up")
+                    .font(.headline)
+            }
+
+            DisclosureGroup(isExpanded: $isColorGradingExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    AdjustmentSlider(
+                        title: "Shadow Hue",
+                        value: adjustmentBinding(\.colorGradeShadowsHue),
+                        range: 0...360,
+                        format: "%.0f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Shadow Sat",
+                        value: adjustmentBinding(\.colorGradeShadowsSaturation),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Midtone Hue",
+                        value: adjustmentBinding(\.colorGradeMidtonesHue),
+                        range: 0...360,
+                        format: "%.0f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Midtone Sat",
+                        value: adjustmentBinding(\.colorGradeMidtonesSaturation),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Highlight Hue",
+                        value: adjustmentBinding(\.colorGradeHighlightsHue),
+                        range: 0...360,
+                        format: "%.0f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Highlight Sat",
+                        value: adjustmentBinding(\.colorGradeHighlightsSaturation),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+                }
+                .padding(.top, 8)
+            } label: {
+                Label("Color Grading", systemImage: "circle.hexagongrid")
                     .font(.headline)
             }
 

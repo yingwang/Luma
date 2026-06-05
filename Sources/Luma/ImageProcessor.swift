@@ -376,6 +376,7 @@ final class ImageProcessor: @unchecked Sendable {
         }
 
         image = applyToneCurve(adjustments, to: image)
+        image = applyColorGrading(adjustments, to: image)
 
         if adjustments.texture > 0, let filter = CIFilter(name: "CIUnsharpMask") {
             filter.setValue(image, forKey: kCIInputImageKey)
@@ -767,6 +768,47 @@ final class ImageProcessor: @unchecked Sendable {
         return filter.outputImage ?? image
     }
 
+    private func applyColorGrading(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.colorGradeShadowsSaturation > 0 ||
+              adjustments.colorGradeMidtonesSaturation > 0 ||
+              adjustments.colorGradeHighlightsSaturation > 0 else {
+            return image
+        }
+
+        let dimension = 24
+        var cube = [Float]()
+        cube.reserveCapacity(dimension * dimension * dimension * 4)
+
+        for blueIndex in 0..<dimension {
+            for greenIndex in 0..<dimension {
+                for redIndex in 0..<dimension {
+                    let red = Double(redIndex) / Double(dimension - 1)
+                    let green = Double(greenIndex) / Double(dimension - 1)
+                    let blue = Double(blueIndex) / Double(dimension - 1)
+                    let rgb = colorGradedRGB(red: red, green: green, blue: blue, adjustments: adjustments)
+
+                    cube.append(Float(rgb.red))
+                    cube.append(Float(rgb.green))
+                    cube.append(Float(rgb.blue))
+                    cube.append(1)
+                }
+            }
+        }
+
+        let data = cube.withUnsafeBufferPointer { buffer in
+            Data(buffer: buffer)
+        }
+
+        guard let filter = CIFilter(name: "CIColorCube") else {
+            return image
+        }
+
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(dimension, forKey: "inputCubeDimension")
+        filter.setValue(data, forKey: "inputCubeData")
+        return filter.outputImage ?? image
+    }
+
     private func applyFaceSlim(_ amount: Double, to image: CIImage) -> CIImage {
         guard amount > 0 else {
             return image
@@ -1078,6 +1120,58 @@ final class ImageProcessor: @unchecked Sendable {
             let weight = max(0, 1 - distance / 35)
             return result + control.amount * weight
         }
+    }
+
+    private func colorGradedRGB(
+        red: Double,
+        green: Double,
+        blue: Double,
+        adjustments: PhotoAdjustments
+    ) -> (red: Double, green: Double, blue: Double) {
+        let luminance = clipped(0.2126 * red + 0.7152 * green + 0.0722 * blue)
+        let shadowWeight = pow(max(0, (0.55 - luminance) / 0.55), 1.2)
+        let highlightWeight = pow(max(0, (luminance - 0.45) / 0.55), 1.2)
+        let midtoneWeight = max(0, 1 - abs(luminance - 0.5) / 0.35)
+        var rgb = (red: red, green: green, blue: blue)
+
+        rgb = applyColorGrade(
+            rgb,
+            hue: adjustments.colorGradeShadowsHue,
+            saturation: adjustments.colorGradeShadowsSaturation,
+            weight: shadowWeight
+        )
+        rgb = applyColorGrade(
+            rgb,
+            hue: adjustments.colorGradeMidtonesHue,
+            saturation: adjustments.colorGradeMidtonesSaturation,
+            weight: midtoneWeight
+        )
+        rgb = applyColorGrade(
+            rgb,
+            hue: adjustments.colorGradeHighlightsHue,
+            saturation: adjustments.colorGradeHighlightsSaturation,
+            weight: highlightWeight
+        )
+        return rgb
+    }
+
+    private func applyColorGrade(
+        _ rgb: (red: Double, green: Double, blue: Double),
+        hue: Double,
+        saturation: Double,
+        weight: Double
+    ) -> (red: Double, green: Double, blue: Double) {
+        let amount = clipped(saturation) * clipped(weight) * 0.35
+        guard amount > 0 else {
+            return rgb
+        }
+
+        let tint = hsvToRGB(hue: normalizedHue(hue), saturation: 1, value: 1)
+        return (
+            clipped(rgb.red + (tint.red - 0.5) * amount),
+            clipped(rgb.green + (tint.green - 0.5) * amount),
+            clipped(rgb.blue + (tint.blue - 0.5) * amount)
+        )
     }
 
     private func colorMixerSaturationAmount(for hue: Double, mixer: ColorMixerAdjustments) -> Double {
