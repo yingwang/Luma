@@ -284,6 +284,7 @@ struct PhotoAdjustments: Codable, Equatable {
     var linearStartY: Double = 1
     var linearEndY: Double = 0.65
     var linearInvert: Bool = false
+    var lensVignetteCorrection: Double = 0
     var spotHealAmount: Double = 0
     var spotHealX: Double = 0.5
     var spotHealY: Double = 0.5
@@ -343,6 +344,7 @@ struct PhotoAdjustments: Codable, Equatable {
         case linearStartY
         case linearEndY
         case linearInvert
+        case lensVignetteCorrection
         case spotHealAmount
         case spotHealX
         case spotHealY
@@ -401,6 +403,7 @@ struct PhotoAdjustments: Codable, Equatable {
         linearStartY: Double = 1,
         linearEndY: Double = 0.65,
         linearInvert: Bool = false,
+        lensVignetteCorrection: Double = 0,
         spotHealAmount: Double = 0,
         spotHealX: Double = 0.5,
         spotHealY: Double = 0.5,
@@ -457,6 +460,7 @@ struct PhotoAdjustments: Codable, Equatable {
         self.linearStartY = linearStartY
         self.linearEndY = linearEndY
         self.linearInvert = linearInvert
+        self.lensVignetteCorrection = lensVignetteCorrection
         self.spotHealAmount = spotHealAmount
         self.spotHealX = spotHealX
         self.spotHealY = spotHealY
@@ -525,6 +529,7 @@ struct PhotoAdjustments: Codable, Equatable {
         linearStartY = try container.decodeIfPresent(Double.self, forKey: .linearStartY) ?? 1
         linearEndY = try container.decodeIfPresent(Double.self, forKey: .linearEndY) ?? 0.65
         linearInvert = try container.decodeIfPresent(Bool.self, forKey: .linearInvert) ?? false
+        lensVignetteCorrection = try container.decodeIfPresent(Double.self, forKey: .lensVignetteCorrection) ?? 0
         spotHealAmount = try container.decodeIfPresent(Double.self, forKey: .spotHealAmount) ?? 0
         spotHealX = try container.decodeIfPresent(Double.self, forKey: .spotHealX) ?? 0.5
         spotHealY = try container.decodeIfPresent(Double.self, forKey: .spotHealY) ?? 0.5
@@ -636,6 +641,10 @@ struct PhotoAdjustments: Codable, Equatable {
         cropCenterY = 0.5
         flipHorizontal = false
         flipVertical = false
+    }
+
+    mutating func resetLensCorrections() {
+        lensVignetteCorrection = 0
     }
 
     mutating func resetToneAdjustments() {

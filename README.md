@@ -65,6 +65,11 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Reset adjustments on all picked photos.
 - Inspect a luminance histogram.
 
+### Lens Corrections
+
+- Lens vignette correction for brightening dark corners.
+- Reset lens corrections without changing crop, tone, local, or retouching edits.
+
 ### Light And Color
 
 - Exposure.

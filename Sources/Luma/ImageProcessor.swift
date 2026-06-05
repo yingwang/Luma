@@ -312,6 +312,7 @@ final class ImageProcessor: @unchecked Sendable {
             centerY: adjustments.cropCenterY
         )
         image = straighten(image, degrees: adjustments.straighten)
+        image = applyLensVignetteCorrection(adjustments, to: image)
 
         if adjustments.exposure != 0 {
             let filter = CIFilter.exposureAdjust()
@@ -890,6 +891,41 @@ final class ImageProcessor: @unchecked Sendable {
         }
 
         blend.setValue(adjusted, forKey: kCIInputImageKey)
+        blend.setValue(image, forKey: kCIInputBackgroundImageKey)
+        blend.setValue(mask, forKey: kCIInputMaskImageKey)
+        return blend.outputImage?.cropped(to: extent) ?? image
+    }
+
+    private func applyLensVignetteCorrection(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.lensVignetteCorrection > 0,
+              let exposure = CIFilter(name: "CIExposureAdjust"),
+              let gradient = CIFilter(name: "CIRadialGradient"),
+              let blend = CIFilter(name: "CIBlendWithMask") else {
+            return image
+        }
+
+        let amount = clipped(adjustments.lensVignetteCorrection)
+        let extent = image.extent
+        let shortEdge = min(extent.width, extent.height)
+        let diagonalRadius = sqrt(extent.width * extent.width + extent.height * extent.height) * 0.5
+        let innerRadius = shortEdge * 0.32
+        let outerRadius = diagonalRadius * (0.78 - amount * 0.12)
+
+        exposure.setValue(image, forKey: kCIInputImageKey)
+        exposure.setValue(amount * 0.85, forKey: kCIInputEVKey)
+
+        gradient.setValue(CIVector(x: extent.midX, y: extent.midY), forKey: kCIInputCenterKey)
+        gradient.setValue(innerRadius, forKey: "inputRadius0")
+        gradient.setValue(max(innerRadius + 1, outerRadius), forKey: "inputRadius1")
+        gradient.setValue(CIColor.black, forKey: "inputColor0")
+        gradient.setValue(CIColor.white, forKey: "inputColor1")
+
+        guard let corrected = exposure.outputImage,
+              let mask = gradient.outputImage?.cropped(to: extent) else {
+            return image
+        }
+
+        blend.setValue(corrected, forKey: kCIInputImageKey)
         blend.setValue(image, forKey: kCIInputBackgroundImageKey)
         blend.setValue(mask, forKey: kCIInputMaskImageKey)
         return blend.outputImage?.cropped(to: extent) ?? image

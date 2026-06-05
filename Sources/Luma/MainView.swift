@@ -633,6 +633,7 @@ struct AdjustmentPanel: View {
     @EnvironmentObject private var library: PhotoLibraryStore
     @State private var isLocalExpanded = false
     @State private var isLinearExpanded = false
+    @State private var isLensExpanded = false
     @State private var isHealExpanded = false
     @State private var isBeautyExpanded = false
     @State private var isColorMixerExpanded = false
@@ -867,6 +868,29 @@ struct AdjustmentPanel: View {
                     Label("Reset Crop", systemImage: "crop.rotate")
                 }
                 .disabled(library.selectedPhoto == nil)
+            }
+
+            DisclosureGroup(isExpanded: $isLensExpanded) {
+                VStack(alignment: .leading, spacing: 10) {
+                    AdjustmentSlider(
+                        title: "Vignette Correction",
+                        value: adjustmentBinding(\.lensVignetteCorrection),
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+                    .disabled(library.selectedPhoto == nil)
+
+                    Button {
+                        library.resetSelectedLensCorrections()
+                    } label: {
+                        Label("Reset Lens", systemImage: "camera.aperture")
+                    }
+                    .disabled(library.selectedPhoto == nil)
+                }
+                .padding(.top, 8)
+            } label: {
+                Label("Lens Corrections", systemImage: "camera.aperture")
+                    .font(.headline)
             }
 
             AdjustmentSlider(

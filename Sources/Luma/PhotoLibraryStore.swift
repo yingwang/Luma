@@ -715,6 +715,13 @@ final class PhotoLibraryStore: ObservableObject {
         statusMessage = "Reset crop and rotation."
     }
 
+    func resetSelectedLensCorrections() {
+        updateSelectedAdjustments { adjustments in
+            adjustments.resetLensCorrections()
+        }
+        statusMessage = "Reset lens corrections."
+    }
+
     func resetSelectedToneAdjustments() {
         updateSelectedAdjustments { adjustments in
             adjustments.resetToneAdjustments()
