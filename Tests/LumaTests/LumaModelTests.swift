@@ -335,6 +335,8 @@ final class LumaModelTests: XCTestCase {
     func testExportFormatMetadata() {
         XCTAssertEqual(ExportFormat.jpeg.fileExtension, "jpg")
         XCTAssertEqual(ExportFormat.jpeg.typeIdentifier, "public.jpeg")
+        XCTAssertEqual(ExportFormat.heic.fileExtension, "heic")
+        XCTAssertEqual(ExportFormat.heic.typeIdentifier, "public.heic")
         XCTAssertEqual(ExportFormat.png.fileExtension, "png")
         XCTAssertEqual(ExportFormat.png.typeIdentifier, "public.png")
         XCTAssertEqual(ExportFormat.tiff.fileExtension, "tiff")

@@ -196,6 +196,7 @@ enum ExportPreset: String, CaseIterable, Identifiable {
 
 enum ExportFormat: String, CaseIterable, Identifiable {
     case jpeg = "JPEG"
+    case heic = "HEIC"
     case png = "PNG"
     case tiff = "TIFF"
 
@@ -207,6 +208,8 @@ enum ExportFormat: String, CaseIterable, Identifiable {
         switch self {
         case .jpeg:
             "jpg"
+        case .heic:
+            "heic"
         case .png:
             "png"
         case .tiff:
@@ -218,6 +221,8 @@ enum ExportFormat: String, CaseIterable, Identifiable {
         switch self {
         case .jpeg:
             "public.jpeg"
+        case .heic:
+            "public.heic"
         case .png:
             "public.png"
         case .tiff:

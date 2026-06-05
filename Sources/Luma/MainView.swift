@@ -1750,12 +1750,12 @@ struct AdjustmentPanel: View {
                     }
 
                     AdjustmentSlider(
-                        title: "JPEG Quality",
+                        title: "Quality",
                         value: $library.exportQuality,
                         range: 0.5...1,
                         format: "%.2f"
                     )
-                    .disabled(library.exportFormat != .jpeg)
+                    .disabled(library.exportFormat != .jpeg && library.exportFormat != .heic)
 
                     AdjustmentSlider(
                         title: "Long Edge",

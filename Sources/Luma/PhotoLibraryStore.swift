@@ -1143,14 +1143,7 @@ final class PhotoLibraryStore: ObservableObject {
     }
 
     private var exportContentType: UTType {
-        switch exportFormat {
-        case .jpeg:
-            .jpeg
-        case .png:
-            .png
-        case .tiff:
-            .tiff
-        }
+        UTType(exportFormat.typeIdentifier) ?? .image
     }
 
     private func renderSelectedPreview() {

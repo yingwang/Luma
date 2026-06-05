@@ -2,7 +2,7 @@
 
 Luma is a native macOS photo-editing prototype built with SwiftUI and Core Image.
 
-The goal is a fast local editor for browsing photos, making common non-destructive adjustments, applying simple portrait retouching, and exporting edited JPEG, PNG, or TIFF files without sending images to a server.
+The goal is a fast local editor for browsing photos, making common non-destructive adjustments, applying simple portrait retouching, and exporting edited JPEG, HEIC, PNG, or TIFF files without sending images to a server.
 
 ## What Works
 
@@ -131,14 +131,14 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Inspect common EXIF fields such as camera, lens, exposure, focal length, and capture time.
 - Identify system-readable RAW files with a RAW badge and filter RAW or non-RAW images.
 - Render and export in a color-managed sRGB space, so exported files are correctly tagged and match the on-screen preview.
-- Export the selected edited photo as JPEG, PNG, or TIFF.
+- Export the selected edited photo as JPEG, HEIC, PNG, or TIFF.
 - Apply export presets for full-size, large web, social, and thumbnail output.
-- Choose JPEG quality.
+- Choose JPEG or HEIC quality.
 - Resize exports by long edge.
 - Apply output sharpening after export resizing.
 - Choose whether exported filenames get a `-luma` suffix.
 - Reset export settings to the default JPEG output.
-- Batch export all picked photos as JPEG, PNG, or TIFF.
+- Batch export all picked photos as JPEG, HEIC, PNG, or TIFF.
 
 ## Run
 

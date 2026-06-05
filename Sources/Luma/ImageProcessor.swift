@@ -291,7 +291,7 @@ final class ImageProcessor: @unchecked Sendable {
         }
 
         let properties: [CFString: Any] = switch format {
-        case .jpeg:
+        case .jpeg, .heic:
             [kCGImageDestinationLossyCompressionQuality: quality]
         case .png, .tiff:
             [:]
