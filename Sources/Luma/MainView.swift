@@ -182,6 +182,17 @@ struct LibrarySidebar: View {
                 .padding(.horizontal, 12)
                 .padding(.bottom, 12)
 
+            Button(role: .destructive) {
+                library.removeRejectedPhotos()
+            } label: {
+                Label("Remove Rejected", systemImage: "trash")
+            }
+            .buttonStyle(.borderless)
+            .font(.caption)
+            .disabled(library.rejectedPhotoCount == 0)
+            .padding(.horizontal, 12)
+            .padding(.bottom, 12)
+
             HStack {
                 Text("Min")
                     .font(.caption)

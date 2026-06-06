@@ -134,6 +134,10 @@ final class PhotoLibraryStore: ObservableObject {
         photos.filter { $0.flag == .picked }.count
     }
 
+    var rejectedPhotoCount: Int {
+        photos.filter { $0.flag == .rejected }.count
+    }
+
     var hasActiveLibraryFilters: Bool {
         libraryFilter != .all ||
             minimumRating > 0 ||
@@ -562,6 +566,20 @@ final class PhotoLibraryStore: ObservableObject {
         let removed = photos.remove(at: index)
         self.selectedPhotoID = filteredPhotos.first?.id ?? photos.first?.id
         statusMessage = "Removed \(removed.fileName) from the library."
+        saveCatalog()
+        renderSelectedPreview()
+    }
+
+    func removeRejectedPhotos() {
+        let removedCount = rejectedPhotoCount
+        guard removedCount > 0 else {
+            statusMessage = "No rejected photos to remove."
+            return
+        }
+
+        photos.removeAll { $0.flag == .rejected }
+        selectedPhotoID = filteredPhotos.first?.id
+        statusMessage = "Removed \(removedCount) rejected photo\(removedCount == 1 ? "" : "s") from the library."
         saveCatalog()
         renderSelectedPreview()
     }
