@@ -54,7 +54,8 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Flip photos horizontally or vertically.
 - Straighten.
 - Vertical and horizontal perspective transform controls.
-- Crop to common aspect ratios and adjust the crop framing position.
+- Crop to common aspect ratios, including square, portrait, classic photo, and wide formats.
+- Adjust the crop framing position after choosing a fixed aspect ratio.
 - Reset crop framing, straighten, and rotation without changing tone edits.
 - Apply built-in presets.
 - Apply one-click Auto Enhance.

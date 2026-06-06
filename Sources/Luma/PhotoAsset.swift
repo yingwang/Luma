@@ -963,8 +963,12 @@ struct AdjustmentHistoryEntry {
 enum CropAspect: String, CaseIterable, Codable, Identifiable {
     case original = "Original"
     case square = "1:1"
+    case twoByThree = "2:3"
     case portrait = "4:5"
+    case threeByFour = "3:4"
     case classic = "3:2"
+    case fourByThree = "4:3"
+    case fiveByFour = "5:4"
     case wide = "16:9"
 
     var id: String {
@@ -977,10 +981,18 @@ enum CropAspect: String, CaseIterable, Codable, Identifiable {
             nil
         case .square:
             1
+        case .twoByThree:
+            2 / 3
         case .portrait:
             4 / 5
+        case .threeByFour:
+            3 / 4
         case .classic:
             3 / 2
+        case .fourByThree:
+            4 / 3
+        case .fiveByFour:
+            5 / 4
         case .wide:
             16 / 9
         }

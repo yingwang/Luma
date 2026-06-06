@@ -123,8 +123,12 @@ final class LumaModelTests: XCTestCase {
     func testCropAspectRatios() {
         XCTAssertNil(CropAspect.original.ratio)
         XCTAssertEqual(CropAspect.square.ratio, 1)
+        XCTAssertEqual(CropAspect.twoByThree.ratio, 2.0 / 3.0)
         XCTAssertEqual(CropAspect.portrait.ratio, 0.8)
+        XCTAssertEqual(CropAspect.threeByFour.ratio, 0.75)
         XCTAssertEqual(CropAspect.classic.ratio, 1.5)
+        XCTAssertEqual(CropAspect.fourByThree.ratio, 4.0 / 3.0)
+        XCTAssertEqual(CropAspect.fiveByFour.ratio, 1.25)
         XCTAssertEqual(CropAspect.wide.ratio, 16.0 / 9.0)
     }
 
