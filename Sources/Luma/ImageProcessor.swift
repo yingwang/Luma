@@ -253,7 +253,10 @@ final class ImageProcessor: @unchecked Sendable {
         to destination: URL,
         quality: CGFloat = 0.92,
         maxLongEdge: CGFloat? = nil,
-        outputSharpening: Double = 0
+        outputSharpening: Double = 0,
+        watermarkText: String = "",
+        watermarkOpacity: Double = 0.45,
+        watermarkSize: Double = 0.25
     ) throws {
         try exportImage(
             from: url,
@@ -262,7 +265,10 @@ final class ImageProcessor: @unchecked Sendable {
             format: .jpeg,
             quality: quality,
             maxLongEdge: maxLongEdge,
-            outputSharpening: outputSharpening
+            outputSharpening: outputSharpening,
+            watermarkText: watermarkText,
+            watermarkOpacity: watermarkOpacity,
+            watermarkSize: watermarkSize
         )
     }
 
@@ -273,13 +279,22 @@ final class ImageProcessor: @unchecked Sendable {
         format: ExportFormat,
         quality: CGFloat = 0.92,
         maxLongEdge: CGFloat? = nil,
-        outputSharpening: Double = 0
+        outputSharpening: Double = 0,
+        watermarkText: String = "",
+        watermarkOpacity: Double = 0.45,
+        watermarkSize: Double = 0.25
     ) throws {
         guard
             let processedImage = processedImage(for: url, adjustments: adjustments),
             let scaledImage = scaledImage(processedImage, maxLongEdge: maxLongEdge),
             let image = exportSharpenedImage(scaledImage, amount: outputSharpening),
-            let cgImage = context.createCGImage(image, from: image.extent, format: .RGBA8, colorSpace: outputColorSpace),
+            let watermarkedImage = watermarkedImage(
+                image,
+                text: watermarkText,
+                opacity: watermarkOpacity,
+                size: watermarkSize
+            ),
+            let cgImage = context.createCGImage(watermarkedImage, from: watermarkedImage.extent, format: .RGBA8, colorSpace: outputColorSpace),
             let destinationRef = CGImageDestinationCreateWithURL(
                 destination as CFURL,
                 format.typeIdentifier as CFString,
@@ -573,6 +588,55 @@ final class ImageProcessor: @unchecked Sendable {
         filter.setValue(image, forKey: kCIInputImageKey)
         filter.setValue(clipped(amount) * 0.9, forKey: kCIInputSharpnessKey)
         return filter.outputImage?.cropped(to: image.extent) ?? image
+    }
+
+    private func watermarkedImage(
+        _ image: CIImage,
+        text: String,
+        opacity: Double,
+        size: Double
+    ) -> CIImage? {
+        let trimmedText = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedText.isEmpty else {
+            return image
+        }
+
+        let extent = image.extent
+        let shortEdge = min(extent.width, extent.height)
+        let fontSize = max(12, shortEdge * CGFloat(0.025 + clipped(size) * 0.055))
+        let padding = max(8, fontSize * 0.35)
+        let shadow = NSShadow()
+        shadow.shadowBlurRadius = max(2, fontSize * 0.08)
+        shadow.shadowOffset = CGSize(width: 0, height: -max(1, fontSize * 0.04))
+        shadow.shadowColor = NSColor.black.withAlphaComponent(0.55)
+
+        let attributes: [NSAttributedString.Key: Any] = [
+            .font: NSFont.systemFont(ofSize: fontSize, weight: .semibold),
+            .foregroundColor: NSColor.white.withAlphaComponent(clipped(opacity)),
+            .shadow: shadow
+        ]
+        let attributedText = NSAttributedString(string: trimmedText, attributes: attributes)
+        let textSize = attributedText.size()
+        let imageSize = CGSize(width: ceil(textSize.width + padding * 2), height: ceil(textSize.height + padding * 2))
+        let overlayImage = NSImage(size: imageSize)
+
+        overlayImage.lockFocus()
+        NSColor.clear.setFill()
+        NSRect(origin: .zero, size: imageSize).fill()
+        attributedText.draw(at: CGPoint(x: padding, y: padding))
+        overlayImage.unlockFocus()
+
+        guard let cgImage = overlayImage.cgImage(forProposedRect: nil, context: nil, hints: nil) else {
+            return image
+        }
+
+        let margin = max(12, shortEdge * 0.025)
+        let x = extent.maxX - imageSize.width - margin
+        let y = extent.minY + margin
+        let watermark = CIImage(cgImage: cgImage)
+            .transformed(by: CGAffineTransform(translationX: x, y: y))
+
+        return watermark.composited(over: image).cropped(to: extent)
     }
 
     private func previewCacheKey(

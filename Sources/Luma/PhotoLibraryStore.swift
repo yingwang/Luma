@@ -9,6 +9,9 @@ final class PhotoLibraryStore: ObservableObject {
     private static let defaultExportQuality = 0.92
     private static let defaultExportLongEdge = 0.0
     private static let defaultExportSharpening = 0.0
+    private static let defaultExportWatermarkText = ""
+    private static let defaultExportWatermarkOpacity = 0.45
+    private static let defaultExportWatermarkSize = 0.25
     private static let defaultExportAddsLumaSuffix = true
 
     @Published private(set) var photos: [PhotoAsset] = [] {
@@ -54,6 +57,9 @@ final class PhotoLibraryStore: ObservableObject {
     @Published var exportQuality = defaultExportQuality
     @Published var exportLongEdge: Double = defaultExportLongEdge
     @Published var exportSharpening: Double = defaultExportSharpening
+    @Published var exportWatermarkText = defaultExportWatermarkText
+    @Published var exportWatermarkOpacity = defaultExportWatermarkOpacity
+    @Published var exportWatermarkSize = defaultExportWatermarkSize
     @Published var exportAddsLumaSuffix = defaultExportAddsLumaSuffix
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
@@ -905,6 +911,9 @@ final class PhotoLibraryStore: ObservableObject {
         exportQuality = Self.defaultExportQuality
         exportLongEdge = Self.defaultExportLongEdge
         exportSharpening = Self.defaultExportSharpening
+        exportWatermarkText = Self.defaultExportWatermarkText
+        exportWatermarkOpacity = Self.defaultExportWatermarkOpacity
+        exportWatermarkSize = Self.defaultExportWatermarkSize
         exportAddsLumaSuffix = Self.defaultExportAddsLumaSuffix
         statusMessage = "Reset export settings."
     }
@@ -932,7 +941,10 @@ final class PhotoLibraryStore: ObservableObject {
                 format: exportFormat,
                 quality: exportQuality,
                 maxLongEdge: exportMaxLongEdge,
-                outputSharpening: exportSharpening
+                outputSharpening: exportSharpening,
+                watermarkText: exportWatermarkText,
+                watermarkOpacity: exportWatermarkOpacity,
+                watermarkSize: exportWatermarkSize
             )
             statusMessage = "Exported \(destination.lastPathComponent)."
         } catch {
@@ -972,7 +984,10 @@ final class PhotoLibraryStore: ObservableObject {
                     format: exportFormat,
                     quality: exportQuality,
                     maxLongEdge: exportMaxLongEdge,
-                    outputSharpening: exportSharpening
+                    outputSharpening: exportSharpening,
+                    watermarkText: exportWatermarkText,
+                    watermarkOpacity: exportWatermarkOpacity,
+                    watermarkSize: exportWatermarkSize
                 )
                 exportedCount += 1
             } catch {

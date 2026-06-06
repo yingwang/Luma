@@ -1778,6 +1778,23 @@ struct AdjustmentPanel: View {
                         format: "%.2f"
                     )
 
+                    TextField("Watermark", text: $library.exportWatermarkText)
+                        .textFieldStyle(.roundedBorder)
+
+                    AdjustmentSlider(
+                        title: "Watermark Opacity",
+                        value: $library.exportWatermarkOpacity,
+                        range: 0.1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Watermark Size",
+                        value: $library.exportWatermarkSize,
+                        range: 0...1,
+                        format: "%.2f"
+                    )
+
                     Toggle("Add -luma Suffix", isOn: $library.exportAddsLumaSuffix)
 
                     Button {

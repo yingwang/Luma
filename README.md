@@ -138,6 +138,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Choose JPEG or HEIC quality.
 - Resize exports by long edge.
 - Apply output sharpening after export resizing.
+- Add a text watermark during export.
 - Choose whether exported filenames get a `-luma` suffix.
 - Reset export settings to the default JPEG output.
 - Batch export all picked photos as JPEG, HEIC, PNG, or TIFF.
