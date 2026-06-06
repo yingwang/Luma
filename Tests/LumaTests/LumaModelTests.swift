@@ -324,6 +324,35 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(PhotoColorLabel.allCases.map(\.rawValue), ["None", "Red", "Yellow", "Green", "Blue", "Purple"])
     }
 
+    func testPhotoSearchMatchesFileNameAndMetadata() {
+        let metadata = PhotoMetadata(
+            pixelWidth: 6000,
+            pixelHeight: 4000,
+            fileSize: 42_000_000,
+            formatName: "DNG",
+            isRaw: true,
+            cameraMake: "Sony",
+            cameraModel: "A7C II",
+            lensModel: "FE 35mm F1.8",
+            iso: 400,
+            aperture: 2.8,
+            shutterSpeed: 1 / 250,
+            focalLength: 35,
+            captureDate: nil
+        )
+        let asset = PhotoAsset(
+            url: URL(fileURLWithPath: "/tmp/stockholm-street.dng"),
+            metadata: metadata,
+            histogramBins: nil
+        )
+
+        XCTAssertTrue(asset.matchesSearch("stockholm"))
+        XCTAssertTrue(asset.matchesSearch("sony 35"))
+        XCTAssertTrue(asset.matchesSearch("raw"))
+        XCTAssertTrue(asset.matchesSearch("iso 400"))
+        XCTAssertFalse(asset.matchesSearch("canon"))
+    }
+
     func testPhotoPresetMetadataAndRepresentativeAdjustments() {
         XCTAssertEqual(PhotoPreset.allCases.map(\.rawValue), ["Neutral", "Vivid", "Landscape", "Soft Portrait", "Clean Portrait", "Black & White", "High Contrast B&W", "Warm Film", "Matte Film"])
         XCTAssertEqual(PhotoPreset.landscape.adjustments.dehaze, 0.22)

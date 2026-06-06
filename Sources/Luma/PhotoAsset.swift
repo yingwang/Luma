@@ -18,6 +18,34 @@ struct PhotoAsset: Identifiable, Equatable {
         url.lastPathComponent
     }
 
+    func matchesSearch(_ query: String) -> Bool {
+        let terms = query
+            .split(whereSeparator: { $0.isWhitespace })
+            .map(String.init)
+
+        guard !terms.isEmpty else {
+            return true
+        }
+
+        let searchableText = [
+            fileName,
+            metadata?.formatText,
+            metadata?.cameraMake,
+            metadata?.cameraModel,
+            metadata?.cameraText,
+            metadata?.lensModel,
+            metadata?.exposureText,
+            metadata?.focalLengthText
+        ]
+        .compactMap { $0 }
+
+        return terms.allSatisfy { term in
+            searchableText.contains {
+                $0.localizedCaseInsensitiveContains(term)
+            }
+        }
+    }
+
     init(
         id: UUID = UUID(),
         url: URL,

@@ -220,7 +220,7 @@ final class PhotoLibraryStore: ObservableObject {
             filteredByRating
         } else {
             filteredByRating.filter {
-                $0.fileName.localizedCaseInsensitiveContains(query)
+                $0.matchesSearch(query)
             }
         }
 

@@ -224,7 +224,7 @@ struct LibrarySidebar: View {
             .padding(.bottom, 12)
 
             HStack(spacing: 6) {
-                TextField("Search file names", text: $library.searchText)
+                TextField("Search photos", text: $library.searchText)
                     .textFieldStyle(.roundedBorder)
 
                 Button {
