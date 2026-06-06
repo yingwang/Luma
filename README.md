@@ -57,7 +57,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Crop to common aspect ratios, including square, portrait, classic photo, and wide formats.
 - Adjust the crop framing position after choosing a fixed aspect ratio.
 - Reset crop framing, straighten, and rotation without changing tone edits.
-- Apply built-in presets.
+- Apply built-in presets for vivid color, landscapes, portraits, black and white, warm film, and matte film.
 - Apply one-click Auto Enhance.
 - Apply a one-click black and white look from the panel or Photo menu.
 - Copy and paste adjustments between photos.

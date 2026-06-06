@@ -324,6 +324,14 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(PhotoColorLabel.allCases.map(\.rawValue), ["None", "Red", "Yellow", "Green", "Blue", "Purple"])
     }
 
+    func testPhotoPresetMetadataAndRepresentativeAdjustments() {
+        XCTAssertEqual(PhotoPreset.allCases.map(\.rawValue), ["Neutral", "Vivid", "Landscape", "Soft Portrait", "Clean Portrait", "Black & White", "High Contrast B&W", "Warm Film", "Matte Film"])
+        XCTAssertEqual(PhotoPreset.landscape.adjustments.dehaze, 0.22)
+        XCTAssertEqual(PhotoPreset.cleanPortrait.adjustments.beautySmooth, 0.18)
+        XCTAssertEqual(PhotoPreset.highContrastBlackAndWhite.adjustments.saturation, 0)
+        XCTAssertEqual(PhotoPreset.matteFilm.adjustments.grainAmount, 0.16)
+    }
+
     func testExportPresetSettings() {
         XCTAssertEqual(ExportPreset.fullSize.jpegQuality, 0.95)
         XCTAssertEqual(ExportPreset.fullSize.longEdge, 0)

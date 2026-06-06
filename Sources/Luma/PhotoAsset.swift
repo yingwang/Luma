@@ -120,9 +120,13 @@ enum LibrarySortOrder: String, CaseIterable, Codable, Identifiable {
 enum PhotoPreset: String, CaseIterable, Identifiable {
     case neutral = "Neutral"
     case vivid = "Vivid"
+    case landscape = "Landscape"
     case softPortrait = "Soft Portrait"
+    case cleanPortrait = "Clean Portrait"
     case blackAndWhite = "Black & White"
+    case highContrastBlackAndWhite = "High Contrast B&W"
     case warmFilm = "Warm Film"
+    case matteFilm = "Matte Film"
 
     var id: String {
         rawValue
@@ -134,12 +138,20 @@ enum PhotoPreset: String, CaseIterable, Identifiable {
             return .neutral
         case .vivid:
             return PhotoAdjustments(exposure: 0.1, contrast: 1.18, saturation: 1.12, warmth: 80, vibrance: 0.35, sharpness: 0.7)
+        case .landscape:
+            return PhotoAdjustments(exposure: 0.05, highlights: -0.18, shadows: 0.12, whites: 0.08, blacks: -0.08, contrast: 1.14, saturation: 1.04, vibrance: 0.28, clarity: 0.35, dehaze: 0.22, sharpness: 0.65)
         case .softPortrait:
             return PhotoAdjustments(exposure: 0.2, contrast: 0.92, saturation: 0.96, warmth: 180, vibrance: 0.08, sharpness: 0.25)
+        case .cleanPortrait:
+            return PhotoAdjustments(exposure: 0.16, highlights: -0.08, shadows: 0.10, contrast: 0.96, saturation: 0.98, warmth: 140, vibrance: 0.10, texture: -0.12, sharpness: 0.28, beautySmooth: 0.18, beautyBrighten: 0.12, beautyWhiten: 0.10)
         case .blackAndWhite:
             return PhotoAdjustments(exposure: 0, contrast: 1.25, saturation: 0, warmth: 0, vibrance: 0, sharpness: 0.45)
+        case .highContrastBlackAndWhite:
+            return PhotoAdjustments(exposure: 0, highlights: -0.08, shadows: 0.05, whites: 0.16, blacks: -0.18, contrast: 1.45, saturation: 0, vibrance: 0, clarity: 0.45, dehaze: 0.18, sharpness: 0.65)
         case .warmFilm:
             return PhotoAdjustments(exposure: 0.05, contrast: 1.08, saturation: 0.94, warmth: 420, vibrance: 0.18, sharpness: 0.35)
+        case .matteFilm:
+            return PhotoAdjustments(exposure: 0.04, highlights: -0.10, shadows: 0.18, blacks: 0.22, contrast: 0.94, saturation: 0.92, warmth: 260, vibrance: 0.08, sharpness: 0.24, grainAmount: 0.16, grainSize: 0.42, grainRoughness: 0.55, toneCurveShadows: 0.22, toneCurveHighlights: -0.10)
         }
     }
 }
