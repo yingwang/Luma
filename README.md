@@ -98,7 +98,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Vignette with radius control.
 - Film grain with amount, size, and roughness controls.
 - Tone curve controls for shadows, darks, lights, and highlights.
-- Color grading for shadows, midtones, and highlights.
+- Color grading for shadows, midtones, and highlights with balance control.
 - Radial local exposure with center, radius, and feather controls.
 - Linear gradient exposure with start and end controls.
 - Invert radial and linear local masks.

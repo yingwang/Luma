@@ -339,6 +339,7 @@ struct PhotoAdjustments: Codable, Equatable {
     var colorGradeMidtonesSaturation: Double = 0
     var colorGradeHighlightsHue: Double = 45
     var colorGradeHighlightsSaturation: Double = 0
+    var colorGradeBalance: Double = 0
     var beautySmooth: Double = 0
     var beautyWrinkle: Double = 0
     var beautyBlemish: Double = 0
@@ -419,6 +420,7 @@ struct PhotoAdjustments: Codable, Equatable {
         case colorGradeMidtonesSaturation
         case colorGradeHighlightsHue
         case colorGradeHighlightsSaturation
+        case colorGradeBalance
         case beautySmooth
         case beautyWrinkle
         case beautyBlemish
@@ -498,6 +500,7 @@ struct PhotoAdjustments: Codable, Equatable {
         colorGradeMidtonesSaturation: Double = 0,
         colorGradeHighlightsHue: Double = 45,
         colorGradeHighlightsSaturation: Double = 0,
+        colorGradeBalance: Double = 0,
         beautySmooth: Double = 0,
         beautyWrinkle: Double = 0,
         beautyBlemish: Double = 0,
@@ -575,6 +578,7 @@ struct PhotoAdjustments: Codable, Equatable {
         self.colorGradeMidtonesSaturation = colorGradeMidtonesSaturation
         self.colorGradeHighlightsHue = colorGradeHighlightsHue
         self.colorGradeHighlightsSaturation = colorGradeHighlightsSaturation
+        self.colorGradeBalance = colorGradeBalance
         self.beautySmooth = beautySmooth
         self.beautyWrinkle = beautyWrinkle
         self.beautyBlemish = beautyBlemish
@@ -664,6 +668,7 @@ struct PhotoAdjustments: Codable, Equatable {
         colorGradeMidtonesSaturation = try container.decodeIfPresent(Double.self, forKey: .colorGradeMidtonesSaturation) ?? 0
         colorGradeHighlightsHue = try container.decodeIfPresent(Double.self, forKey: .colorGradeHighlightsHue) ?? 45
         colorGradeHighlightsSaturation = try container.decodeIfPresent(Double.self, forKey: .colorGradeHighlightsSaturation) ?? 0
+        colorGradeBalance = try container.decodeIfPresent(Double.self, forKey: .colorGradeBalance) ?? 0
         beautySmooth = try container.decodeIfPresent(Double.self, forKey: .beautySmooth) ?? 0
         beautyWrinkle = try container.decodeIfPresent(Double.self, forKey: .beautyWrinkle) ?? 0
         beautyBlemish = try container.decodeIfPresent(Double.self, forKey: .beautyBlemish) ?? 0
@@ -846,6 +851,7 @@ struct PhotoAdjustments: Codable, Equatable {
         colorGradeMidtonesSaturation = 0
         colorGradeHighlightsHue = 45
         colorGradeHighlightsSaturation = 0
+        colorGradeBalance = 0
     }
 }
 

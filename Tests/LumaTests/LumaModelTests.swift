@@ -40,6 +40,7 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.colorGradeMidtonesSaturation, 0)
         XCTAssertEqual(adjustments.colorGradeHighlightsHue, 45)
         XCTAssertEqual(adjustments.colorGradeHighlightsSaturation, 0)
+        XCTAssertEqual(adjustments.colorGradeBalance, 0)
         XCTAssertEqual(adjustments.beautySmooth, 0)
         XCTAssertEqual(adjustments.beautyWrinkle, 0)
         XCTAssertEqual(adjustments.beautyBlemish, 0)
@@ -266,6 +267,7 @@ final class LumaModelTests: XCTestCase {
             colorGradeMidtonesSaturation: 0.2,
             colorGradeHighlightsHue: 38,
             colorGradeHighlightsSaturation: 0.35,
+            colorGradeBalance: -0.45,
             radialExposure: -0.5,
             lensDistortionCorrection: -0.35,
             chromaticAberrationReduction: 0.55,
@@ -301,6 +303,7 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.colorGradeMidtonesSaturation, 0)
         XCTAssertEqual(adjustments.colorGradeHighlightsHue, 45)
         XCTAssertEqual(adjustments.colorGradeHighlightsSaturation, 0)
+        XCTAssertEqual(adjustments.colorGradeBalance, 0)
         XCTAssertEqual(adjustments.radialExposure, -0.5)
         XCTAssertEqual(adjustments.lensDistortionCorrection, -0.35)
         XCTAssertEqual(adjustments.chromaticAberrationReduction, 0.55)

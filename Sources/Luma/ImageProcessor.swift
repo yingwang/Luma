@@ -1309,8 +1309,11 @@ final class ImageProcessor: @unchecked Sendable {
         adjustments: PhotoAdjustments
     ) -> (red: Double, green: Double, blue: Double) {
         let luminance = clipped(0.2126 * red + 0.7152 * green + 0.0722 * blue)
-        let shadowWeight = pow(max(0, (0.55 - luminance) / 0.55), 1.2)
-        let highlightWeight = pow(max(0, (luminance - 0.45) / 0.55), 1.2)
+        let balance = max(-1, min(1, adjustments.colorGradeBalance))
+        let baseShadowWeight = pow(max(0, (0.55 - luminance) / 0.55), 1.2)
+        let baseHighlightWeight = pow(max(0, (luminance - 0.45) / 0.55), 1.2)
+        let shadowWeight = clipped(baseShadowWeight * (balance < 0 ? 1 + abs(balance) : 1 - balance * 0.5))
+        let highlightWeight = clipped(baseHighlightWeight * (balance > 0 ? 1 + balance : 1 - abs(balance) * 0.5))
         let midtoneWeight = max(0, 1 - abs(luminance - 0.5) / 0.35)
         var rgb = (red: red, green: green, blue: blue)
 

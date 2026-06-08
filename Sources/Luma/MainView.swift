@@ -1187,6 +1187,13 @@ struct AdjustmentPanel: View {
                         range: 0...1,
                         format: "%.2f"
                     )
+
+                    AdjustmentSlider(
+                        title: "Balance",
+                        value: adjustmentBinding(\.colorGradeBalance),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
                 }
                 .padding(.top, 8)
             } label: {
