@@ -1137,6 +1137,50 @@ final class PhotoLibraryStore: ObservableObject {
 
                 return colorLabelRank($0.colorLabel) > colorLabelRank($1.colorLabel)
             }
+        case .fileSize:
+            photos.sorted {
+                let leftSize = $0.metadata?.fileSize ?? -1
+                let rightSize = $1.metadata?.fileSize ?? -1
+
+                if leftSize == rightSize {
+                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                }
+
+                return leftSize > rightSize
+            }
+        case .format:
+            photos.sorted {
+                let leftFormat = $0.metadata?.formatText ?? ""
+                let rightFormat = $1.metadata?.formatText ?? ""
+
+                if leftFormat == rightFormat {
+                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                }
+
+                return leftFormat.localizedStandardCompare(rightFormat) == .orderedAscending
+            }
+        case .camera:
+            photos.sorted {
+                let leftCamera = $0.metadata?.cameraText ?? ""
+                let rightCamera = $1.metadata?.cameraText ?? ""
+
+                if leftCamera == rightCamera {
+                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                }
+
+                return leftCamera.localizedStandardCompare(rightCamera) == .orderedAscending
+            }
+        case .lens:
+            photos.sorted {
+                let leftLens = $0.metadata?.lensModel ?? ""
+                let rightLens = $1.metadata?.lensModel ?? ""
+
+                if leftLens == rightLens {
+                    return $0.fileName.localizedStandardCompare($1.fileName) == .orderedAscending
+                }
+
+                return leftLens.localizedStandardCompare(rightLens) == .orderedAscending
+            }
         case .importDate:
             photos.sorted {
                 if $0.importedAt == $1.importedAt {

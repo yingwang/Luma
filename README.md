@@ -19,7 +19,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Move to the previous or next visible photo from the toolbar or keyboard.
 - Jump to the first or last visible photo from the Photo menu.
 - Search by filename, camera, lens, format, and common exposure metadata.
-- Sort by file name, capture date, rating, flag, color label, or import date.
+- Sort by file name, capture date, rating, flag, color label, file size, format, camera, lens, or import date.
 - Reverse the current library sort order.
 - Filter by picked, rejected, rated, unrated, unflagged, labeled, unlabeled, individual color labels, recent imports, RAW, non-RAW, edited, unedited, and minimum star rating.
 - Clear active library filters in one action.

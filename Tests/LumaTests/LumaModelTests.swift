@@ -312,7 +312,7 @@ final class LumaModelTests: XCTestCase {
     }
 
     func testLibrarySortMetadata() {
-        XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag", "Color Label", "Import Date"])
+        XCTAssertEqual(LibrarySort.allCases.map(\.rawValue), ["File Name", "Capture Date", "Rating", "Flag", "Color Label", "File Size", "Format", "Camera", "Lens", "Import Date"])
     }
 
     func testLibrarySortOrderMetadata() {

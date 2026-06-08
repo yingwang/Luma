@@ -129,6 +129,10 @@ enum LibrarySort: String, CaseIterable, Codable, Identifiable {
     case rating = "Rating"
     case flag = "Flag"
     case colorLabel = "Color Label"
+    case fileSize = "File Size"
+    case format = "Format"
+    case camera = "Camera"
+    case lens = "Lens"
     case importDate = "Import Date"
 
     var id: String {
