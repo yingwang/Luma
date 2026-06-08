@@ -1081,6 +1081,13 @@ struct AdjustmentPanel: View {
             )
 
             AdjustmentSlider(
+                title: "Vignette Radius",
+                value: adjustmentBinding(\.vignetteRadius),
+                range: 0...1,
+                format: "%.2f"
+            )
+
+            AdjustmentSlider(
                 title: "Grain Amount",
                 value: adjustmentBinding(\.grainAmount),
                 range: 0...1,

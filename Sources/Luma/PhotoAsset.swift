@@ -325,6 +325,7 @@ struct PhotoAdjustments: Codable, Equatable {
     var noiseReduction: Double = 0
     var sharpness: Double = 0
     var vignette: Double = 0
+    var vignetteRadius: Double = 0.5
     var grainAmount: Double = 0
     var grainSize: Double = 0.35
     var grainRoughness: Double = 0.5
@@ -404,6 +405,7 @@ struct PhotoAdjustments: Codable, Equatable {
         case noiseReduction
         case sharpness
         case vignette
+        case vignetteRadius
         case grainAmount
         case grainSize
         case grainRoughness
@@ -482,6 +484,7 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction: Double = 0,
         sharpness: Double = 0,
         vignette: Double = 0,
+        vignetteRadius: Double = 0.5,
         grainAmount: Double = 0,
         grainSize: Double = 0.35,
         grainRoughness: Double = 0.5,
@@ -558,6 +561,7 @@ struct PhotoAdjustments: Codable, Equatable {
         self.noiseReduction = noiseReduction
         self.sharpness = sharpness
         self.vignette = vignette
+        self.vignetteRadius = vignetteRadius
         self.grainAmount = grainAmount
         self.grainSize = grainSize
         self.grainRoughness = grainRoughness
@@ -646,6 +650,7 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction = try container.decodeIfPresent(Double.self, forKey: .noiseReduction) ?? 0
         sharpness = try container.decodeIfPresent(Double.self, forKey: .sharpness) ?? 0
         vignette = try container.decodeIfPresent(Double.self, forKey: .vignette) ?? 0
+        vignetteRadius = try container.decodeIfPresent(Double.self, forKey: .vignetteRadius) ?? 0.5
         grainAmount = try container.decodeIfPresent(Double.self, forKey: .grainAmount) ?? 0
         grainSize = try container.decodeIfPresent(Double.self, forKey: .grainSize) ?? 0.35
         grainRoughness = try container.decodeIfPresent(Double.self, forKey: .grainRoughness) ?? 0.5
@@ -827,6 +832,7 @@ struct PhotoAdjustments: Codable, Equatable {
         noiseReduction = 0
         sharpness = 0
         vignette = 0
+        vignetteRadius = 0.5
         grainAmount = 0
         grainSize = 0.35
         grainRoughness = 0.5

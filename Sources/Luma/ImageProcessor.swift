@@ -539,7 +539,7 @@ final class ImageProcessor: @unchecked Sendable {
         if adjustments.vignette != 0, let filter = CIFilter(name: "CIVignette") {
             filter.setValue(image, forKey: kCIInputImageKey)
             filter.setValue(abs(adjustments.vignette) * 1.5, forKey: kCIInputIntensityKey)
-            filter.setValue(1 + abs(adjustments.vignette) * 2.5, forKey: kCIInputRadiusKey)
+            filter.setValue(0.8 + clipped(adjustments.vignetteRadius) * 3.2, forKey: kCIInputRadiusKey)
             image = filter.outputImage ?? image
         }
 

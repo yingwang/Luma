@@ -95,7 +95,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Dehaze.
 - Noise reduction.
 - Sharpness.
-- Vignette.
+- Vignette with radius control.
 - Film grain with amount, size, and roughness controls.
 - Tone curve controls for shadows, darks, lights, and highlights.
 - Color grading for shadows, midtones, and highlights.
