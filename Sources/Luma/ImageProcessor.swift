@@ -402,6 +402,7 @@ final class ImageProcessor: @unchecked Sendable {
         }
 
         image = applyToneCurve(adjustments, to: image)
+        image = applyFade(adjustments, to: image)
         image = applyColorGrading(adjustments, to: image)
 
         if adjustments.texture > 0, let filter = CIFilter(name: "CIUnsharpMask") {
@@ -1169,6 +1170,22 @@ final class ImageProcessor: @unchecked Sendable {
         filter.setValue(CIVector(x: 0.45, y: clipped(0.45 + adjustments.toneCurveDarks * 0.2)), forKey: "inputPoint2")
         filter.setValue(CIVector(x: 0.7, y: clipped(0.7 + adjustments.toneCurveLights * 0.2)), forKey: "inputPoint3")
         filter.setValue(CIVector(x: 1, y: clipped(1 + adjustments.toneCurveHighlights * 0.18)), forKey: "inputPoint4")
+        return filter.outputImage ?? image
+    }
+
+    private func applyFade(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.fade > 0,
+              let filter = CIFilter(name: "CIToneCurve") else {
+            return image
+        }
+
+        let amount = clipped(adjustments.fade)
+        filter.setValue(image, forKey: kCIInputImageKey)
+        filter.setValue(CIVector(x: 0, y: 0.10 * amount), forKey: "inputPoint0")
+        filter.setValue(CIVector(x: 0.25, y: clipped(0.25 + 0.14 * amount)), forKey: "inputPoint1")
+        filter.setValue(CIVector(x: 0.55, y: 0.55), forKey: "inputPoint2")
+        filter.setValue(CIVector(x: 0.82, y: clipped(0.82 - 0.04 * amount)), forKey: "inputPoint3")
+        filter.setValue(CIVector(x: 1, y: clipped(1 - 0.08 * amount)), forKey: "inputPoint4")
         return filter.outputImage ?? image
     }
 

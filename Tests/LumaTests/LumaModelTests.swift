@@ -28,6 +28,7 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.cropCenterX, 0.5)
         XCTAssertEqual(adjustments.cropCenterY, 0.5)
         XCTAssertEqual(adjustments.colorMixer, ColorMixerAdjustments())
+        XCTAssertEqual(adjustments.fade, 0)
         XCTAssertEqual(adjustments.texture, 0)
         XCTAssertEqual(adjustments.grainAmount, 0)
         XCTAssertEqual(adjustments.grainSize, 0.35)
@@ -248,6 +249,7 @@ final class LumaModelTests: XCTestCase {
             contrast: 1.4,
             saturation: 0.7,
             warmth: 250,
+            fade: 0.42,
             texture: 0.35,
             grainAmount: 0.5,
             grainSize: 0.8,
@@ -281,6 +283,7 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.contrast, 1)
         XCTAssertEqual(adjustments.saturation, 1)
         XCTAssertEqual(adjustments.warmth, 0)
+        XCTAssertEqual(adjustments.fade, 0)
         XCTAssertEqual(adjustments.texture, 0)
         XCTAssertEqual(adjustments.grainAmount, 0)
         XCTAssertEqual(adjustments.grainSize, 0.35)

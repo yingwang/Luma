@@ -89,6 +89,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Warmth.
 - Tint.
 - Vibrance.
+- Fade for matte black-point lift.
 - Texture.
 - Clarity.
 - Dehaze.

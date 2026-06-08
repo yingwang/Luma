@@ -314,6 +314,7 @@ struct PhotoAdjustments: Codable, Equatable {
     var warmth: Double = 0
     var tint: Double = 0
     var vibrance: Double = 0
+    var fade: Double = 0
     var texture: Double = 0
     var clarity: Double = 0
     var dehaze: Double = 0
@@ -392,6 +393,7 @@ struct PhotoAdjustments: Codable, Equatable {
         case warmth
         case tint
         case vibrance
+        case fade
         case texture
         case clarity
         case dehaze
@@ -469,6 +471,7 @@ struct PhotoAdjustments: Codable, Equatable {
         warmth: Double = 0,
         tint: Double = 0,
         vibrance: Double = 0,
+        fade: Double = 0,
         texture: Double = 0,
         clarity: Double = 0,
         dehaze: Double = 0,
@@ -544,6 +547,7 @@ struct PhotoAdjustments: Codable, Equatable {
         self.warmth = warmth
         self.tint = tint
         self.vibrance = vibrance
+        self.fade = fade
         self.texture = texture
         self.clarity = clarity
         self.dehaze = dehaze
@@ -631,6 +635,7 @@ struct PhotoAdjustments: Codable, Equatable {
         warmth = try container.decodeIfPresent(Double.self, forKey: .warmth) ?? 0
         tint = try container.decodeIfPresent(Double.self, forKey: .tint) ?? 0
         vibrance = try container.decodeIfPresent(Double.self, forKey: .vibrance) ?? 0
+        fade = try container.decodeIfPresent(Double.self, forKey: .fade) ?? 0
         texture = try container.decodeIfPresent(Double.self, forKey: .texture) ?? 0
         clarity = try container.decodeIfPresent(Double.self, forKey: .clarity) ?? 0
         dehaze = try container.decodeIfPresent(Double.self, forKey: .dehaze) ?? 0
@@ -811,6 +816,7 @@ struct PhotoAdjustments: Codable, Equatable {
         warmth = 0
         tint = 0
         vibrance = 0
+        fade = 0
         texture = 0
         clarity = 0
         dehaze = 0
