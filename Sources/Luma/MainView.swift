@@ -1813,7 +1813,11 @@ struct AdjustmentPanel: View {
                         format: "%.2f"
                     )
 
-                    Toggle("Add -luma Suffix", isOn: $library.exportAddsLumaSuffix)
+                    Toggle("Add Suffix", isOn: $library.exportAddsLumaSuffix)
+
+                    TextField("Suffix", text: $library.exportFileNameSuffix)
+                        .textFieldStyle(.roundedBorder)
+                        .disabled(!library.exportAddsLumaSuffix)
 
                     Button {
                         library.resetExportSettings()

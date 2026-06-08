@@ -141,7 +141,7 @@ The goal is a fast local editor for browsing photos, making common non-destructi
 - Resize exports by long edge.
 - Apply output sharpening after export resizing.
 - Add a text watermark during export.
-- Choose whether exported filenames get a `-luma` suffix.
+- Choose whether exported filenames get a custom suffix.
 - Reset export settings to the default JPEG output.
 - Batch export all picked photos as JPEG, HEIC, PNG, or TIFF.
 

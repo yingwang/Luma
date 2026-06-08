@@ -13,6 +13,7 @@ final class PhotoLibraryStore: ObservableObject {
     private static let defaultExportWatermarkOpacity = 0.45
     private static let defaultExportWatermarkSize = 0.25
     private static let defaultExportAddsLumaSuffix = true
+    private static let defaultExportFileNameSuffix = "-luma"
 
     @Published private(set) var photos: [PhotoAsset] = [] {
         didSet {
@@ -61,6 +62,7 @@ final class PhotoLibraryStore: ObservableObject {
     @Published var exportWatermarkOpacity = defaultExportWatermarkOpacity
     @Published var exportWatermarkSize = defaultExportWatermarkSize
     @Published var exportAddsLumaSuffix = defaultExportAddsLumaSuffix
+    @Published var exportFileNameSuffix = defaultExportFileNameSuffix
     @Published private(set) var canUndo = false
     @Published private(set) var canRedo = false
     @Published var showOriginal = false {
@@ -933,6 +935,7 @@ final class PhotoLibraryStore: ObservableObject {
         exportWatermarkOpacity = Self.defaultExportWatermarkOpacity
         exportWatermarkSize = Self.defaultExportWatermarkSize
         exportAddsLumaSuffix = Self.defaultExportAddsLumaSuffix
+        exportFileNameSuffix = Self.defaultExportFileNameSuffix
         statusMessage = "Reset export settings."
     }
 
@@ -1082,7 +1085,22 @@ final class PhotoLibraryStore: ObservableObject {
 
     private func exportBaseName(for photo: PhotoAsset) -> String {
         let baseName = photo.url.deletingPathExtension().lastPathComponent
-        return exportAddsLumaSuffix ? baseName + "-luma" : baseName
+        guard exportAddsLumaSuffix else {
+            return baseName
+        }
+
+        let suffix = sanitizedExportSuffix
+        return suffix.isEmpty ? baseName : baseName + suffix
+    }
+
+    private var sanitizedExportSuffix: String {
+        exportFileNameSuffix
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+            .map { character in
+                character == "/" || character == ":" ? "-" : character
+            }
+            .map(String.init)
+            .joined()
     }
 
     private func sortedPhotos(_ photos: [PhotoAsset]) -> [PhotoAsset] {
