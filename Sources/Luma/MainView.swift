@@ -1218,6 +1218,20 @@ struct AdjustmentPanel: View {
                     )
 
                     AdjustmentSlider(
+                        title: "Radial Saturation",
+                        value: adjustmentBinding(\.radialSaturation),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Radial Warmth",
+                        value: adjustmentBinding(\.radialWarmth),
+                        range: -1000...1000,
+                        format: "%.0f"
+                    )
+
+                    AdjustmentSlider(
                         title: "Center X",
                         value: adjustmentBinding(\.radialCenterX),
                         range: 0...1,
@@ -1268,6 +1282,20 @@ struct AdjustmentPanel: View {
                         value: adjustmentBinding(\.linearExposure),
                         range: -2...2,
                         format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Linear Saturation",
+                        value: adjustmentBinding(\.linearSaturation),
+                        range: -1...1,
+                        format: "%.2f"
+                    )
+
+                    AdjustmentSlider(
+                        title: "Linear Warmth",
+                        value: adjustmentBinding(\.linearWarmth),
+                        range: -1000...1000,
+                        format: "%.0f"
                     )
 
                     AdjustmentSlider(

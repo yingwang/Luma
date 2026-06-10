@@ -526,8 +526,8 @@ final class ImageProcessor: @unchecked Sendable {
         image = applyEyeEnlarge(adjustments.eyeEnlarge, to: image)
         image = applyBodySlim(adjustments.bodySlim, to: image)
         image = applyFaceSlim(adjustments.faceSlim, to: image)
-        image = applyRadialExposure(adjustments, to: image)
-        image = applyLinearExposure(adjustments, to: image)
+        image = applyRadialAdjustment(adjustments, to: image)
+        image = applyLinearAdjustment(adjustments, to: image)
         image = applySpotHeal(adjustments.effectiveSpotHealPoints, to: image)
 
         if adjustments.sharpness > 0, let filter = CIFilter(name: "CISharpenLuminance") {
@@ -999,9 +999,8 @@ final class ImageProcessor: @unchecked Sendable {
         return filter.outputImage?.cropped(to: image.extent) ?? image
     }
 
-    private func applyRadialExposure(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
-        guard adjustments.radialExposure != 0,
-              let exposure = CIFilter(name: "CIExposureAdjust"),
+    private func applyRadialAdjustment(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.radialExposure != 0 || adjustments.radialSaturation != 0 || adjustments.radialWarmth != 0,
               let gradient = CIFilter(name: "CIRadialGradient"),
               let blend = CIFilter(name: "CIBlendWithMask") else {
             return image
@@ -1014,19 +1013,22 @@ final class ImageProcessor: @unchecked Sendable {
         let innerRadius = shortEdge * max(0.02, clipped(adjustments.radialRadius))
         let outerRadius = innerRadius + shortEdge * max(0.01, clipped(adjustments.radialFeather))
 
-        exposure.setValue(image, forKey: kCIInputImageKey)
-        exposure.setValue(adjustments.radialExposure, forKey: kCIInputEVKey)
-
         gradient.setValue(CIVector(x: centerX, y: centerY), forKey: kCIInputCenterKey)
         gradient.setValue(innerRadius, forKey: "inputRadius0")
         gradient.setValue(outerRadius, forKey: "inputRadius1")
         gradient.setValue(adjustments.radialInvert ? CIColor.black : CIColor.white, forKey: "inputColor0")
         gradient.setValue(adjustments.radialInvert ? CIColor.white : CIColor.black, forKey: "inputColor1")
 
-        guard let adjusted = exposure.outputImage,
-              let mask = gradient.outputImage?.cropped(to: extent) else {
+        guard let mask = gradient.outputImage?.cropped(to: extent) else {
             return image
         }
+
+        let adjusted = locallyAdjustedImage(
+            image,
+            exposure: adjustments.radialExposure,
+            saturation: adjustments.radialSaturation,
+            warmth: adjustments.radialWarmth
+        )
 
         blend.setValue(adjusted, forKey: kCIInputImageKey)
         blend.setValue(image, forKey: kCIInputBackgroundImageKey)
@@ -1034,9 +1036,8 @@ final class ImageProcessor: @unchecked Sendable {
         return blend.outputImage?.cropped(to: extent) ?? image
     }
 
-    private func applyLinearExposure(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
-        guard adjustments.linearExposure != 0,
-              let exposure = CIFilter(name: "CIExposureAdjust"),
+    private func applyLinearAdjustment(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {
+        guard adjustments.linearExposure != 0 || adjustments.linearSaturation != 0 || adjustments.linearWarmth != 0,
               let gradient = CIFilter(name: "CILinearGradient"),
               let blend = CIFilter(name: "CIBlendWithMask") else {
             return image
@@ -1046,23 +1047,59 @@ final class ImageProcessor: @unchecked Sendable {
         let startY = extent.minY + extent.height * clipped(adjustments.linearStartY)
         let endY = extent.minY + extent.height * clipped(adjustments.linearEndY)
 
-        exposure.setValue(image, forKey: kCIInputImageKey)
-        exposure.setValue(adjustments.linearExposure, forKey: kCIInputEVKey)
-
         gradient.setValue(CIVector(x: extent.midX, y: startY), forKey: "inputPoint0")
         gradient.setValue(CIVector(x: extent.midX, y: endY), forKey: "inputPoint1")
         gradient.setValue(adjustments.linearInvert ? CIColor.black : CIColor.white, forKey: "inputColor0")
         gradient.setValue(adjustments.linearInvert ? CIColor.white : CIColor.black, forKey: "inputColor1")
 
-        guard let adjusted = exposure.outputImage,
-              let mask = gradient.outputImage?.cropped(to: extent) else {
+        guard let mask = gradient.outputImage?.cropped(to: extent) else {
             return image
         }
+
+        let adjusted = locallyAdjustedImage(
+            image,
+            exposure: adjustments.linearExposure,
+            saturation: adjustments.linearSaturation,
+            warmth: adjustments.linearWarmth
+        )
 
         blend.setValue(adjusted, forKey: kCIInputImageKey)
         blend.setValue(image, forKey: kCIInputBackgroundImageKey)
         blend.setValue(mask, forKey: kCIInputMaskImageKey)
         return blend.outputImage?.cropped(to: extent) ?? image
+    }
+
+    // Saturation is an offset around the neutral 1.0 multiplier and warmth is a
+    // kelvin offset, so 0 always means "no local change" for every control.
+    private func locallyAdjustedImage(
+        _ image: CIImage,
+        exposure: Double,
+        saturation: Double,
+        warmth: Double
+    ) -> CIImage {
+        var adjusted = image
+
+        if exposure != 0, let filter = CIFilter(name: "CIExposureAdjust") {
+            filter.setValue(adjusted, forKey: kCIInputImageKey)
+            filter.setValue(exposure, forKey: kCIInputEVKey)
+            adjusted = filter.outputImage ?? adjusted
+        }
+
+        if saturation != 0, let filter = CIFilter(name: "CIColorControls") {
+            filter.setValue(adjusted, forKey: kCIInputImageKey)
+            filter.setValue(max(0, 1 + saturation), forKey: kCIInputSaturationKey)
+            adjusted = filter.outputImage ?? adjusted
+        }
+
+        if warmth != 0 {
+            let filter = CIFilter.temperatureAndTint()
+            filter.inputImage = adjusted
+            filter.neutral = CIVector(x: 6500 - warmth, y: 0)
+            filter.targetNeutral = CIVector(x: 6500, y: 0)
+            adjusted = filter.outputImage ?? adjusted
+        }
+
+        return adjusted
     }
 
     private func applyLensVignetteCorrection(_ adjustments: PhotoAdjustments, to image: CIImage) -> CIImage {

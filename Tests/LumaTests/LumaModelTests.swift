@@ -51,12 +51,16 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.faceSlim, 0)
         XCTAssertEqual(adjustments.bodySlim, 0)
         XCTAssertEqual(adjustments.radialExposure, 0)
+        XCTAssertEqual(adjustments.radialSaturation, 0)
+        XCTAssertEqual(adjustments.radialWarmth, 0)
         XCTAssertEqual(adjustments.radialCenterX, 0.5)
         XCTAssertEqual(adjustments.radialCenterY, 0.5)
         XCTAssertEqual(adjustments.radialRadius, 0.35)
         XCTAssertEqual(adjustments.radialFeather, 0.25)
         XCTAssertFalse(adjustments.radialInvert)
         XCTAssertEqual(adjustments.linearExposure, 0)
+        XCTAssertEqual(adjustments.linearSaturation, 0)
+        XCTAssertEqual(adjustments.linearWarmth, 0)
         XCTAssertEqual(adjustments.linearStartY, 1)
         XCTAssertEqual(adjustments.linearEndY, 0.65)
         XCTAssertFalse(adjustments.linearInvert)
@@ -269,6 +273,10 @@ final class LumaModelTests: XCTestCase {
             colorGradeHighlightsSaturation: 0.35,
             colorGradeBalance: -0.45,
             radialExposure: -0.5,
+            radialSaturation: 0.3,
+            radialWarmth: 250,
+            linearSaturation: -0.2,
+            linearWarmth: -180,
             lensDistortionCorrection: -0.35,
             chromaticAberrationReduction: 0.55,
             lensVignetteCorrection: 0.45,
@@ -305,6 +313,10 @@ final class LumaModelTests: XCTestCase {
         XCTAssertEqual(adjustments.colorGradeHighlightsSaturation, 0)
         XCTAssertEqual(adjustments.colorGradeBalance, 0)
         XCTAssertEqual(adjustments.radialExposure, -0.5)
+        XCTAssertEqual(adjustments.radialSaturation, 0.3)
+        XCTAssertEqual(adjustments.radialWarmth, 250)
+        XCTAssertEqual(adjustments.linearSaturation, -0.2)
+        XCTAssertEqual(adjustments.linearWarmth, -180)
         XCTAssertEqual(adjustments.lensDistortionCorrection, -0.35)
         XCTAssertEqual(adjustments.chromaticAberrationReduction, 0.55)
         XCTAssertEqual(adjustments.lensVignetteCorrection, 0.45)

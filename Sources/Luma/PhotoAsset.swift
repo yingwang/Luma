@@ -354,12 +354,16 @@ struct PhotoAdjustments: Codable, Equatable {
     var faceSlim: Double = 0
     var bodySlim: Double = 0
     var radialExposure: Double = 0
+    var radialSaturation: Double = 0
+    var radialWarmth: Double = 0
     var radialCenterX: Double = 0.5
     var radialCenterY: Double = 0.5
     var radialRadius: Double = 0.35
     var radialFeather: Double = 0.25
     var radialInvert: Bool = false
     var linearExposure: Double = 0
+    var linearSaturation: Double = 0
+    var linearWarmth: Double = 0
     var linearStartY: Double = 1
     var linearEndY: Double = 0.65
     var linearInvert: Bool = false
@@ -435,12 +439,16 @@ struct PhotoAdjustments: Codable, Equatable {
         case faceSlim
         case bodySlim
         case radialExposure
+        case radialSaturation
+        case radialWarmth
         case radialCenterX
         case radialCenterY
         case radialRadius
         case radialFeather
         case radialInvert
         case linearExposure
+        case linearSaturation
+        case linearWarmth
         case linearStartY
         case linearEndY
         case linearInvert
@@ -515,12 +523,16 @@ struct PhotoAdjustments: Codable, Equatable {
         faceSlim: Double = 0,
         bodySlim: Double = 0,
         radialExposure: Double = 0,
+        radialSaturation: Double = 0,
+        radialWarmth: Double = 0,
         radialCenterX: Double = 0.5,
         radialCenterY: Double = 0.5,
         radialRadius: Double = 0.35,
         radialFeather: Double = 0.25,
         radialInvert: Bool = false,
         linearExposure: Double = 0,
+        linearSaturation: Double = 0,
+        linearWarmth: Double = 0,
         linearStartY: Double = 1,
         linearEndY: Double = 0.65,
         linearInvert: Bool = false,
@@ -593,12 +605,16 @@ struct PhotoAdjustments: Codable, Equatable {
         self.faceSlim = faceSlim
         self.bodySlim = bodySlim
         self.radialExposure = radialExposure
+        self.radialSaturation = radialSaturation
+        self.radialWarmth = radialWarmth
         self.radialCenterX = radialCenterX
         self.radialCenterY = radialCenterY
         self.radialRadius = radialRadius
         self.radialFeather = radialFeather
         self.radialInvert = radialInvert
         self.linearExposure = linearExposure
+        self.linearSaturation = linearSaturation
+        self.linearWarmth = linearWarmth
         self.linearStartY = linearStartY
         self.linearEndY = linearEndY
         self.linearInvert = linearInvert
@@ -683,12 +699,16 @@ struct PhotoAdjustments: Codable, Equatable {
         faceSlim = try container.decodeIfPresent(Double.self, forKey: .faceSlim) ?? 0
         bodySlim = try container.decodeIfPresent(Double.self, forKey: .bodySlim) ?? 0
         radialExposure = try container.decodeIfPresent(Double.self, forKey: .radialExposure) ?? 0
+        radialSaturation = try container.decodeIfPresent(Double.self, forKey: .radialSaturation) ?? 0
+        radialWarmth = try container.decodeIfPresent(Double.self, forKey: .radialWarmth) ?? 0
         radialCenterX = try container.decodeIfPresent(Double.self, forKey: .radialCenterX) ?? 0.5
         radialCenterY = try container.decodeIfPresent(Double.self, forKey: .radialCenterY) ?? 0.5
         radialRadius = try container.decodeIfPresent(Double.self, forKey: .radialRadius) ?? 0.35
         radialFeather = try container.decodeIfPresent(Double.self, forKey: .radialFeather) ?? 0.25
         radialInvert = try container.decodeIfPresent(Bool.self, forKey: .radialInvert) ?? false
         linearExposure = try container.decodeIfPresent(Double.self, forKey: .linearExposure) ?? 0
+        linearSaturation = try container.decodeIfPresent(Double.self, forKey: .linearSaturation) ?? 0
+        linearWarmth = try container.decodeIfPresent(Double.self, forKey: .linearWarmth) ?? 0
         linearStartY = try container.decodeIfPresent(Double.self, forKey: .linearStartY) ?? 1
         linearEndY = try container.decodeIfPresent(Double.self, forKey: .linearEndY) ?? 0.65
         linearInvert = try container.decodeIfPresent(Bool.self, forKey: .linearInvert) ?? false

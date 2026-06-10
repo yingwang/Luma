@@ -791,12 +791,16 @@ final class PhotoLibraryStore: ObservableObject {
     func resetSelectedLocalAdjustments() {
         updateSelectedAdjustments { adjustments in
             adjustments.radialExposure = 0
+            adjustments.radialSaturation = 0
+            adjustments.radialWarmth = 0
             adjustments.radialCenterX = 0.5
             adjustments.radialCenterY = 0.5
             adjustments.radialRadius = 0.35
             adjustments.radialFeather = 0.25
             adjustments.radialInvert = false
             adjustments.linearExposure = 0
+            adjustments.linearSaturation = 0
+            adjustments.linearWarmth = 0
             adjustments.linearStartY = 1
             adjustments.linearEndY = 0.65
             adjustments.linearInvert = false
@@ -808,6 +812,8 @@ final class PhotoLibraryStore: ObservableObject {
     func resetSelectedRadialAdjustment() {
         updateSelectedAdjustments { adjustments in
             adjustments.radialExposure = 0
+            adjustments.radialSaturation = 0
+            adjustments.radialWarmth = 0
             adjustments.radialCenterX = 0.5
             adjustments.radialCenterY = 0.5
             adjustments.radialRadius = 0.35
@@ -820,6 +826,8 @@ final class PhotoLibraryStore: ObservableObject {
     func resetSelectedLinearAdjustment() {
         updateSelectedAdjustments { adjustments in
             adjustments.linearExposure = 0
+            adjustments.linearSaturation = 0
+            adjustments.linearWarmth = 0
             adjustments.linearStartY = 1
             adjustments.linearEndY = 0.65
             adjustments.linearInvert = false
